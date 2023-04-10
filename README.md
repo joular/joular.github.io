@@ -1,4 +1,4 @@
 # Joular Project - Documentations
 
-- [PowerJoular Documentation)(./powerjoular/)
+- [PowerJoular Documentation](./powerjoular/)
 - [JoularJX Documentation](./joularjx/)
