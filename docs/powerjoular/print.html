@@ -275,6 +275,12 @@ The service will run the program with the <code>-o</code> option (which only sav
 The service can be enabled to run automatically on boot.</p>
 <p>The systemd service is automatically installed when installing PowerJoular using the installer script.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="integration-with-systems-and-tools"><a class="header" href="#integration-with-systems-and-tools">Integration with Systems and Tools</a></h1>
+<p>PowerJoular exports its power data to CSV files, or print the values directly on the terminal.
+As such, PowerJoular can be used in IDEs, integration systems CI/CD, or alongside other profilers or debugging tools.</p>
+<p>All what is needed is to start PowerJoular and read the generated CSV files.
+PowerJoular can write these CSV files in <code>overwrite</code> mode, and thus reducing the overhead and size of these files.</p>
+<p>With the systemd service provided, PowerJoular can run automatically on startup and write power consumption to <code>/tmp</code> folder (which can be changed in the service).
+Therefore, offering an automatic way for multiple tools and dashboards to get accurate and real-time power metrics in multiple platforms.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="how-powerjoular-works"><a class="header" href="#how-powerjoular-works">How PowerJoular Works</a></h1>
 
                     </main>
