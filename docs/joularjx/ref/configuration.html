@@ -83,7 +83,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="../overview.html"><strong aria-hidden="true">1.</strong> Overview</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../guide/joularjx.html"><strong aria-hidden="true">2.</strong> What is JoularJX</a></li><li class="chapter-item expanded "><a href="../guide/supported_platforms.html"><strong aria-hidden="true">3.</strong> Supported Platforms</a></li><li class="chapter-item expanded "><a href="../guide/installation.html"><strong aria-hidden="true">4.</strong> Installation</a></li><li class="chapter-item expanded "><a href="../guide/quick_usage.html"><strong aria-hidden="true">5.</strong> Quick Usage</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference Guide</li><li class="chapter-item expanded "><a href="../ref/compilation.html"><strong aria-hidden="true">6.</strong> Compilation</a></li><li class="chapter-item expanded "><a href="../ref/how_it_works.html"><strong aria-hidden="true">7.</strong> How JoularJX Works</a></li><li class="chapter-item expanded "><a href="../ref/configuration.html" class="active"><strong aria-hidden="true">8.</strong> Configuration Properties</a></li><li class="chapter-item expanded "><a href="../ref/generated_files.html"><strong aria-hidden="true">9.</strong> Generated Files</a></li><li class="chapter-item expanded "><a href="../ref/integration.html"><strong aria-hidden="true">10.</strong> Integration with Systems and Tools</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../overview.html"><strong aria-hidden="true">1.</strong> Overview</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../guide/supported_platforms.html"><strong aria-hidden="true">2.</strong> Supported Platforms</a></li><li class="chapter-item expanded "><a href="../guide/installation.html"><strong aria-hidden="true">3.</strong> Installation</a></li><li class="chapter-item expanded "><a href="../guide/quick_usage.html"><strong aria-hidden="true">4.</strong> Quick Usage</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference Guide</li><li class="chapter-item expanded "><a href="../ref/compilation.html"><strong aria-hidden="true">5.</strong> Compilation</a></li><li class="chapter-item expanded "><a href="../ref/configuration.html" class="active"><strong aria-hidden="true">6.</strong> Configuration Properties</a></li><li class="chapter-item expanded "><a href="../ref/generated_files.html"><strong aria-hidden="true">7.</strong> Generated Files</a></li><li class="chapter-item expanded "><a href="../ref/integration.html"><strong aria-hidden="true">8.</strong> Integration with Systems and Tools</a></li><li class="chapter-item expanded "><a href="../ref/how_it_works.html"><strong aria-hidden="true">9.</strong> How JoularJX Works</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -145,12 +145,27 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="configuration-properties"><a class="header" href="#configuration-properties">Configuration Properties</a></h1>
+<p>JoularJX can be configured by modifying the <code>config.properties</code> files:</p>
+<ul>
+<li><code>filter-method-names</code>: list of strings which will be used to filter the monitored methods (see Generated files below for explanations).</li>
+<li><code>save-runtime-data</code>: write runtime methods power consumption in a CSV file.</li>
+<li><code>overwrite-runtime-data</code>: overwrite runtime power data files, or if set to false, it will write new files for each monitoring cycle.</li>
+<li><code>logger-level</code>: set the level of information (by logger) given by JoularJX in the terminal (allowed values: OFF, INFO, WARNING, SEVERE).</li>
+<li><code>powermonitor-path</code>: Full path to the power monitor program (only for Windows).</li>
+<li><code>track-consumption-evolution</code>: generate CSV files for each method containing details of the method's consumption over the time. Each consumption value is mapped to an Unix timestamp.</li>
+<li><code>hide-agent-consumption</code>: if set to true, the energy consumption of the agent threads will not be reported.</li>
+<li><code>enable-call-trees-consumption</code>: compute methods call trees energy consumption. A CSV file will be generated at the end of the agent's execution, associating to each call tree it's total energy consumption.</li>
+<li><code>save-call-trees-runtime-data</code>: write runtime call trees power consumption in a CSV file. For each monitoring cycle (1 second), a new CSV file will be generated, containing the runtime power consumption of the call trees. The generated files will include timestamps in their names.</li>
+<li><code>overwrite-call-trees-runtime-data</code>: overwrite runtime call trees power data file, or if set to false, it will write new file for each monitoring cycle.</li>
+</ul>
+<p>You can install the jar package (and the PowerMonitor.exe on Windows) wherever you want, and call it in the <code>javaagent</code> with the full path.
+However, <code>config.properties</code> must be copied to the same folder as where you run the Java command.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../ref/how_it_works.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../ref/compilation.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
@@ -164,7 +179,7 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../ref/how_it_works.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../ref/compilation.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 

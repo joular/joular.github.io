@@ -22,3 +22,9 @@ We currently support the following Raspberry Pi models and Asus Tinker Board mod
 - Model 4 B (rev 1.1, and rev 1.2), for both 32 bits and 64 bits OS
 - Model 400 (rev 1.0), for 64 bits OS
 - Asus Tinker Board (S)
+
+| Platform | Supported OS | Based on | Supported Architecture |
+|:--------------:|:---------------------:|:-----------------------------:|:-----------------------------:|
+|        Raspberry Pi       |        GNU/Linux       |             Our regression models             |             ARM            |
+|        Asus Tinker Board       |        GNU/Linux       |             Our regression models             |             ARM            |
+|     Linux PC/Server    |        GNU/Linux        |             RAPL (using powercap), Nvidia-smi            |             x86, x86_64            |

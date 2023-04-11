@@ -83,7 +83,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="../overview.html"><strong aria-hidden="true">1.</strong> Overview</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../guide/joularjx.html"><strong aria-hidden="true">2.</strong> What is JoularJX</a></li><li class="chapter-item expanded "><a href="../guide/supported_platforms.html"><strong aria-hidden="true">3.</strong> Supported Platforms</a></li><li class="chapter-item expanded "><a href="../guide/installation.html" class="active"><strong aria-hidden="true">4.</strong> Installation</a></li><li class="chapter-item expanded "><a href="../guide/quick_usage.html"><strong aria-hidden="true">5.</strong> Quick Usage</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference Guide</li><li class="chapter-item expanded "><a href="../ref/compilation.html"><strong aria-hidden="true">6.</strong> Compilation</a></li><li class="chapter-item expanded "><a href="../ref/how_it_works.html"><strong aria-hidden="true">7.</strong> How JoularJX Works</a></li><li class="chapter-item expanded "><a href="../ref/configuration.html"><strong aria-hidden="true">8.</strong> Configuration Properties</a></li><li class="chapter-item expanded "><a href="../ref/generated_files.html"><strong aria-hidden="true">9.</strong> Generated Files</a></li><li class="chapter-item expanded "><a href="../ref/integration.html"><strong aria-hidden="true">10.</strong> Integration with Systems and Tools</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../overview.html"><strong aria-hidden="true">1.</strong> Overview</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../guide/supported_platforms.html"><strong aria-hidden="true">2.</strong> Supported Platforms</a></li><li class="chapter-item expanded "><a href="../guide/installation.html" class="active"><strong aria-hidden="true">3.</strong> Installation</a></li><li class="chapter-item expanded "><a href="../guide/quick_usage.html"><strong aria-hidden="true">4.</strong> Quick Usage</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference Guide</li><li class="chapter-item expanded "><a href="../ref/compilation.html"><strong aria-hidden="true">5.</strong> Compilation</a></li><li class="chapter-item expanded "><a href="../ref/configuration.html"><strong aria-hidden="true">6.</strong> Configuration Properties</a></li><li class="chapter-item expanded "><a href="../ref/generated_files.html"><strong aria-hidden="true">7.</strong> Generated Files</a></li><li class="chapter-item expanded "><a href="../ref/integration.html"><strong aria-hidden="true">8.</strong> Integration with Systems and Tools</a></li><li class="chapter-item expanded "><a href="../ref/how_it_works.html"><strong aria-hidden="true">9.</strong> How JoularJX Works</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -145,6 +145,17 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="installation"><a class="header" href="#installation">Installation</a></h1>
+<p>JoularJX is a Java agent, and therfore provided as a <code>.jar</code> file.
+Just use the compiled jar package for JoularJX.</p>
+<p>You can also run the installation script in the <code>install/</code> folder:</p>
+<ul>
+<li>On Windows, run in a command line: <code>windows-install.bat</code>. This will install JoularJX jar and ProgramMonitor to <code>C:\joularjx</code>.</li>
+<li>On GNU/Linux, run in a terminal: <code>sh linux-install.sh</code>. This will install JoularJX to <code>/opt/joularjx</code>.</li>
+</ul>
+<p>JoularJX requires a minimum version of Java 11+.</p>
+<p>On Windows, JoularJX uses a custom power monitor program that uses Intel Power Gadget API on Windows, and therefore require installing the <a href="https://www.intel.com/content/www/us/en/developer/articles/tool/power-gadget.html">Intel Power Gadget tool</a> and using a supported Intel CPU.</p>
+<p>On x86_64 Linux, JoularJX uses Intel RAPL interface through powercap, and therefore requires running on an Intel CPU or an AMD Ryzen CPU.</p>
+<p>On supported ARM Linux, JoularJX uses our own research-based regression models to estimate CPU power consumption with support for the following, therefore not requiring any additional dependencies.</p>
 
                     </main>
 
