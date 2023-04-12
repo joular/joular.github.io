@@ -22,6 +22,10 @@ The generated files are available under the following folder structure:
         - methods
       - evolution
 
+The folder structure is summarized in the following figure:
+
+![JoularJX folder structure](joularjx2-results.png)
+
 For real-time power data or the total energy at the program exit, JoularJX generated two CSV files:
 
 - A file which contains power or energy data for all methods, which include the JDK's ones.

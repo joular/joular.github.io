@@ -13,6 +13,8 @@ JoularJX is a Java agent where you can simply hook it to the Java Virtual Machin
 
 JoularJX is the successor of [Jalen](https://www.noureddine.org/research/jalen), and the core approach of statistical sampling is based and inspired by the work we did in monitoring energy hotspots in software ([ASE 2012 conference paper](https://hal.inria.fr/hal-00715331/document), and [ASE Journal paper in 2015](https://hal.inria.fr/hal-01069142/document)).
 
+The official website of JoularJX is: [https://www.noureddine.org/research/joular/joularjx](https://www.noureddine.org/research/joular/joularjx).
+
 ## Features
 
 - Monitor power consumption of each method at runtime

@@ -153,6 +153,7 @@
 <p>JoularJX is a Java-based agent for power monitoring at the source code level with support for modern Java versions and multi-OS to monitor power consumption of hardware and software.</p>
 <p>JoularJX is a Java agent where you can simply hook it to the Java Virtual Machine when starting your Java program. To get power readings, JoularJX uses a custom PowerMonitor program (based on Intel Power Gadget API) on Windows, Intel RAPL (through powercap) on GNU/Linux, and our accurate power models on Raspberry Pi and similar devices.</p>
 <p>JoularJX is the successor of <a href="https://www.noureddine.org/research/jalen">Jalen</a>, and the core approach of statistical sampling is based and inspired by the work we did in monitoring energy hotspots in software (<a href="https://hal.inria.fr/hal-00715331/document">ASE 2012 conference paper</a>, and <a href="https://hal.inria.fr/hal-01069142/document">ASE Journal paper in 2015</a>).</p>
+<p>The official website of JoularJX is: <a href="https://www.noureddine.org/research/joular/joularjx">https://www.noureddine.org/research/joular/joularjx</a>.</p>
 <h2 id="features"><a class="header" href="#features">Features</a></h2>
 <ul>
 <li>Monitor power consumption of each method at runtime</li>
@@ -302,6 +303,8 @@ However, <code>config.properties</code> must be copied to the same folder as whe
 </ul>
 </li>
 </ul>
+<p>The folder structure is summarized in the following figure:</p>
+<p><img src="ref/joularjx2-results.png" alt="JoularJX folder structure" /></p>
 <p>For real-time power data or the total energy at the program exit, JoularJX generated two CSV files:</p>
 <ul>
 <li>A file which contains power or energy data for all methods, which include the JDK's ones.</li>
@@ -314,7 +317,33 @@ However, <code>config.properties</code> must be copied to the same folder as whe
 </ul>
 <p>We manage to do this by analyzing the stacktrace of all running threads on runtime.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="integration-with-systems-and-tools"><a class="header" href="#integration-with-systems-and-tools">Integration with Systems and Tools</a></h1>
+<p>JoularJX is a Java agent, and the compiled JAR file have no external dependencies.
+Therefore, it can be integrated and used in any Java-based virtual machine and setup.</p>
+<p>For instance, you can add JoularJX to the run/execute parameters of your favorite IDE (Eclipse, IntelliJ Idea, NetBeans, etc.), or to your development workflow or continuous integration and delivery processes (CI/CD).</p>
+<p>JoularJX runs indistinctly and with the same configuration options and generated files on all supported platforms, from Windows to Linux, from x86_64 servers and PC to ARM Raspberry Pi devices.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="how-joularjx-works"><a class="header" href="#how-joularjx-works">How JoularJX Works</a></h1>
+<p>JoularJX is a Java agent that hooks to the Java Virtual Machine (JVM) on startup along with the monitored application.
+It runs in a separate thread and collects information about CPU usage of the JVM process, each thread running in the JVM, and then for each method of the application.</p>
+<p><a href="https://www.noureddine.org/research/joular/joularjx">JoularJX</a> is the successor of <a href="https://www.noureddine.org/research/jalen">Jalen</a>, and the core approach of statistical sampling is based and inspired by the work we did in monitoring energy hotspots in software (<a href="https://hal.inria.fr/hal-00715331/document">ASE 2012 conference paper</a>, and <a href="https://hal.inria.fr/hal-01069142/document">ASE Journal paper in 2015</a>).
+JoularJX version 1 is described in our newer research paper at the <a href="https://hal.science/hal-03608223v1/document">IE 2022 conference</a>.</p>
+<p>The general architecture of JoularJX is summarized in the following figure:</p>
+<p><img src="ref/joularjx-architecture-1.png" alt="JoularJX General Architecture" /></p>
+<p>The monitoring process is as follows:</p>
+<ul>
+<li>Every application monitoring cycle (by default, 1 second), JoularJX collects the CPU usage of the JVM and calculates the power consumption of the entire JVM (on Windows, using the PowerMonitor.exe program using Intel API, on x86_64 Linux using RAPL interface in the Linux kernel, and on Raspberry Pi and Asus Tinker Board using our regression power models).</li>
+<li>Then, JoularJX collects the CPU usage of each thread in the JVM using the JDK's <code>getThreadCpuTime</code> method, and calculates the power consumption of each thread.</li>
+<li>Every source code monitoring cycle (by default, 10 milliseconds), JoularJX checks, for each thread, the stacktrace and identify the method being executed (the method on top of the stacktrace). At the end of the application monitoring cycle, JoularJX statistically analyzes the ratio of each method observed in the stacktrace, and allocate the power consumption accordingly as seen in the following figures:</li>
+</ul>
+<p><img src="ref/joularjx-architecture-2.png" alt="JoularJX Simplified Architecture" /></p>
+<p><img src="ref/joularjx-architecture-3.png" alt="JoularJX Simplified Approach to Monitor Power per Method" /></p>
+<p>Usually the method on the top of the stacktrace is a method from the JDK.
+For example, calling <code>System.out.println()</code> from the application's method <code>Main</code> will call other methods from the JDK (such as buffers, writeln, etc.).
+JoularJX will verify, when checking the stacktrace, if the method is called, anywhere in its call tree, by a method from the application we wish to monitor, and thus isolate these statistics from methods called by other applications or by the JoularJX agent itself.</p>
+<p>During these monitoring cycles, JoularJX not only identify the method being executed, but also its execution branch (all the methods calling it), and can provide power and energy consumption for each execution branch as seen in the following figures:</p>
+<p><img src="ref/method-callree.png" alt="Methods Call Tree" /></p>
+<p><img src="ref/calltree.png" alt="Methods Call Tree" /></p>
+<p>JoularJX will also automatically calculate the power consumption for each method, for each timestamp, thus allowing to trace the power consumption evolution of each method, as seen in the following figure:</p>
+<p><img src="ref/joularjx2-evolution.png" alt="Methods Power Evolution" /></p>
 
                     </main>
 
