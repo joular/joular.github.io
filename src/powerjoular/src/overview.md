@@ -12,6 +12,8 @@ PowerJoular is part of the <a href="https://www.noureddine.org/research/joular/"
 PowerJoular can monitor the power consumption, in real time, of the CPU and the GPU in general, and also for a specific application (through its name or PID).
 It works on a Linux system and on multiple platforms (x86_64, ARM) and devices (computers, servers, Raspberry Pi, etc.).
 
+The official website of PowerJoular is: [https://www.noureddine.org/research/joular/powerjoular](https://www.noureddine.org/research/joular/powerjoular).
+
 ## Features
 
 - Monitor power consumption of CPU and GPU of PC/servers
