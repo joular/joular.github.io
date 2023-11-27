@@ -1,17 +1,17 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sidebar-visible no-js light">
+<html lang="en" class="light" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
         <title>JoularJX Documentation</title>
-        <meta name="robots" content="noindex" />
+        <meta name="robots" content="noindex">
 
 
         <!-- Custom HTML head -->
         
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="theme-color" content="#ffffff" />
+        <meta name="theme-color" content="#ffffff">
 
         <link rel="icon" href="favicon.svg">
         <link rel="shortcut icon" href="favicon.png">
@@ -32,7 +32,7 @@
         <!-- Custom theme stylesheets -->
 
     </head>
-    <body>
+    <body class="sidebar-visible no-js">
     <div id="body-container">
         <!-- Provide site root to javascript -->
         <script>
@@ -62,24 +62,29 @@
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             var html = document.querySelector('html');
-            html.classList.remove('no-js')
             html.classList.remove('light')
             html.classList.add(theme);
-            html.classList.add('js');
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
         </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var html = document.querySelector('html');
+            var body = document.querySelector('body');
             var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
             } else {
                 sidebar = 'hidden';
             }
-            html.classList.remove('sidebar-visible');
-            html.classList.add("sidebar-" + sidebar);
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
@@ -89,15 +94,37 @@
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
                                 <div id="menu-bar-hover-placeholder"></div>
-                <div id="menu-bar" class="menu-bar sticky bordered">
+                <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
-                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
                             <i class="fa fa-bars"></i>
-                        </button>
+                        </label>
                         <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
                             <i class="fa fa-paint-brush"></i>
                         </button>
@@ -151,7 +178,7 @@
 <p><img src="joularjx.png" alt="JoularJX Logo" /></p>
 <p>JoularJX is part of the <a href="https://www.noureddine.org/research/joular/"><img src="https://raw.githubusercontent.com/joular/.github/main/profile/joular.png" alt="Joular Project" width="64" /></a> project.</p>
 <p>JoularJX is a Java-based agent for power monitoring at the source code level with support for modern Java versions and multi-OS to monitor power consumption of hardware and software.</p>
-<p>JoularJX is a Java agent where you can simply hook it to the Java Virtual Machine when starting your Java program. To get power readings, JoularJX uses a custom PowerMonitor program (based on Intel Power Gadget API) on Windows, Intel RAPL (through powercap) on GNU/Linux, and our accurate power models on Raspberry Pi and similar devices.</p>
+<p>JoularJX is a Java agent where you can simply hook it to the Java Virtual Machine when starting your Java program. To get power readings, JoularJX uses a custom PowerMonitor program (based on Intel Power Gadget API) on Windows, Intel RAPL (through powercap) on GNU/Linux, Powermetrics on macOS, and our accurate power models on Raspberry Pi and similar devices.</p>
 <p>JoularJX is the successor of <a href="https://www.noureddine.org/research/jalen">Jalen</a>, and the core approach of statistical sampling is based and inspired by the work we did in monitoring energy hotspots in software (<a href="https://hal.inria.fr/hal-00715331/document">ASE 2012 conference paper</a>, and <a href="https://hal.inria.fr/hal-01069142/document">ASE Journal paper in 2015</a>).</p>
 <p>The official website of JoularJX is: <a href="https://www.noureddine.org/research/joular/joularjx">https://www.noureddine.org/research/joular/joularjx</a>.</p>
 <h2 id="features"><a class="header" href="#features">Features</a></h2>
@@ -187,7 +214,12 @@ All rights reserved. This program and the accompanying materials are made availa
 <div style="break-before: page; page-break-before: always;"></div><h1 id="supported-platforms"><a class="header" href="#supported-platforms">Supported Platforms</a></h1>
 <p>JoularJX support the following platforms and operating systems:</p>
 <ul>
-<li>PC/Servers using a RAPL supported Intel processor (since Sandy Bridge) or a RAPL supported AMD processor (since Ryzen), on GNU/Linux and on Windows.</li>
+<li>PC/Servers using a RAPL supported Intel processor (since Sandy Bridge) or a RAPL supported AMD processor (since Ryzen), on GNU/Linux, on Windows and on macOS.</li>
+</ul>
+<p>The supported list of Raspberry Pi and Asus Tinker Board models are listed below.
+We support all revisions of each model lineup.
+However, the model is generated and trained on a specific revision (listed between brackets), and the accuracy is best on this particular revision.</p>
+<ul>
 <li>Raspberry Pi devices (multiple models) on GNU/Linux:
 <ul>
 <li>Model Zero W (rev 1.1), for 32 bits OS</li>
@@ -205,6 +237,7 @@ All rights reserved. This program and the accompanying materials are made availa
 <div class="table-wrapper"><table><thead><tr><th style="text-align: center">Platform</th><th style="text-align: center">Supported OS</th><th style="text-align: center">Based on</th><th style="text-align: center">Supported Architecture</th></tr></thead><tbody>
 <tr><td style="text-align: center">Linux PC/Server</td><td style="text-align: center">GNU/Linux</td><td style="text-align: center">RAPL (using powercap)</td><td style="text-align: center">x86, x86_64</td></tr>
 <tr><td style="text-align: center">Windows PC/Server</td><td style="text-align: center">Windows</td><td style="text-align: center">Intel Power Gadget API</td><td style="text-align: center">x86, x86_64</td></tr>
+<tr><td style="text-align: center">macOS PC</td><td style="text-align: center">macOS</td><td style="text-align: center">Powermetrics</td><td style="text-align: center">x86_64, ARM</td></tr>
 <tr><td style="text-align: center">Raspberry Pi</td><td style="text-align: center">GNU/Linux</td><td style="text-align: center">Our regression models</td><td style="text-align: center">ARM</td></tr>
 <tr><td style="text-align: center">Asus Tinker Board</td><td style="text-align: center">GNU/Linux</td><td style="text-align: center">Our regression models</td><td style="text-align: center">ARM</td></tr>
 </tbody></table>
@@ -215,11 +248,13 @@ Just use the compiled jar package for JoularJX.</p>
 <ul>
 <li>On Windows, run in a command line: <code>windows-install.bat</code>. This will install JoularJX jar and ProgramMonitor to <code>C:\joularjx</code>.</li>
 <li>On GNU/Linux, run in a terminal: <code>sh linux-install.sh</code>. This will install JoularJX to <code>/opt/joularjx</code>.</li>
+<li>on macOS, we don't provide a quick installation script, but you follow the compilation instructions.</li>
 </ul>
 <p>JoularJX requires a minimum version of Java 11+.</p>
 <p>On Windows, JoularJX uses a custom power monitor program that uses Intel Power Gadget API on Windows, and therefore require installing the <a href="https://www.intel.com/content/www/us/en/developer/articles/tool/power-gadget.html">Intel Power Gadget tool</a> and using a supported Intel CPU.</p>
 <p>On x86_64 Linux, JoularJX uses Intel RAPL interface through powercap, and therefore requires running on an Intel CPU or an AMD Ryzen CPU.</p>
 <p>On supported ARM Linux, JoularJX uses our own research-based regression models to estimate CPU power consumption with support for the following, therefore not requiring any additional dependencies.</p>
+<p>On macOS, JoularJX uses Powermetrics, a tool bundled with the OS.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="quick-usage"><a class="header" href="#quick-usage">Quick Usage</a></h1>
 <p>JoularJX is a Java agent where you can simply hook it to the Java Virtual Machine when starting your Java program's main class:</p>
 <pre><code>java -javaagent:joularjx-$version.jar YourProgramMainClass
@@ -233,7 +268,7 @@ Just use the compiled jar package for JoularJX.</p>
 <pre><code>mvn clean install
 </code></pre>
 <p>Alternatively, you can use the Maven wrappen shipped with the project with the command:</p>
-<pre><code>Linux: ./mvnw clean install
+<pre><code>Linux and macOS: ./mvnw clean install
 Windows: mvnw.cmd clean install
 </code></pre>
 <p>To compile the Windows power monitor tool, required by JoularJX on Windows, open the project in Visual Studio and compile there.

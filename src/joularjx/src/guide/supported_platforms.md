@@ -3,6 +3,11 @@
 JoularJX support the following platforms and operating systems:
 
 - PC/Servers using a RAPL supported Intel processor (since Sandy Bridge) or a RAPL supported AMD processor (since Ryzen), on GNU/Linux, on Windows and on macOS.
+
+The supported list of Raspberry Pi and Asus Tinker Board models are listed below.
+We support all revisions of each model lineup.
+However, the model is generated and trained on a specific revision (listed between brackets), and the accuracy is best on this particular revision.
+
 - Raspberry Pi devices (multiple models) on GNU/Linux:
   - Model Zero W (rev 1.1), for 32 bits OS
   - Model 1 B (rev 2), for 32 bits OS
