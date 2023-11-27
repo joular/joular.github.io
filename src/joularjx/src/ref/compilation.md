@@ -9,7 +9,7 @@ mvn clean install
 Alternatively, you can use the Maven wrappen shipped with the project with the command:
 
 ```
-Linux: ./mvnw clean install
+Linux and macOS: ./mvnw clean install
 Windows: mvnw.cmd clean install
 ```
 

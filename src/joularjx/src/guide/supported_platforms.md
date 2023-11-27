@@ -2,7 +2,7 @@
 
 JoularJX support the following platforms and operating systems:
 
-- PC/Servers using a RAPL supported Intel processor (since Sandy Bridge) or a RAPL supported AMD processor (since Ryzen), on GNU/Linux and on Windows.
+- PC/Servers using a RAPL supported Intel processor (since Sandy Bridge) or a RAPL supported AMD processor (since Ryzen), on GNU/Linux, on Windows and on macOS.
 - Raspberry Pi devices (multiple models) on GNU/Linux:
   - Model Zero W (rev 1.1), for 32 bits OS
   - Model 1 B (rev 2), for 32 bits OS
@@ -18,5 +18,6 @@ JoularJX support the following platforms and operating systems:
 |:--------------:|:---------------------:|:-----------------------------:|:-----------------------------:|
 |     Linux PC/Server    |        GNU/Linux        |             RAPL (using powercap)            |             x86, x86_64            |
 |     Windows PC/Server    |        Windows        |             Intel Power Gadget API            |             x86, x86_64            |
+|     macOS PC    |        macOS        |             Powermetrics            |             x86_64, ARM            |
 |        Raspberry Pi       |        GNU/Linux       |             Our regression models             |             ARM            |
 |        Asus Tinker Board       |        GNU/Linux       |             Our regression models             |             ARM            |
