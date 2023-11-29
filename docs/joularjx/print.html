@@ -265,11 +265,11 @@ Just use the compiled jar package for JoularJX.</p>
 <p>JoularJX will generate multiple CSV files according to the configuration settings (in <code>config.properties</code>), and will create these files in a <code>joularjx-results</code>folder.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="compilation"><a class="header" href="#compilation">Compilation</a></h1>
 <p>To build JoularJX, you need Java 11+ and Maven, then just build:</p>
-<pre><code>mvn clean install
+<pre><code>mvn clean install -DskipTests
 </code></pre>
 <p>Alternatively, you can use the Maven wrappen shipped with the project with the command:</p>
-<pre><code>Linux and macOS: ./mvnw clean install
-Windows: mvnw.cmd clean install
+<pre><code>Linux and macOS: ./mvnw clean install -DskipTests
+Windows: mvnw.cmd clean install -DskipTests
 </code></pre>
 <p>To compile the Windows power monitor tool, required by JoularJX on Windows, open the project in Visual Studio and compile there.
 Or open, Developer Command Prompt for VS (or Developer PowerShell for VS), and compile with this command:</p>
