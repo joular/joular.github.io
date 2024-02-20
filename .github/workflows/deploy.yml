@@ -3,9 +3,6 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
   build:
@@ -36,7 +33,6 @@ jobs:
           cd src/joularjx/book/
           cp -rf ./* docs/joularjx
       - name: GIT Commit Build Artifacts
-          # Only run on main branch push (e.g. after pull request merge).
           if: github.event_name == 'push'
           run: |
             git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
