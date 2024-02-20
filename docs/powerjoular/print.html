@@ -91,7 +91,9 @@
             <div class="sidebar-scrollbox">
                 <ol class="chapter"><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">1.</strong> Overview</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="guide/supported_platforms.html"><strong aria-hidden="true">2.</strong> Supported Platforms</a></li><li class="chapter-item expanded "><a href="guide/installation.html"><strong aria-hidden="true">3.</strong> Installation</a></li><li class="chapter-item expanded "><a href="guide/quick_usage.html"><strong aria-hidden="true">4.</strong> Quick Usage</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference Guide</li><li class="chapter-item expanded "><a href="ref/compilation.html"><strong aria-hidden="true">5.</strong> Compilation</a></li><li class="chapter-item expanded "><a href="ref/options.html"><strong aria-hidden="true">6.</strong> Command Line Options</a></li><li class="chapter-item expanded "><a href="ref/systemd.html"><strong aria-hidden="true">7.</strong> Systemd Service</a></li><li class="chapter-item expanded "><a href="ref/integration.html"><strong aria-hidden="true">8.</strong> Integration with Systems and Tools</a></li><li class="chapter-item expanded "><a href="ref/how_it_works.html"><strong aria-hidden="true">9.</strong> How PowerJoular Works</a></li></ol>
             </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
         </nav>
 
         <!-- Track and set sidebar scroll position -->
@@ -206,7 +208,7 @@ It works on a Linux system and on multiple platforms (x86_64, ARM) and devices (
 </code></pre>
 <h2 id="license"><a class="header" href="#license">License</a></h2>
 <p>PowerJoular is licensed under the GNU GPL 3 license only (GPL-3.0-only).</p>
-<p>Copyright (c) 2020-2023, Adel Noureddine, Université de Pau et des Pays de l'Adour.
+<p>Copyright (c) 2020-2024, Adel Noureddine, Université de Pau et des Pays de l'Adour.
 All rights reserved. This program and the accompanying materials are made available under the terms of the GNU General Public License v3.0 only (GPL-3.0-only) which accompanies this distribution, and is available at: https://www.gnu.org/licenses/gpl-3.0.en.html</p>
 <p>Author : <a href="https://www.noureddine.org/">Adel Noureddine</a></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="supported-platforms"><a class="header" href="#supported-platforms">Supported Platforms</a></h1>
@@ -254,7 +256,7 @@ On PC/servers, PowerJoular uses Intel's RAPL through the Linux powercap sysfs, a
 <p>By default, the software will show the power consumption of the CPU and its utilization.
 The difference (increase or decrease) of power consumption from last metric will also be shown.</p>
 <p>To monitor a specific application, just run PowerJoular with the <code>-a appName</code> parameter.
-PowerJoular is a powerful tool with many functionalities that can be accessed using specific parameters. Check the <a href="guide/../ref/options.html">Command Line Options page</a> for the detailed list. </p>
+PowerJoular is a powerful tool with many functionalities that can be accessed using specific parameters. Check the <a href="guide/../ref/options.html">Command Line Options page</a> for the detailed list.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="compilation"><a class="header" href="#compilation">Compilation</a></h1>
 <p>PowerJoular is written with Ada, and requires a modern Ada compiler, such as GNAT.</p>
 <p>PowerJoular depends on the following commands and libraries for certain of its functions, but can function without them:</p>
@@ -277,7 +279,7 @@ sudo apt install gnat gprbuild
 <p>By default, the project will statically link the required libraries, and therefore the PowerJoular binary can be copied to any compatible system and used as-is.</p>
 <p>To build with dynamic linking, remove or comment the static switch in the <code>powerjoular.gpr</code> file, in particular these lines:</p>
 <pre><code>package Binder is
-    for Switches (&quot;Ada&quot;) use (&quot;-static&quot;);
+    for Switches ("Ada") use ("-static");
 end Binder;
 </code></pre>
 <h3 id="compilation-with-the-gnat-compiler-only"><a class="header" href="#compilation-with-the-gnat-compiler-only">Compilation with the GNAT compiler only</a></h3>
@@ -298,11 +300,13 @@ The difference (increase or decrease) of power consumption from the last metric 
 <p>The following options are available:</p>
 <ul>
 <li><code>-h</code>: show the help message</li>
+<li><code>-v</code>: show version number</li>
 <li><code>-p pid</code>: specifiy a particular PID to monitor</li>
 <li><code>-a appName</code>: specifiy a particular application name to monitor (will monitor all PIDs of the application)</li>
 <li><code>-f filename</code>: save monitoring data to the given filename path</li>
 <li><code>-o filename</code>: save only last monitoring data to the given filename path (file overwritten with only latest power measures)</li>
-<li><code>-t</code>: print data to the terminal</li>
+<li><code>-t</code>: print energy data to the terminal</li>
+<li><code>-d</code>: print debug info to the terminal</li>
 <li><code>-l</code>: use linear regression models (less accurate than the default polynomial models) for Raspberry Pi energy models</li>
 </ul>
 <p>You can mix options, i.e., <code>powerjoular -tp 144</code> will monitor PID 144 and will print to the terminal.</p>
