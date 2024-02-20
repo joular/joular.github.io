@@ -28,10 +28,10 @@ jobs:
       - name : Copy build book
         run: |
           cd src/powerjoular/book/
-          cp -rf ./* docs/powerjoular
+          cp -rf ./* ../../../docs/powerjoular/
           cd ../../..
           cd src/joularjx/book/
-          cp -rf ./* docs/joularjx
+          cp -rf ./* ../../../docs/joularjx/
       - name: GIT Commit Build Artifacts
         run: |
           git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
