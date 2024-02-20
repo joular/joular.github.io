@@ -28,7 +28,6 @@ jobs:
           mdbook build
           cd ../joularjx/
           mdbook build
-          cd ../..
       - name : Copy build book
         run: |
           cd src/powerjoular/book/
@@ -36,8 +35,7 @@ jobs:
           cd ../../..
           cd src/joularjx/book/
           cp -rf ./* docs/joularjx
-          cd ../../..
-      - name: GIT Commit Build Artifacts (coverage, dist, devdist, docs)
+      - name: GIT Commit Build Artifacts
           # Only run on main branch push (e.g. after pull request merge).
           if: github.event_name == 'push'
           run: |
