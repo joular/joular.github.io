@@ -23,7 +23,7 @@ However, the model is generated and trained on a specific revision (listed betwe
 | Platform | Supported OS | Based on | Supported Architecture |
 |:--------------:|:---------------------:|:-----------------------------:|:-----------------------------:|
 |     Linux PC/Server    |        GNU/Linux        |             RAPL (using powercap)            |             x86, x86_64            |
-|     Windows PC/Server    |        Windows        |             Intel Power Gadget API            |             x86, x86_64            |
+|     Windows PC/Server    |        Windows        |             Hubblo's Windows RAPL driver            |             x86, x86_64            |
 |     macOS PC    |        macOS        |             Powermetrics            |             x86_64, ARM            |
 |        Raspberry Pi       |        GNU/Linux       |             Our regression models             |             ARM            |
 |        Asus Tinker Board       |        GNU/Linux       |             Our regression models             |             ARM            |

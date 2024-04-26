@@ -7,3 +7,5 @@ Just open the installer folder and run the appropriate file to build and/or inst
 
 - ```build-install.sh```: will build (using ```gprbuild```) and install the program binary to ```/usr/bin``` and systemd service. It requires having installed GNAT and gprbuild (see [Compilation](../ref/compilation.html)).
 - ```uninstall.sh```: deletes the program binary and systemd service.
+
+We also provide Debian installation packages (.deb) for a number of CPU architectures (for Debian, Ubuntu, Raspberry Pi OS, etc.).
