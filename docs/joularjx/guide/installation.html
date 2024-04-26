@@ -183,10 +183,11 @@ Just use the compiled jar package for JoularJX.</p>
 <li>on macOS, we don't provide a quick installation script, but you follow the compilation instructions.</li>
 </ul>
 <p>JoularJX requires a minimum version of Java 11+.</p>
-<p>On Windows, JoularJX uses a custom power monitor program that uses Intel Power Gadget API on Windows, and therefore require installing the <a href="https://www.intel.com/content/www/us/en/developer/articles/tool/power-gadget.html">Intel Power Gadget tool</a> and using a supported Intel CPU.</p>
+<p>On Windows, JoularJX uses a custom power monitor program that uses the <a href="https://github.com/hubblo-org/windows-rapl-driver">Windows RAPL driver by Hubblo</a>, and therefore require installing the driver first, and runs on Intel or AMD CPUs (since Ryzen).</p>
 <p>On x86_64 Linux, JoularJX uses Intel RAPL interface through powercap, and therefore requires running on an Intel CPU or an AMD Ryzen CPU.</p>
 <p>On supported ARM Linux, JoularJX uses our own research-based regression models to estimate CPU power consumption with support for the following, therefore not requiring any additional dependencies.</p>
-<p>On macOS, JoularJX uses Powermetrics, a tool bundled with the OS.</p>
+<p>On macOS, JoularJX uses <code>powermetrics</code>, a tool bundled with macOS which requires running with <code>sudo</code> access.
+It is recommended to authorize the current users to run <code>/usr/bin/powermetrics</code> without requiring a password by making the proper modification to the <code>sudoers</code> file.</p>
 
                     </main>
 

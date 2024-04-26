@@ -180,7 +180,7 @@
 <p><img src="joularjx.png" alt="JoularJX Logo" /></p>
 <p>JoularJX is part of the <a href="https://www.noureddine.org/research/joular/"><img src="https://raw.githubusercontent.com/joular/.github/main/profile/joular.png" alt="Joular Project" width="64" /></a> project.</p>
 <p>JoularJX is a Java-based agent for power monitoring at the source code level with support for modern Java versions and multi-OS to monitor power consumption of hardware and software.</p>
-<p>JoularJX is a Java agent where you can simply hook it to the Java Virtual Machine when starting your Java program. To get power readings, JoularJX uses a custom PowerMonitor program (based on Intel Power Gadget API) on Windows, Intel RAPL (through powercap) on GNU/Linux, Powermetrics on macOS, and our accurate power models on Raspberry Pi and similar devices.</p>
+<p>JoularJX is a Java agent where you can simply hook it to the Java Virtual Machine when starting your Java program. To get power readings, JoularJX uses a custom PowerMonitor program (based on Hubblo's Windows RAPL driver) on Windows, Intel RAPL (through powercap) on GNU/Linux, Powermetrics on macOS, and our accurate power models on Raspberry Pi and similar devices.</p>
 <p>JoularJX is the successor of <a href="https://www.noureddine.org/research/jalen">Jalen</a>, and the core approach of statistical sampling is based and inspired by the work we did in monitoring energy hotspots in software (<a href="https://hal.inria.fr/hal-00715331/document">ASE 2012 conference paper</a>, and <a href="https://hal.inria.fr/hal-01069142/document">ASE Journal paper in 2015</a>).</p>
 <p>The official website of JoularJX is: <a href="https://www.noureddine.org/research/joular/joularjx">https://www.noureddine.org/research/joular/joularjx</a>.</p>
 <h2 id="features"><a class="header" href="#features">Features</a></h2>
@@ -239,7 +239,7 @@ However, the model is generated and trained on a specific revision (listed betwe
 </ul>
 <div class="table-wrapper"><table><thead><tr><th style="text-align: center">Platform</th><th style="text-align: center">Supported OS</th><th style="text-align: center">Based on</th><th style="text-align: center">Supported Architecture</th></tr></thead><tbody>
 <tr><td style="text-align: center">Linux PC/Server</td><td style="text-align: center">GNU/Linux</td><td style="text-align: center">RAPL (using powercap)</td><td style="text-align: center">x86, x86_64</td></tr>
-<tr><td style="text-align: center">Windows PC/Server</td><td style="text-align: center">Windows</td><td style="text-align: center">Intel Power Gadget API</td><td style="text-align: center">x86, x86_64</td></tr>
+<tr><td style="text-align: center">Windows PC/Server</td><td style="text-align: center">Windows</td><td style="text-align: center">Hubblo's Windows RAPL driver</td><td style="text-align: center">x86, x86_64</td></tr>
 <tr><td style="text-align: center">macOS PC</td><td style="text-align: center">macOS</td><td style="text-align: center">Powermetrics</td><td style="text-align: center">x86_64, ARM</td></tr>
 <tr><td style="text-align: center">Raspberry Pi</td><td style="text-align: center">GNU/Linux</td><td style="text-align: center">Our regression models</td><td style="text-align: center">ARM</td></tr>
 <tr><td style="text-align: center">Asus Tinker Board</td><td style="text-align: center">GNU/Linux</td><td style="text-align: center">Our regression models</td><td style="text-align: center">ARM</td></tr>
@@ -254,10 +254,11 @@ Just use the compiled jar package for JoularJX.</p>
 <li>on macOS, we don't provide a quick installation script, but you follow the compilation instructions.</li>
 </ul>
 <p>JoularJX requires a minimum version of Java 11+.</p>
-<p>On Windows, JoularJX uses a custom power monitor program that uses Intel Power Gadget API on Windows, and therefore require installing the <a href="https://www.intel.com/content/www/us/en/developer/articles/tool/power-gadget.html">Intel Power Gadget tool</a> and using a supported Intel CPU.</p>
+<p>On Windows, JoularJX uses a custom power monitor program that uses the <a href="https://github.com/hubblo-org/windows-rapl-driver">Windows RAPL driver by Hubblo</a>, and therefore require installing the driver first, and runs on Intel or AMD CPUs (since Ryzen).</p>
 <p>On x86_64 Linux, JoularJX uses Intel RAPL interface through powercap, and therefore requires running on an Intel CPU or an AMD Ryzen CPU.</p>
 <p>On supported ARM Linux, JoularJX uses our own research-based regression models to estimate CPU power consumption with support for the following, therefore not requiring any additional dependencies.</p>
-<p>On macOS, JoularJX uses Powermetrics, a tool bundled with the OS.</p>
+<p>On macOS, JoularJX uses <code>powermetrics</code>, a tool bundled with macOS which requires running with <code>sudo</code> access.
+It is recommended to authorize the current users to run <code>/usr/bin/powermetrics</code> without requiring a password by making the proper modification to the <code>sudoers</code> file.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="quick-usage"><a class="header" href="#quick-usage">Quick Usage</a></h1>
 <p>JoularJX is a Java agent where you can simply hook it to the Java Virtual Machine when starting your Java program's main class:</p>
 <pre><code>java -javaagent:joularjx-$version.jar YourProgramMainClass
@@ -291,6 +292,7 @@ Or open, Developer Command Prompt for VS (or Developer PowerShell for VS), and c
 <li><code>enable-call-trees-consumption</code>: compute methods call trees energy consumption. A CSV file will be generated at the end of the agent's execution, associating to each call tree it's total energy consumption.</li>
 <li><code>save-call-trees-runtime-data</code>: write runtime call trees power consumption in a CSV file. For each monitoring cycle (1 second), a new CSV file will be generated, containing the runtime power consumption of the call trees. The generated files will include timestamps in their names.</li>
 <li><code>overwrite-call-trees-runtime-data</code>: overwrite runtime call trees power data file, or if set to false, it will write new file for each monitoring cycle.</li>
+<li><code>application-server</code>: properly handles application servers and frameworks (Sprig Boot, Tomcat, etc.). Set <code>true</code> when running on application servers. If <code>false</code>, the monitoring loop will check if the JVM is destroyed, hence closing JoularJX when the application ends (in regular Java application). If <code>true</code>, JoularJX will continue to monitor correctly as the JVM isn't destroyed in a application server.</li>
 </ul>
 <p>You can install the jar package (and the PowerMonitor.exe on Windows) wherever you want, and call it in the <code>javaagent</code> with the full path.
 However, <code>config.properties</code> must be copied to the same folder as where you run the Java command.</p>
