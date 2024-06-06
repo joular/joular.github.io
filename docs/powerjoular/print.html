@@ -353,11 +353,7 @@ Inside the guest, PowerJoular will read this file continuously and use the repor
 <h2 id="in-the-guest-os"><a class="header" href="#in-the-guest-os">In the guest OS</a></h2>
 <ul>
 <li>Install PowerJoular</li>
-<li>
-<ul>
 <li>Share the <code>/home/vm/vm.csv</code> between the host OS and the guest OS, potentially having a different path of the file inside the guest. For instance, <code>/opt/vm/vm.csv</code></li>
-</ul>
-</li>
 <li>Run PowerJoular with the -m and -s options to specify the file and the power data format.</li>
 <li>For example, in our use case example: <code>powerjoular -m /opt/vm/vm.csv -s powerjoular</code></li>
 <li>You can add other options for your needs, such as -p or -a to monitor a specific process or application inside your virtual machine.</li>
