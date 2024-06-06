@@ -88,7 +88,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="../overview.html"><strong aria-hidden="true">1.</strong> Overview</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../guide/supported_platforms.html" class="active"><strong aria-hidden="true">2.</strong> Supported Platforms</a></li><li class="chapter-item expanded "><a href="../guide/installation.html"><strong aria-hidden="true">3.</strong> Installation</a></li><li class="chapter-item expanded "><a href="../guide/quick_usage.html"><strong aria-hidden="true">4.</strong> Quick Usage</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference Guide</li><li class="chapter-item expanded "><a href="../ref/compilation.html"><strong aria-hidden="true">5.</strong> Compilation</a></li><li class="chapter-item expanded "><a href="../ref/options.html"><strong aria-hidden="true">6.</strong> Command Line Options</a></li><li class="chapter-item expanded "><a href="../ref/systemd.html"><strong aria-hidden="true">7.</strong> Systemd Service</a></li><li class="chapter-item expanded "><a href="../ref/integration.html"><strong aria-hidden="true">8.</strong> Integration with Systems and Tools</a></li><li class="chapter-item expanded "><a href="../ref/how_it_works.html"><strong aria-hidden="true">9.</strong> How PowerJoular Works</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../overview.html"><strong aria-hidden="true">1.</strong> Overview</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../guide/supported_platforms.html" class="active"><strong aria-hidden="true">2.</strong> Supported Platforms</a></li><li class="chapter-item expanded "><a href="../guide/installation.html"><strong aria-hidden="true">3.</strong> Installation</a></li><li class="chapter-item expanded "><a href="../guide/quick_usage.html"><strong aria-hidden="true">4.</strong> Quick Usage</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference Guide</li><li class="chapter-item expanded "><a href="../ref/compilation.html"><strong aria-hidden="true">5.</strong> Compilation</a></li><li class="chapter-item expanded "><a href="../ref/options.html"><strong aria-hidden="true">6.</strong> Command Line Options</a></li><li class="chapter-item expanded "><a href="../ref/systemd.html"><strong aria-hidden="true">7.</strong> Systemd Service</a></li><li class="chapter-item expanded "><a href="../ref/integration.html"><strong aria-hidden="true">8.</strong> Integration with Systems and Tools</a></li><li class="chapter-item expanded "><a href="../ref/vm.html"><strong aria-hidden="true">9.</strong> Virtual machines</a></li><li class="chapter-item expanded "><a href="../ref/how_it_works.html"><strong aria-hidden="true">10.</strong> How PowerJoular Works</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -178,10 +178,17 @@
 <ul>
 <li>PC/Servers using a RAPL supported Intel processor (since Sandy Bridge) or a RAPL supported AMD processor (since Ryzen), and optionally an Nvidia graphic card.</li>
 <li>Raspberry Pi devices (multiple models) and Asus Tinker Board.</li>
+<li>Inside virtual machines in all supported host platforms.</li>
 </ul>
 <p>In all platforms, PowerJoular works currently only on GNU/Linux.</p>
 <p>On PC/Servers, PowerJoular uses powercap Linux interface to read Intel RAPL (Running Average Power Limit) energy consumption.</p>
 <p>PowerJoular supports RAPL package domain (core, including integrated graphics, and dram), and for more recent processors, we support Psys package (which covers the energy consumption of the entire SoC).</p>
+<p>On virtual machines, PowerJoular requires two steps:</p>
+<ul>
+<li>Installing PowerJoular itself or another power monitoring tool in the host machine.
+Then monitoring the virtual machine power consumption every second and writing it to a file (to be shared with the guest VM).</li>
+<li>Installing PowerJoular in the guest VM, then running PowerJoular while specifying the path of the power file shared with the host and its format.</li>
+</ul>
 <p>On Raspberry Pi and Asus Tinker Board, PowerJoular uses its own research-based empirical regression models to estimate the power consumption of the ARM processor.</p>
 <p>The supported list of Raspberry Pi and Asus Tinker Board models are listed below.
 We support all revisions of each model lineup.

@@ -89,7 +89,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">1.</strong> Overview</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="guide/supported_platforms.html"><strong aria-hidden="true">2.</strong> Supported Platforms</a></li><li class="chapter-item expanded "><a href="guide/installation.html"><strong aria-hidden="true">3.</strong> Installation</a></li><li class="chapter-item expanded "><a href="guide/quick_usage.html"><strong aria-hidden="true">4.</strong> Quick Usage</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference Guide</li><li class="chapter-item expanded "><a href="ref/compilation.html"><strong aria-hidden="true">5.</strong> Compilation</a></li><li class="chapter-item expanded "><a href="ref/options.html"><strong aria-hidden="true">6.</strong> Command Line Options</a></li><li class="chapter-item expanded "><a href="ref/systemd.html"><strong aria-hidden="true">7.</strong> Systemd Service</a></li><li class="chapter-item expanded "><a href="ref/integration.html"><strong aria-hidden="true">8.</strong> Integration with Systems and Tools</a></li><li class="chapter-item expanded "><a href="ref/how_it_works.html"><strong aria-hidden="true">9.</strong> How PowerJoular Works</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">1.</strong> Overview</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="guide/supported_platforms.html"><strong aria-hidden="true">2.</strong> Supported Platforms</a></li><li class="chapter-item expanded "><a href="guide/installation.html"><strong aria-hidden="true">3.</strong> Installation</a></li><li class="chapter-item expanded "><a href="guide/quick_usage.html"><strong aria-hidden="true">4.</strong> Quick Usage</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference Guide</li><li class="chapter-item expanded "><a href="ref/compilation.html"><strong aria-hidden="true">5.</strong> Compilation</a></li><li class="chapter-item expanded "><a href="ref/options.html"><strong aria-hidden="true">6.</strong> Command Line Options</a></li><li class="chapter-item expanded "><a href="ref/systemd.html"><strong aria-hidden="true">7.</strong> Systemd Service</a></li><li class="chapter-item expanded "><a href="ref/integration.html"><strong aria-hidden="true">8.</strong> Integration with Systems and Tools</a></li><li class="chapter-item expanded "><a href="ref/vm.html"><strong aria-hidden="true">9.</strong> Virtual machines</a></li><li class="chapter-item expanded "><a href="ref/how_it_works.html"><strong aria-hidden="true">10.</strong> How PowerJoular Works</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -178,7 +178,7 @@
 <p><a href="https://www.gnu.org/licenses/gpl-3.0"><img src="https://img.shields.io/badge/License-GPLv3-blue" alt="License: GPL v3" /></a>
 <a href="https://www.adaic.org"><img src="https://img.shields.io/badge/Made%20with-Ada-blue" alt="Ada" /></a></p>
 <p><img src="powerjoular.png" alt="PowerJoular Logo" /></p>
-<p>PowerJoular is a command line software to monitor, in real time, the power consumption of software and hardware components.</p>
+<p>PowerJoular is a command line software to monitor, in real time, the power consumption of software and hardware components, across multiple platforms and virtual machines.</p>
 <p>PowerJoular is part of the <a href="https://www.noureddine.org/research/joular/"><img src="https://raw.githubusercontent.com/joular/.github/main/profile/joular.png" alt="Joular Project" width="64" /></a> project.</p>
 <p>PowerJoular can monitor the power consumption, in real time, of the CPU and the GPU in general, and also for a specific application (through its name or PID).
 It works on a Linux system and on multiple platforms (x86_64, ARM) and devices (computers, servers, Raspberry Pi, etc.).</p>
@@ -186,6 +186,7 @@ It works on a Linux system and on multiple platforms (x86_64, ARM) and devices (
 <h2 id="features"><a class="header" href="#features">Features</a></h2>
 <ul>
 <li>Monitor power consumption of CPU and GPU of PC/servers</li>
+<li>Monitor power consumption inside virtual machines</li>
 <li>Monitor power consumption of individual applications or processes in GNU/Linux</li>
 <li>Expose power consumption to the terminal and CSV files</li>
 <li>Provides a systemd service (daemon) to continuously monitor power of devices</li>
@@ -216,10 +217,17 @@ All rights reserved. This program and the accompanying materials are made availa
 <ul>
 <li>PC/Servers using a RAPL supported Intel processor (since Sandy Bridge) or a RAPL supported AMD processor (since Ryzen), and optionally an Nvidia graphic card.</li>
 <li>Raspberry Pi devices (multiple models) and Asus Tinker Board.</li>
+<li>Inside virtual machines in all supported host platforms.</li>
 </ul>
 <p>In all platforms, PowerJoular works currently only on GNU/Linux.</p>
 <p>On PC/Servers, PowerJoular uses powercap Linux interface to read Intel RAPL (Running Average Power Limit) energy consumption.</p>
 <p>PowerJoular supports RAPL package domain (core, including integrated graphics, and dram), and for more recent processors, we support Psys package (which covers the energy consumption of the entire SoC).</p>
+<p>On virtual machines, PowerJoular requires two steps:</p>
+<ul>
+<li>Installing PowerJoular itself or another power monitoring tool in the host machine.
+Then monitoring the virtual machine power consumption every second and writing it to a file (to be shared with the guest VM).</li>
+<li>Installing PowerJoular in the guest VM, then running PowerJoular while specifying the path of the power file shared with the host and its format.</li>
+</ul>
 <p>On Raspberry Pi and Asus Tinker Board, PowerJoular uses its own research-based empirical regression models to estimate the power consumption of the ARM processor.</p>
 <p>The supported list of Raspberry Pi and Asus Tinker Board models are listed below.
 We support all revisions of each model lineup.
@@ -309,6 +317,8 @@ The difference (increase or decrease) of power consumption from the last metric 
 <li><code>-t</code>: print energy data to the terminal</li>
 <li><code>-d</code>: print debug info to the terminal</li>
 <li><code>-l</code>: use linear regression models (less accurate than the default polynomial models) for Raspberry Pi energy models</li>
+<li><code>-m</code>: specify a filename for the power consumption of the virtual machine</li>
+<li><code>-s</code>: specify the format of the VM power, either <code>powerjoular</code> format (generated with the <code>-o</code> option: 3 columns csv file with the 3rd containing the power consumption the VM), or <code>watts</code> format (1 column containing just the power consumption of the VM)</li>
 </ul>
 <p>You can mix options, i.e., <code>powerjoular -tp 144</code> will monitor PID 144 and will print to the terminal.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="systemd-service"><a class="header" href="#systemd-service">Systemd Service</a></h1>
@@ -323,6 +333,35 @@ As such, PowerJoular can be used in IDEs, integration systems CI/CD, or alongsid
 PowerJoular can write these CSV files in <code>overwrite</code> mode, and thus reducing the overhead and size of these files.</p>
 <p>With the systemd service provided, PowerJoular can run automatically on startup and write power consumption to <code>/tmp</code> folder (which can be changed in the service).
 Therefore, offering an automatic way for multiple tools and dashboards to get accurate and real-time power metrics in multiple platforms.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="virtual-machines"><a class="header" href="#virtual-machines">Virtual Machines</a></h1>
+<p>PowerJoular also works inside virtual machines.
+All its functionalities (such as monitoring a PID or an application) work the same inside a virtual machine as with bare metal installation.</p>
+<p>In virtual machines, PowerJoular in the guest OS needs to get the power consumption of the virtual machine instance itself.
+This can only be done by installing on the host OS, a power monitoring tool (such as PowerJoular itself or other ones), and monitoring the power consumption of the specific guest virtual machine process.</p>
+<p>The power data of the VM process need to be written to a shared file between the host and the guest.
+Inside the guest, PowerJoular will read this file continuously and use the reported power value as the power of the entire virtual machine.</p>
+<p>PowerJoular is agnostic to what power tools in installed in the host and can work with any available tool that is capable of monitoring the VM process.</p>
+<h2 id="use-case-example-with-powerjoular-on-host-and-guest"><a class="header" href="#use-case-example-with-powerjoular-on-host-and-guest">Use case example with PowerJoular on host and guest</a></h2>
+<p>A use case example is using PowerJoular on both the host and the guest.</p>
+<h3 id="in-the-host-os"><a class="header" href="#in-the-host-os">In the host OS</a></h3>
+<ul>
+<li>Install PowerJoular</li>
+<li>Run PowerJoular while specifying the PID of the virtual machine of the guest OS, and writing the power data in a CSV file in overwrite mode.</li>
+<li>For instance, you can run PowerJoular with the following command: <code>powerjoular -p $VM_PID -o /home/vm/vm.csv</code></li>
+<li>Share the <code>/home/vm/vm.csv</code> between the host OS and the guest OS</li>
+</ul>
+<h2 id="in-the-guest-os"><a class="header" href="#in-the-guest-os">In the guest OS</a></h2>
+<ul>
+<li>Install PowerJoular</li>
+<li>
+<ul>
+<li>Share the <code>/home/vm/vm.csv</code> between the host OS and the guest OS, potentially having a different path of the file inside the guest. For instance, <code>/opt/vm/vm.csv</code></li>
+</ul>
+</li>
+<li>Run PowerJoular with the -m and -s options to specify the file and the power data format.</li>
+<li>For example, in our use case example: <code>powerjoular -m /opt/vm/vm.csv -s powerjoular</code></li>
+<li>You can add other options for your needs, such as -p or -a to monitor a specific process or application inside your virtual machine.</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="how-powerjoular-works"><a class="header" href="#how-powerjoular-works">How PowerJoular Works</a></h1>
 <p>PowerJoular monitors the CPU and GPU power consumption in computers and servers. It is written in Ada in order to provide a low-impact tool as Ada is constantly ranked among the most energy efficient programming languages, while also improving code maintainability and safety.</p>
 <p>PowerJoular is aimed to software developers, system administrators and to automated tools, with a goal to help these users understand the power consumption of their devices and software, and to build more in-depth tools using our proposed platform.</p>
