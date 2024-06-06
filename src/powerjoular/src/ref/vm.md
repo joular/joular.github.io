@@ -25,7 +25,7 @@ A use case example is using PowerJoular on both the host and the guest.
 ## In the guest OS
 
 - Install PowerJoular
-- - Share the ```/home/vm/vm.csv``` between the host OS and the guest OS, potentially having a different path of the file inside the guest. For instance, ```/opt/vm/vm.csv```
+- Share the ```/home/vm/vm.csv``` between the host OS and the guest OS, potentially having a different path of the file inside the guest. For instance, ```/opt/vm/vm.csv```
 - Run PowerJoular with the -m and -s options to specify the file and the power data format.
 - For example, in our use case example: ```powerjoular -m /opt/vm/vm.csv -s powerjoular```
 - You can add other options for your needs, such as -p or -a to monitor a specific process or application inside your virtual machine.
