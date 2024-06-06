@@ -5,7 +5,7 @@
 
 ![PowerJoular Logo](powerjoular.png)
 
-PowerJoular is a command line software to monitor, in real time, the power consumption of software and hardware components.
+PowerJoular is a command line software to monitor, in real time, the power consumption of software and hardware components, across multiple platforms and virtual machines.
 
 PowerJoular is part of the <a href="https://www.noureddine.org/research/joular/"><img src="https://raw.githubusercontent.com/joular/.github/main/profile/joular.png" alt="Joular Project" width="64" /></a> project.
 
@@ -17,6 +17,7 @@ The official website of PowerJoular is: [https://www.noureddine.org/research/jou
 ## Features
 
 - Monitor power consumption of CPU and GPU of PC/servers
+- Monitor power consumption inside virtual machines
 - Monitor power consumption of individual applications or processes in GNU/Linux
 - Expose power consumption to the terminal and CSV files
 - Provides a systemd service (daemon) to continuously monitor power of devices

@@ -3,12 +3,18 @@
 PowerJoular monitors the following platforms:
 - PC/Servers using a RAPL supported Intel processor (since Sandy Bridge) or a RAPL supported AMD processor (since Ryzen), and optionally an Nvidia graphic card.
 - Raspberry Pi devices (multiple models) and Asus Tinker Board.
+- Inside virtual machines in all supported host platforms.
 
 In all platforms, PowerJoular works currently only on GNU/Linux.
 
 On PC/Servers, PowerJoular uses powercap Linux interface to read Intel RAPL (Running Average Power Limit) energy consumption.
 
 PowerJoular supports RAPL package domain (core, including integrated graphics, and dram), and for more recent processors, we support Psys package (which covers the energy consumption of the entire SoC).
+
+On virtual machines, PowerJoular requires two steps:
+- Installing PowerJoular itself or another power monitoring tool in the host machine.
+Then monitoring the virtual machine power consumption every second and writing it to a file (to be shared with the guest VM).
+- Installing PowerJoular in the guest VM, then running PowerJoular while specifying the path of the power file shared with the host and its format.
 
 On Raspberry Pi and Asus Tinker Board, PowerJoular uses its own research-based empirical regression models to estimate the power consumption of the ARM processor.
 

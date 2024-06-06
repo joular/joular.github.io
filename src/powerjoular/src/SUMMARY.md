@@ -13,4 +13,5 @@
 - [Command Line Options](./ref/options.md)
 - [Systemd Service](./ref/systemd.md)
 - [Integration with Systems and Tools](./ref/integration.md)
+- [Virtual machines](./ref/vm.md)
 - [How PowerJoular Works](./ref/how_it_works.md)

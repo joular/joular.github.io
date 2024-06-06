@@ -16,5 +16,7 @@ The following options are available:
 - ```-t```: print energy data to the terminal
 - ```-d```: print debug info to the terminal
 - ```-l```: use linear regression models (less accurate than the default polynomial models) for Raspberry Pi energy models
- 
+ - ```-m```: specify a filename for the power consumption of the virtual machine
+- ```-s```: specify the format of the VM power, either ```powerjoular``` format (generated with the ```-o``` option: 3 columns csv file with the 3rd containing the power consumption the VM), or ```watts``` format (1 column containing just the power consumption of the VM)
+
 You can mix options, i.e., ```powerjoular -tp 144``` will monitor PID 144 and will print to the terminal.
