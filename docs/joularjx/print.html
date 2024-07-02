@@ -89,7 +89,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">1.</strong> Overview</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="guide/supported_platforms.html"><strong aria-hidden="true">2.</strong> Supported Platforms</a></li><li class="chapter-item expanded "><a href="guide/installation.html"><strong aria-hidden="true">3.</strong> Installation</a></li><li class="chapter-item expanded "><a href="guide/quick_usage.html"><strong aria-hidden="true">4.</strong> Quick Usage</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference Guide</li><li class="chapter-item expanded "><a href="ref/compilation.html"><strong aria-hidden="true">5.</strong> Compilation</a></li><li class="chapter-item expanded "><a href="ref/configuration.html"><strong aria-hidden="true">6.</strong> Configuration Properties</a></li><li class="chapter-item expanded "><a href="ref/generated_files.html"><strong aria-hidden="true">7.</strong> Generated Files</a></li><li class="chapter-item expanded "><a href="ref/integration.html"><strong aria-hidden="true">8.</strong> Integration with Systems and Tools</a></li><li class="chapter-item expanded "><a href="ref/how_it_works.html"><strong aria-hidden="true">9.</strong> How JoularJX Works</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">1.</strong> Overview</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="guide/supported_platforms.html"><strong aria-hidden="true">2.</strong> Supported Platforms</a></li><li class="chapter-item expanded "><a href="guide/installation.html"><strong aria-hidden="true">3.</strong> Installation</a></li><li class="chapter-item expanded "><a href="guide/quick_usage.html"><strong aria-hidden="true">4.</strong> Quick Usage</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference Guide</li><li class="chapter-item expanded "><a href="ref/compilation.html"><strong aria-hidden="true">5.</strong> Compilation</a></li><li class="chapter-item expanded "><a href="ref/configuration.html"><strong aria-hidden="true">6.</strong> Configuration Properties</a></li><li class="chapter-item expanded "><a href="ref/generated_files.html"><strong aria-hidden="true">7.</strong> Generated Files</a></li><li class="chapter-item expanded "><a href="ref/integration.html"><strong aria-hidden="true">8.</strong> Integration with Systems and Tools</a></li><li class="chapter-item expanded "><a href="ref/vm.html"><strong aria-hidden="true">9.</strong> Virtual machines</a></li><li class="chapter-item expanded "><a href="ref/how_it_works.html"><strong aria-hidden="true">10.</strong> How JoularJX Works</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -188,6 +188,7 @@
 <li>Monitor power consumption of each method at runtime</li>
 <li>Monitor the evolution of power consumption of each method</li>
 <li>Monitor power consumption of methods' call tree and execution branches</li>
+<li>Monitor energy of Java applications running in virtual machines</li>
 <li>Uses a Java agent, no source code instrumentation needed</li>
 <li>Uses Intel RAPL (powercap interface) for getting accurate power reading on GNU/Linux, our research-based regression models on Raspberry Pi devices, and a custom program monitor (based on Intel Power Gadget) for accurate power readings on Windows</li>
 <li>Provides real-time power consumption of every method in the monitored program</li>
@@ -217,6 +218,7 @@ All rights reserved. This program and the accompanying materials are made availa
 <p>JoularJX support the following platforms and operating systems:</p>
 <ul>
 <li>PC/Servers using a RAPL supported Intel processor (since Sandy Bridge) or a RAPL supported AMD processor (since Ryzen), on GNU/Linux, on Windows and on macOS.</li>
+<li>Virtual machines (any supported guest on any guest)</li>
 </ul>
 <p>The supported list of Raspberry Pi and Asus Tinker Board models are listed below.
 We support all revisions of each model lineup.
@@ -243,6 +245,7 @@ However, the model is generated and trained on a specific revision (listed betwe
 <tr><td style="text-align: center">macOS PC</td><td style="text-align: center">macOS</td><td style="text-align: center">Powermetrics</td><td style="text-align: center">x86_64, ARM</td></tr>
 <tr><td style="text-align: center">Raspberry Pi</td><td style="text-align: center">GNU/Linux</td><td style="text-align: center">Our regression models</td><td style="text-align: center">ARM</td></tr>
 <tr><td style="text-align: center">Asus Tinker Board</td><td style="text-align: center">GNU/Linux</td><td style="text-align: center">Our regression models</td><td style="text-align: center">ARM</td></tr>
+<tr><td style="text-align: center">Virtual Machine</td><td style="text-align: center">Supported guests (Windows, Linux, macOS), any host</td><td style="text-align: center">Host's architecture (RAPL, regression models, others)</td><td style="text-align: center">x86, x86_64, ARM</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="installation"><a class="header" href="#installation">Installation</a></h1>
 <p>JoularJX is a Java agent, and therfore provided as a <code>.jar</code> file.
@@ -361,6 +364,30 @@ However, <code>config.properties</code> must be copied to the same folder as whe
 Therefore, it can be integrated and used in any Java-based virtual machine and setup.</p>
 <p>For instance, you can add JoularJX to the run/execute parameters of your favorite IDE (Eclipse, IntelliJ Idea, NetBeans, etc.), or to your development workflow or continuous integration and delivery processes (CI/CD).</p>
 <p>JoularJX runs indistinctly and with the same configuration options and generated files on all supported platforms, from Windows to Linux, from x86_64 servers and PC to ARM Raspberry Pi devices.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="virtual-machines"><a class="header" href="#virtual-machines">Virtual Machines</a></h1>
+<p>JoularJX also works inside virtual machines.
+All its functionalities work the same inside a virtual machine as with bare metal installation.</p>
+<p>In virtual machines, JoularJX in the guest OS needs to get the power consumption of the virtual machine instance itself.
+This can only be done by installing on the host OS, a power monitoring tool (such as PowerJoular or other ones), and monitoring the power consumption of the specific guest virtual machine process.</p>
+<p>The power data of the VM process need to be written to a shared file between the host and the guest.
+Inside the guest, JoularJX will read this file continuously and use the reported power value as the power of the entire virtual machine.</p>
+<p>JoularJX is agnostic to what power tools in installed in the host and can work with any available tool that is capable of monitoring the VM process.</p>
+<h2 id="use-case-example-with-joularjx-on-guest-and-powerjoular-on-host"><a class="header" href="#use-case-example-with-joularjx-on-guest-and-powerjoular-on-host">Use case example with JoularJX on guest and PowerJoular on host</a></h2>
+<p>A use case example is using JoularJX on the guest OS and PowerJoular on the host OS.</p>
+<h3 id="in-the-host-os"><a class="header" href="#in-the-host-os">In the host OS</a></h3>
+<ul>
+<li>Install <a href="https://github.com/joular/powerjoular">PowerJoular</a></li>
+<li>Run PowerJoular while specifying the PID of the virtual machine of the guest OS, and writing the power data in a CSV file in overwrite mode.</li>
+<li>For instance, you can run PowerJoular with the following command: <code>powerjoular -p $VM_PID -o /home/vm/vm.csv</code></li>
+<li>Share the <code>/home/vm/vm.csv</code> between the host OS and the guest OS</li>
+</ul>
+<h2 id="in-the-guest-os"><a class="header" href="#in-the-guest-os">In the guest OS</a></h2>
+<ul>
+<li>Get and compile JoularJX</li>
+<li>Share the <code>/home/vm/vm.csv</code> between the host OS and the guest OS, potentially having a different path of the file inside the guest. For instance, <code>/opt/vm/vm.csv</code></li>
+<li>Modify <code>config.properties</code> and set ``vm-power-path<code>to the shared file</code>/opt/vm/vm.csv<code>, and </code>vm-power-format<code>to the proper format (in this case to</code>powerjoular```).</li>
+<li>Start your Java application with JoularJX agent as usual.</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="how-joularjx-works"><a class="header" href="#how-joularjx-works">How JoularJX Works</a></h1>
 <p>JoularJX is a Java agent that hooks to the Java Virtual Machine (JVM) on startup along with the monitored application.
 It runs in a separate thread and collects information about CPU usage of the JVM process, each thread running in the JVM, and then for each method of the application.</p>
