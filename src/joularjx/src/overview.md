@@ -20,6 +20,7 @@ The official website of JoularJX is: [https://www.noureddine.org/research/joular
 - Monitor power consumption of each method at runtime
 - Monitor the evolution of power consumption of each method
 - Monitor power consumption of methods' call tree and execution branches
+- Monitor energy of Java applications running in virtual machines
 - Uses a Java agent, no source code instrumentation needed
 - Uses Intel RAPL (powercap interface) for getting accurate power reading on GNU/Linux, our research-based regression models on Raspberry Pi devices, and a custom program monitor (based on Intel Power Gadget) for accurate power readings on Windows
 - Provides real-time power consumption of every method in the monitored program

@@ -39,3 +39,4 @@ We currently support the following Raspberry Pi models and Asus Tinker Board mod
 |        Raspberry Pi       |        GNU/Linux       |             Our regression models             |             ARM            |
 |        Asus Tinker Board       |        GNU/Linux       |             Our regression models             |             ARM            |
 |     Linux PC/Server    |        GNU/Linux        |             RAPL (using powercap), Nvidia-smi            |             x86, x86_64            |
+|     Linux Virtual Machine    |        GNU/Linux guest, any host       |             Host's architecture (RAPL, regression models, others)            |             x86, x86_64, ARM            |

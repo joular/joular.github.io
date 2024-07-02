@@ -13,4 +13,5 @@
 - [Configuration Properties](./ref/configuration.md)
 - [Generated Files](./ref/generated_files.md)
 - [Integration with Systems and Tools](./ref/integration.md)
+- [Virtual machines](./ref/vm.md)
 - [How JoularJX Works](./ref/how_it_works.md)
