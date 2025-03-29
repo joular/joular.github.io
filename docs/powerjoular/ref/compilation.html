@@ -90,9 +90,7 @@
             <div class="sidebar-scrollbox">
                 <ol class="chapter"><li class="chapter-item expanded "><a href="../overview.html"><strong aria-hidden="true">1.</strong> Overview</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../guide/supported_platforms.html"><strong aria-hidden="true">2.</strong> Supported Platforms</a></li><li class="chapter-item expanded "><a href="../guide/installation.html"><strong aria-hidden="true">3.</strong> Installation</a></li><li class="chapter-item expanded "><a href="../guide/quick_usage.html"><strong aria-hidden="true">4.</strong> Quick Usage</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference Guide</li><li class="chapter-item expanded "><a href="../ref/compilation.html" class="active"><strong aria-hidden="true">5.</strong> Compilation</a></li><li class="chapter-item expanded "><a href="../ref/options.html"><strong aria-hidden="true">6.</strong> Command Line Options</a></li><li class="chapter-item expanded "><a href="../ref/systemd.html"><strong aria-hidden="true">7.</strong> Systemd Service</a></li><li class="chapter-item expanded "><a href="../ref/integration.html"><strong aria-hidden="true">8.</strong> Integration with Systems and Tools</a></li><li class="chapter-item expanded "><a href="../ref/vm.html"><strong aria-hidden="true">9.</strong> Virtual machines</a></li><li class="chapter-item expanded "><a href="../ref/how_it_works.html"><strong aria-hidden="true">10.</strong> How PowerJoular Works</a></li></ol>
             </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
-                <div class="sidebar-resize-indicator"></div>
-            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
         <!-- Track and set sidebar scroll position -->
@@ -195,7 +193,7 @@ sudo apt install gnat gprbuild
 <p>By default, the project will statically link the required libraries, and therefore the PowerJoular binary can be copied to any compatible system and used as-is.</p>
 <p>To build with dynamic linking, remove or comment the static switch in the <code>powerjoular.gpr</code> file, in particular these lines:</p>
 <pre><code>package Binder is
-    for Switches ("Ada") use ("-static");
+    for Switches (&quot;Ada&quot;) use (&quot;-static&quot;);
 end Binder;
 </code></pre>
 <h3 id="compilation-with-the-gnat-compiler-only"><a class="header" href="#compilation-with-the-gnat-compiler-only">Compilation with the GNAT compiler only</a></h3>
