@@ -1,0 +1,248 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>How PowerJoular Works - PowerJoular Documentation</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../overview.html"><strong aria-hidden="true">1.</strong> Overview</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../guide/supported_platforms.html"><strong aria-hidden="true">2.</strong> Supported Platforms</a></li><li class="chapter-item expanded "><a href="../guide/installation.html"><strong aria-hidden="true">3.</strong> Installation</a></li><li class="chapter-item expanded "><a href="../guide/quick_usage.html"><strong aria-hidden="true">4.</strong> Quick Usage</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference Guide</li><li class="chapter-item expanded "><a href="../ref/compilation.html"><strong aria-hidden="true">5.</strong> Compilation</a></li><li class="chapter-item expanded "><a href="../ref/options.html"><strong aria-hidden="true">6.</strong> Command Line Options</a></li><li class="chapter-item expanded "><a href="../ref/systemd.html"><strong aria-hidden="true">7.</strong> Systemd Service</a></li><li class="chapter-item expanded "><a href="../ref/integration.html"><strong aria-hidden="true">8.</strong> Integration with Systems and Tools</a></li><li class="chapter-item expanded "><a href="../ref/vm.html"><strong aria-hidden="true">9.</strong> Virtual machines</a></li><li class="chapter-item expanded "><a href="../ref/how_it_works.html" class="active"><strong aria-hidden="true">10.</strong> How PowerJoular Works</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">PowerJoular Documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="how-powerjoular-works"><a class="header" href="#how-powerjoular-works">How PowerJoular Works</a></h1>
+<p>PowerJoular monitors the CPU and GPU power consumption in computers and servers. It is written in Ada in order to provide a low-impact tool as Ada is constantly ranked among the most energy efficient programming languages, while also improving code maintainability and safety.</p>
+<p>PowerJoular is aimed to software developers, system administrators and to automated tools, with a goal to help these users understand the power consumption of their devices and software, and to build more in-depth tools using our proposed platform.</p>
+<p>PowerJoular's power monitoring is based on the Intel RAPL through the <a href="https://www.kernel.org/doc/html/latest/power/powercap/powercap.html">Linux Power Capping Framework</a>, and, optionally <a href="https://developer.nvidia.com/nvidia-system-management-interface">NVIDIA's System Management Interface</a>.
+PowerJoular automatically detects the computer configuration and supported modules, and provides power data accordingly.</p>
+<p>On Raspberry Pi and Asus Tinker Board (and similar devices), PowerJoular uses its own research-based empirical regression models to estimate the power consumption of the ARM processor.</p>
+<h2 id="cpu-power-monitoring"><a class="header" href="#cpu-power-monitoring">CPU Power Monitoring</a></h2>
+<p>For the CPU, PowerJoular uses the Intel RAPL power data through the Linux powercap interface by reading the appropriate system files (or our regression models on Raspberry Pi and similar devices).</p>
+<p>It first detects which power domains are supported by the CPU:</p>
+<ul>
+<li>Pkg: which is supported since Intel Sandy Bridge CPUs, and provides energy consumption for the CPU cores, integrated graphics, memory controller and last level caches.
+PowerJoular also checks if DRAM power domain is supported (RAM attached to the memory controller) and adds its power readings to the total.</li>
+<li>Psys: which is supported since Intel Skylake CPUs, and provides energy consumption for the entire SOC (including Pkg along with other components, such as eDRAM, PCH, System Agent). If Psys is supported, it will be exclusively used by PowerJoular for CPU power consumption instead of Pkg and DRAM, as it provides a more comprehensive power reading of the CPU SOC.</li>
+</ul>
+<p>On Raspberry Pi and similar devices, PowerJoular uses regression models we developed (which provides high accuracy, and publish in <a href="https://github.com/joular/powermodels">this repository</a>).
+The model uses CPU utilization (calculated from CPU cycles statistics from <code>/proc/stat</code> and <code>/proc/pid/stat</code> files).</p>
+<h2 id="gpu-power-monitoring"><a class="header" href="#gpu-power-monitoring">GPU Power Monitoring</a></h2>
+<p>For the GPU, PowerJoular checks if NVIDIA SMI is installed, then uses it to verify if GPU power monitoring is supported to the specific graphic card, and to read GPU power consumption every second.</p>
+<p>Finally, PowerJoular aggregates power readings from all supported components to provide an overall power consumption.
+For instance, if both Intel RAPL and NVIDIA SMI are supported, the tool will provide an aggregated power value for both CPU and GPU.</p>
+<h2 id="monitoring-a-pid"><a class="header" href="#monitoring-a-pid">Monitoring a PID</a></h2>
+<p>For monitoring a specific process through its ID (PID), PowerJoular uses the Linux statistics in <code>/proc/stat</code> and <code>/proc/pid/stat</code>, and calculates the proportion of CPU cycles used by the process, and thus calculates the power consumed by the process accordingly.</p>
+<h2 id="monitoring-an-application-by-its-name"><a class="header" href="#monitoring-an-application-by-its-name">Monitoring an application by its name</a></h2>
+<p>PowerJoular monitors an application by searching for all its PIDs, on every monitoring cycle (by default, every second) because an application can create or destroy process during its runtime.
+Then, PowerJoular applies the same approach to monitor a PID, but by monitoring all the applications PIDs and calculating the sum of the power of these PIDs.</p>
+<h2 id="systemd-service"><a class="header" href="#systemd-service">Systemd service</a></h2>
+<p>PowerJoular also provides a systemd service which writes power consumption to /tmp folder, allowing it to bypass the added restrictions on reading powercap energy meters to <a href="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=949dd0104c496fa7c14991a23c03c62e44637e71">non-privileged users in Intel CPUs</a>.
+The restriction was added due to the recently discovered <a href="https://platypusattack.com/">PLATYPUS vulnerability</a>.
+However, the systemd service still requires privileged access (root/sudo) to be enabled, and the data provided is the runtime power consumption (every second) from aggregate sources (CPU and GPU when available).</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../ref/vm.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../ref/vm.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
