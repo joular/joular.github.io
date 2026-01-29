@@ -1,0 +1,7 @@
+[book]
+authors = ["Adel Noureddine"]
+language = "en"
+#multilingual = false
+src = "src"
+title = "Joular Core Documentation"
+#default-theme = "light"

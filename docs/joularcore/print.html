@@ -1,0 +1,583 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Joular Core Documentation</title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-2459343d.css">
+        <link rel="stylesheet" href="css/chrome-ae938929.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-6cbfcdb8.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-cced847a.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Joular Core Documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="overview"><a class="header" href="#overview">Overview</a></h1>
+<p><a href="https://www.gnu.org/licenses/gpl-3.0"><img src="https://img.shields.io/badge/License-GPLv3-blue" alt="License: GPL v3"></a> <img src="https://img.shields.io/badge/Made%20with-Rust-2b2b2b?logo=rust&amp;logoColor=white" alt="Made with Rust">
+<img src="joularcore.png" alt="Joular Core Logo"></p>
+<p>Joular Core is a platform to measure power and energy across all systems and devices.</p>
+<p>Joular Core is part of the <a href="https://www.noureddine.org/research/joular/"><img src="https://raw.githubusercontent.com/joular/.github/main/profile/joular.png" alt="Joular Project" width="64" /></a> project.</p>
+<p>Joular Core aims to monitor hardware and software power and energy consumption on all platforms, operating systems and CPU &amp; GPU architectures, <em>i.e.</em>, everywhere.</p>
+<p>The official website of Joular Core is: <a href="https://www.noureddine.org/research/joular/joularcore">https://www.noureddine.org/research/joular/joularcore</a>.</p>
+<h2 id="-key-features"><a class="header" href="#-key-features">🔧 Key Features</a></h2>
+<ul>
+<li>📊 Monitor CPU &amp; GPU power consumption on PCs, servers, and SBCs</li>
+<li>🌐 Work seamlessly inside virtual machines</li>
+<li>🔍 Track individual processes and multi-process applications on all platforms</li>
+<li>📈 Export power measurements to the terminal or CSV files (multiple modes available)</li>
+<li>⚙️ Inspect hardware-specific power data (CPU-only, GPU-only, or combined)</li>
+<li>⌨️ Intuitive command-line interface (CLI)</li>
+<li>🎨 Multi-platform graphical user interface (GUI)</li>
+<li>⚡ Low overhead, written in Rust and compiled to native code</li>
+</ul>
+<h2 id="license"><a class="header" href="#license">License</a></h2>
+<p>Joular Core is licensed under the GNU GPL 3 license only (GPL-3.0-only).</p>
+<p>Copyright (c) 2025-2026, Adel Noureddine.
+All rights reserved. This program and the accompanying materials are made available under the terms of the GNU General Public License v3.0 only (GPL-3.0-only) which accompanies this distribution, and is available at: https://www.gnu.org/licenses/gpl-3.0.en.html</p>
+<p>Author : <a href="https://www.noureddine.org/">Adel Noureddine</a></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="supported-platforms"><a class="header" href="#supported-platforms">Supported Platforms</a></h1>
+<p>Joular Core supports a wide variety of platforms, operating systems and CPU architectures.
+It is as universal as it can get, and most environements are supported.</p>
+<ul>
+<li>💻 <strong>Supported Systems</strong>: 🐧 Linux, 🪟 Windows, 🍎 MacOS, 🍓 Raspberry Pi, 💽 Virtual Machines.</li>
+<li>⚙️ <strong>Supported Architectures</strong>: x86_64 (amd64), x86/i686, aarch64, arm, armv7, GPUs (Nvidia, Apple, AMD).</li>
+</ul>
+<p>In particular:</p>
+<ul>
+<li>PC/Servers using a RAPL supported Intel processor (since Sandy Bridge) or a RAPL supported AMD processor (since Ryzen), on Windows and Linux.</li>
+<li>macOS computers on Intel mac or Apple ARM chip.</li>
+<li>Virtual machines (any supported guest on any host).</li>
+<li>For GPU: Nvidia, AMD and Apple</li>
+<li>Raspberry Pi devices (multiple models) on Linux (all revisions for each model are supported):
+<ul>
+<li>Model Zero W, for 32 bits OS</li>
+<li>Model 1 B, for 32 bits OS</li>
+<li>Model 1 B+, for 32 bits OS</li>
+<li>Model 2 B, for 32 bits OS</li>
+<li>Model 3 B, for 32 bits OS</li>
+<li>Model 3 B+, for 32 bits OS</li>
+<li>Model 4 B, for both 32 bits and 64 bits OS</li>
+<li>Model 400, for 64 bits OS</li>
+<li>Model 5 B, for 64 bits OS</li>
+</ul>
+</li>
+<li>Asus Tinker Board (S)</li>
+</ul>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th style="text-align: center">Platform</th><th style="text-align: center">Supported OS</th><th style="text-align: center">Based on</th><th style="text-align: center">Supported Architecture</th></tr>
+</thead>
+<tbody>
+<tr><td style="text-align: center">Linux PC/Server</td><td style="text-align: center">Linux</td><td style="text-align: center">RAPL, Nvidia, AMD</td><td style="text-align: center">x86, x86_64</td></tr>
+<tr><td style="text-align: center">Windows PC/Server</td><td style="text-align: center">Windows</td><td style="text-align: center">RAPL, Nvidia, AMD</td><td style="text-align: center">x86, x86_64</td></tr>
+<tr><td style="text-align: center">macOS PC/Server</td><td style="text-align: center">macOS</td><td style="text-align: center">Powermetrics (Apple Silicon CPU, GPU, Intel CPU)</td><td style="text-align: center">x86, x86_64, ARM</td></tr>
+<tr><td style="text-align: center">Raspberry Pi</td><td style="text-align: center">Linux</td><td style="text-align: center">Our regression models (CPU)</td><td style="text-align: center">ARM</td></tr>
+<tr><td style="text-align: center">Asus Tinker Board</td><td style="text-align: center">Linux</td><td style="text-align: center">Our regression models (CPU)</td><td style="text-align: center">ARM</td></tr>
+<tr><td style="text-align: center">Virtual Machine</td><td style="text-align: center">Supported guests (Windows, Linux, macOS), any host</td><td style="text-align: center">Host’s architecture (CPU, GPU)</td><td style="text-align: center">x86, x86_64, ARM</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>CPU:</strong></p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>OS</th><th>x86_64</th><th>i686</th><th>Apple Silicon</th><th>arm</th><th>armv7</th><th>aarch64</th></tr>
+</thead>
+<tbody>
+<tr><td>Windows</td><td>🌟</td><td>🌟</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Linux</td><td>🌟</td><td>🌟</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>macOS</td><td>🌟</td><td></td><td>🌟</td><td></td><td></td><td></td></tr>
+<tr><td>SBC (Raspberry Pi, Asus)</td><td></td><td></td><td></td><td>🌟</td><td>🌟</td><td>🌟</td></tr>
+<tr><td>Virtual Machines</td><td>🌟</td><td>🌟</td><td>🌟</td><td>🌟</td><td>🌟</td><td>🌟</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>GPU:</strong></p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>OS</th><th>Nvidia GPU</th><th>AMD GPU</th><th>Apple GPU</th></tr>
+</thead>
+<tbody>
+<tr><td>Windows</td><td>🌟</td><td>🌟</td><td></td></tr>
+<tr><td>Linux</td><td>🌟</td><td>🌟</td><td></td></tr>
+<tr><td>macOS</td><td></td><td></td><td>🌟</td></tr>
+<tr><td>SBC (Raspberry Pi, Asus)</td><td></td><td></td><td></td></tr>
+<tr><td>Virtual Machines</td><td>🌟</td><td>🌟</td><td>🌟</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>Supported SBC platforms</strong>: Raspberry Pi (models: Zero W, 1 B, 1 B+, 2 B, 3 B, 3 B+, 4 B, 400, 5 B), Asus Tinker Board S.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="installation"><a class="header" href="#installation">Installation</a></h1>
+<p>Joular Core is written in Rust and can be easily compiled, and its binaries added to your system PATH.</p>
+<h2 id="installers-and-packages"><a class="header" href="#installers-and-packages">Installers and Packages</a></h2>
+<p>We provide installation packages for a number of CPU architectures and operating systems.</p>
+<p>For Windows:</p>
+<ul>
+<li>Installation MSI for 64 bits Windows.</li>
+</ul>
+<p>For macOS:</p>
+<ul>
+<li>Installation PKG for Apple Silicon macOS.</li>
+</ul>
+<p>For Linux:</p>
+<ul>
+<li>DEB packages for Debian-bases systems (Debian, Ubuntu, Raspberry Pi OS, etc.), for x86_64 and ARM aarch64 architectures.</li>
+<li>RPM packages for Red Hat and Fedora-based systems (RHEL, Fedora, etc.), for x86_64 architecture.</li>
+<li>AUR installation script for Arch-based systems, for x86_64 architecture.</li>
+</ul>
+<p>For other architectures and distributions (32 bits Windows, Apple Intel macOS, other distros/architectures in Linux), you can just <a href="#compilation">compile</a> Joular Core and you’re good to start energy monitoring.</p>
+<h2 id="binaries"><a class="header" href="#binaries">Binaries</a></h2>
+<p>Compiled version are available on our GitHub repository in the latest stable release.
+Just add the path of this binary to your user or system <code>PATH</code> environnemental variable and you’re good to go.
+You can also start the program directly with its full path, or double click to run.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="quick-usage-of-the-command-line-version"><a class="header" href="#quick-usage-of-the-command-line-version">Quick Usage of the command-line version</a></h1>
+<p>To use Joular Core, just run the command <code>joularcore</code> (on Linux or macOS), or <code>joularcore.exe</code> (on Windows).</p>
+<p>On Intel or AMD PC/servers on Linux, Joular Core uses Intel’s RAPL through the Linux powercap sysfs, and therefore requires root/sudo access on the latest Linux kernels (5.10 and newer): <code>sudo joularcore</code>.
+An alternative is to change the permissions on the RAPL powercap files to provide read access to all. Check <a href="https://github.com/joular/joularcore/issues/12">this issue in our GitHub</a> on the matter. This is a limitation for all power monitoring tools on Linux using RAPL, and not specific to Joular Core.</p>
+<p>On macOS, you also need to run Joular Core with elevated access (thus <code>sudo</code>): <code>sudo joularcore</code>.</p>
+<p>On Windows, just run <code>joularcore.exe</code>.</p>
+<p>On Raspberry Pi devices with Linux, just run <code>joularcore</code>.</p>
+<p>By default, the software will show the power consumption of the CPU, GPU, total power, and CPU utilization.</p>
+<p>To monitor a specific application, just run PowerJoular with the <code>-a appName</code> parameter, and a specific process with the <code>-p PID</code>.
+PowerJoular is a powerful tool with many functionalities that can be accessed using specific parameters. Check the <a href="#command-line-options">Command Line Options page</a> for the detailed list.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="quick-usage-of-the-graphical-user-interface-gui-version"><a class="header" href="#quick-usage-of-the-graphical-user-interface-gui-version">Quick Usage of the graphical user interface (GUI) version</a></h1>
+<p>Joular Core is shipped with an easy-to-use, yet powerful and complete, graphical user interface (GUI), which works seamlessly and in a coherent way across all platforms and operating systems.</p>
+<p>To run the GUI, either:</p>
+<ul>
+<li>Start Joular Core with the <code>-g</code> or <code>--gui</code> argument.</li>
+<li>Use the dedicated GUI binary directly (double click for instance): <code>joularcoregui</code> (on Linux or macOS) or <code>joularcoregui.exe</code> (on Windows).</li>
+</ul>
+<p>On RAPL-based Linux systems and on macOS, elevated access is needed to monitor CPU energy (hence the need to start it with <code>sudo</code>).</p>
+<p>Most CLI features are available in the GUI, with easy-to-use buttons and configuration settings to monitor the entire computer, a specific process, or a specific multi-process application.</p>
+<p>If the GUI is executed from a terminal, it also accepted the same CLI arguments as the CLI version.
+For instance, you can start the gui and an HTTP socket to export power data with: <code>joularcore -g --api-port 8080</code></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="compilation"><a class="header" href="#compilation">Compilation</a></h1>
+<p>Joular Core is written in Rust and uses Cargo for compilation.</p>
+<h2 id="default-build"><a class="header" href="#default-build">Default build:</a></h2>
+<pre><code class="language-bash">cargo build --release
+</code></pre>
+<p>This will build Joular Core with the virtual machine and GUI features, but not with SBC support.</p>
+<h2 id="sbc-raspberry-pi-build"><a class="header" href="#sbc-raspberry-pi-build">SBC (Raspberry Pi) build:</a></h2>
+<pre><code class="language-bash">cargo build --release --features sbc
+</code></pre>
+<p>This will build Joular Core with the virtual machine and GUI features, and with SBC support.</p>
+<h2 id="feature-selection"><a class="header" href="#feature-selection">Feature selection:</a></h2>
+<p>You can build Joular Core with or without virtual machine support or the GUI.
+For instane, this is useful when you don’t need the GUI (<em>i.e.</em>, in server environments) and want to build a smaller binary.</p>
+<pre><code class="language-bash">cargo build --release --no-default-features
+</code></pre>
+<p>⚙️ <strong>Available Features:</strong></p>
+<ul>
+<li><code>vm</code> <em>(default: ON)</em>: Enables support for monitoring inside virtual machines.</li>
+<li><code>api</code> <em>(default: OFF)</em>: Enables support for the API with an HTTP server or WebSockets. Exporting power data to CSV files or to a ring buffer is enabled by default regardless of this feature.</li>
+<li><code>gui</code> <em>(default: ON)</em>: Compiles the application with the graphical user interface.</li>
+<li><code>sbc</code> <em>(default: OFF)</em>: Enables support for monitoring on single-board computers (<em>e.g.</em>, Raspberry Pi) running Linux.
+<ul>
+<li>This disables RAPL-based monitoring and uses our SBC-specific power models.</li>
+</ul>
+</li>
+</ul>
+<p>You can mix and match features, for example:</p>
+<pre><code class="language-bash"># No GUI, but with VM
+cargo build --release --no-default-features --features vm
+
+# No GUI, no VM, but with SBC
+cargo build --release --no-default-features --features sbc
+
+# No VM, but with GUI and SBC
+cargo build --release --no-default-features --features gui,sbc
+</code></pre>
+<h2 id="cross-compilation"><a class="header" href="#cross-compilation">Cross-Compilation</a></h2>
+<p>To cross-compile, use <code>cargo-make</code> with one of the targets defined in <code>Makefile.toml</code>.</p>
+<p>For example, to build for all supported Raspberry Pi architectures (<code>aarch64</code>, <code>arm</code>, <code>armv7</code>):</p>
+<pre><code class="language-bash">cargo make build-sbc
+</code></pre>
+<p>With the proper Rust targets installed, you can hence cross-compile on all architectures and operating systems.</p>
+<h2 id="dependencies"><a class="header" href="#dependencies">Dependencies</a></h2>
+<ul>
+<li><strong>Linux (PC, servers)</strong>: Requires the RAPL interface for CPU power readings. RAPL files are usually readable only by the administrator, so you must either grant read access to these files or run Joular Core with sudo. <a href="https://github.com/joular/joularcore/issues/12">More information in this issue</a>.</li>
+<li><strong>Windows</strong>: a RAPL driver. We currently support <a href="https://github.com/hubblo-org/windows-rapl-driver">Hubblo’s RAPL driver</a>. The easiest way to install a signed version of the driver is to install the <a href="https://github.com/hubblo-org/scaphandre">Scaphandre</a> tool from <a href="https://github.com/hubblo-org/scaphandre/releases/download/v1.0.0/scaphandre_v1.0.0_installer.exe">this installer</a>.</li>
+<li><strong>macOS</strong>: no dependencies required 😇 Uses powermetrics (already installed by default).</li>
+<li>Raspberry Pi: No dependencies required 😇</li>
+</ul>
+<h2 id="virtual-machines"><a class="header" href="#virtual-machines">Virtual Machines</a></h2>
+<p>For virtual machines, two environment variables must be set depending on whether you want to monitor the CPU, the GPU, or both:</p>
+<ul>
+<li><code>VM_CPU_POWER_FILE</code>: Path to the CPU power data file</li>
+<li><code>VM_CPU_POWER_FORMAT</code>: Format of the CPU power data (<code>joularcore</code>  or <code>powerjoular</code> or <code>watts</code>, default is <code>watts</code> if not set)</li>
+<li><code>VM_GPU_POWER_FILE</code>: Path to the GPU power data file</li>
+<li><code>VM_GPU_POWER_FORMAT</code>: Format of the GPU power data (<code>joularcore</code> or <code>powerjoular</code> or <code>watts</code>, default is <code>watts</code> if not set)</li>
+</ul>
+<h2 id="single-board-computers-sbc"><a class="header" href="#single-board-computers-sbc">Single-Board Computers (SBC)</a></h2>
+<p>On SBC (Raspberry Pi, Asus TinkerBoard), Joular Core uses our own regression models to calculate CPU power consumption.
+These models are hard-coded in the code, but you can use your own models by supplying a JSON file with the model detail with the <code>SBC_POWER_MODEL_JSON</code> environmental variable.
+The format needs to follow the one used in our <a href="https://github.com/joular/powermodels">Power Models Database</a>.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="command-line-options"><a class="header" href="#command-line-options">Command Line Options</a></h1>
+<p>To use Joular Core, just run the command <code>joularcore</code> or <code>joularcore.exe</code>.</p>
+<p>The following options are available:</p>
+<ul>
+<li><code>-p</code>, <code>--pid &lt;PID&gt;</code>              : Monitor a specific process by its PID</li>
+<li><code>-a</code>, <code>--app &lt;APP&gt;</code>              : Monitor a specific application by its name (all PIDs)</li>
+<li><code>-f</code>, <code>--file &lt;FILE&gt;</code>            : Write output to CSV file</li>
+<li><code>-c</code>, <code>--component &lt;COMPONENT&gt;</code>  : Monitor only specific component (values: <code>cpu</code>, <code>gpu</code>)</li>
+<li><code>-i</code>, <code>--numeric</code>                : Output only numeric value (no formatting)</li>
+<li><code>-o</code>, <code>--overwrite</code>              : Overwrite file instead of append (only with -f)</li>
+<li><code>-g</code>, <code>--gui</code>                    : Start GUI interface</li>
+<li><code>-r</code>, <code>--ringbuffer</code>             : Send power data to ring buffer</li>
+<li><code>-h</code>, <code>--help</code>                   : Print help</li>
+<li><code>-V</code>, <code>--version</code>                : Print version</li>
+</ul>
+<p>To use Joular Core inside virtual machines, two environment variables must be set depending on whether you want to monitor the CPU, the GPU, or both:</p>
+<ul>
+<li><code>VM_CPU_POWER_FILE</code>: Path to the CPU power data file</li>
+<li><code>VM_CPU_POWER_FORMAT</code>: Format of the CPU power data (<code>joularcore</code>  or <code>powerjoular</code> or <code>watts</code>, default is <code>watts</code> if not set)</li>
+<li><code>VM_GPU_POWER_FILE</code>: Path to the GPU power data file</li>
+<li><code>VM_GPU_POWER_FORMAT</code>: Format of the GPU power data (<code>joularcore</code> or <code>powerjoular</code> or <code>watts</code>, default is <code>watts</code> if not set)</li>
+</ul>
+<p>On SBC (Raspberry Pi, Asus TinkerBoard), Joular Core uses our own regression models to calculate CPU power consumption.
+These models are hard-coded in the code, but you can use your own models by supplying a JSON file with the model detail with the <code>SBC_POWER_MODEL_JSON</code> environmental variable.
+The format needs to follow the one used in our <a href="https://github.com/joular/powermodels">Power Models Database</a>.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="exporting-power-and-energy-measurements"><a class="header" href="#exporting-power-and-energy-measurements">Exporting power and energy measurements</a></h1>
+<p>Joular Core can export the power and energy measurements through multiple interfaces and approaches.
+All the following export approaches works on all supported platforms and operating systems.</p>
+<h2 id="write-on-terminal-and-stdout-redirection"><a class="header" href="#write-on-terminal-and-stdout-redirection">Write on terminal and stdout redirection</a></h2>
+<p>By default, Joular Core will write data to the terminal.
+However, this data could be friendly for stdout redirection by using the <code>-i</code> argument: <code>joularcore -i</code> or <code>joularcore.exe -i</code></p>
+<p>This will output just a float on the terminal that can be redirected anywhere.
+By default, the float will be the total power consumption.
+If combined with other arguments, such as the <code>-c</code> argument to select a specific component, it will provide only that specific component.</p>
+<h2 id="csv-files"><a class="header" href="#csv-files">CSV files</a></h2>
+<p>Joular Core can export data to a CSV file with the <code>-f</code> argument, while supplying a filename or path.</p>
+<p><code>joularcore -f myfile.csv</code> will write a CSV with a header and a new line for every second of power monitoring.
+The format of the CSV file is the following:
+<code>Timestamp,Total Power (W), CPU Power (W),GPU Power (W),CPU Usage (%),Process Power (W)</code></p>
+<h2 id="inter-process-communication-with-a-shared-memory-ring-buffer"><a class="header" href="#inter-process-communication-with-a-shared-memory-ring-buffer">Inter-process communication with a shared memory ring buffer</a></h2>
+<p>Joular Core can also write data to a shared memory ring buffer, on all OSes, when executed with the <code>-r</code> argument: <code>joularcore -r</code> or <code>joularcore.exe -r</code>
+This allows much faster communication and sharing power data between Joular Core and other programs.</p>
+<p>Default ring buffer paths are:</p>
+<ul>
+<li><code>/dev/shm/joularcorering</code> on Linux</li>
+<li><code>/tmp/joularcorering</code> on macOS</li>
+<li><code>Local\\JoularCoreRing</code> on Windows</li>
+</ul>
+<p>The ring buffer have a size of 5 data stuctures with the following values (by order): <code>CPU power</code>, <code>GPU power</code>, <code>Total power</code>, <code>CPU usage</code>, and <code>PID or APP power</code>.
+Unavailable values, such as when monitoring entire CPU and not a specific application, will be at 0.</p>
+<h2 id="http-and-websockets-api"><a class="header" href="#http-and-websockets-api">HTTP and WebSockets API</a></h2>
+<p>Joular Core can expose power data through an HTTP server or WebSockets.
+To use this API, you need to enable the <code>api</code> feature when building Joular Core.</p>
+<p>To run Joular Core and export data through the API, use the <code>--api-port</code> option to specify the port for the HTTP and WebSockets server endpoint. For example:</p>
+<pre><code class="language-bash">joularcore --api-port 8080
+</code></pre>
+<p>The API will expose the following endpoints:</p>
+<ul>
+<li><code>/data</code>: HTTP endpoint to get the latest power data</li>
+<li><code>/ws</code>: WebSockets endpoint for real-time power data</li>
+</ul>
+<p>The API exposes data in JSON format:</p>
+<ul>
+<li><code>cpu_power</code>: CPU power in Watts</li>
+<li><code>gpu_power</code>: GPU power in Watts</li>
+<li><code>total_power</code>: Total power in Watts</li>
+<li><code>cpu_usage</code>: CPU usage in percentage</li>
+<li><code>pid_or_app_power</code>: PID or application power in Watts (0 if option not selected)</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="systemd-service"><a class="header" href="#systemd-service">Systemd Service</a></h1>
+<p>A systemd service is provided and can be installed (by copying <code>joularcore.service</code> in <code>systemd</code> folder to <code>/etc/systemd/system/</code>).
+The service will run the program with the <code>-o</code> option (which only saves the latest power data) and the <code>-f</code> option to save data to <code>/tmp/joularcore-service.csv</code>.
+The service can be enabled to run automatically on boot.</p>
+<p>You can modify the service as needed to start Joular Core with any argument and output the data with any format (CSV, HTTP API, ring buffer shared memory, etc.).</p>
+<p>The systemd service is automatically installed when installing Joular Core using the installer script.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="integration-with-systems-and-tools"><a class="header" href="#integration-with-systems-and-tools">Integration with Systems and Tools</a></h1>
+<p>Joular Core exports its power data with multiple outputs and approaches: to the terminal, to CSV files, to an HTTP and WebSockets API, and to a ring buffer shared memory (IPC).
+Check <a href="#exporting-power-and-energy-measurements">this page</a> for details on these export approaches in Joular Core.</p>
+<p>Therefore, Joular Core can be used in IDEs, integration systems CI/CD, alongside other profilers or debugging tools, connect with dashboard for real-time power monitoring, send data to remote databases, or anywhere needed!</p>
+<p>All what is needed is to start Joular Core and configure the export you want to use, and that’s it.</p>
+<p>Joular Core can also be run as a CLI service, on all platforms.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="virtual-machines-1"><a class="header" href="#virtual-machines-1">Virtual Machines</a></h1>
+<p>Joular Core also works inside virtual machines.
+All its functionalities (such as monitoring a PID or an application) work the same inside a virtual machine as with bare metal installation.</p>
+<p>In virtual machines, Joular Core in the guest OS needs to get the power consumption of the virtual machine instance itself.
+This can only be done by installing on the host OS, a power monitoring tool (such as Joular Core itself or other ones), and monitoring the power consumption of the specific guest virtual machine process.</p>
+<p>The power data of the VM process need to be written to a shared file between the host and the guest.
+Inside the guest, Joular Core will read this file continuously and use the reported power value as the power of the entire virtual machine.</p>
+<p>Joular Core is agnostic to what power tools in installed in the host and can work with any available tool that is capable of monitoring the VM process.</p>
+<p>For virtual machines, two environment variables must be set depending on whether you want to monitor the CPU, the GPU, or both:</p>
+<ul>
+<li><code>VM_CPU_POWER_FILE</code>: Path to the CPU power data file</li>
+<li><code>VM_CPU_POWER_FORMAT</code>: Format of the CPU power data (<code>joularcore</code>  or <code>powerjoular</code> or <code>watts</code>, default is <code>watts</code> if not set)</li>
+<li><code>VM_GPU_POWER_FILE</code>: Path to the GPU power data file</li>
+<li><code>VM_GPU_POWER_FORMAT</code>: Format of the GPU power data (<code>joularcore</code> or <code>powerjoular</code> or <code>watts</code>, default is <code>watts</code> if not set)</li>
+</ul>
+<h2 id="use-case-example-with-joular-core-on-host-and-guest"><a class="header" href="#use-case-example-with-joular-core-on-host-and-guest">Use case example with Joular Core on host and guest</a></h2>
+<p>A use case example is using Joular Core on both the host and the guest.</p>
+<h3 id="in-the-host-os"><a class="header" href="#in-the-host-os">In the host OS</a></h3>
+<ul>
+<li>Install Joular Core</li>
+<li>Run Joular Core while specifying the PID of the virtual machine of the guest OS (or the application name), and writing the power data in a CSV file in overwrite mode.</li>
+<li>For instance, you can run Joular Core with the following command: <code>joularcore -p $VM_PID -o /home/vm/vm.csv</code></li>
+<li>Share the <code>/home/vm/vm.csv</code> between the host OS and the guest OS</li>
+</ul>
+<h3 id="in-the-guest-os"><a class="header" href="#in-the-guest-os">In the guest OS</a></h3>
+<ul>
+<li>Install Joular Core</li>
+<li>Share the <code>/home/vm/vm.csv</code> between the host OS and the guest OS, potentially having a different path of the file inside the guest. For instance, <code>/opt/vm/vm.csv</code></li>
+<li>Run Joular Core after setting the needed environemental variables.</li>
+<li>For example, in our use case example, set <code>VM_CPU_POWER_FILE</code> to <code>/opt/vm/vm.csv</code>, and <code>VM_CPU_POWER_FORMAT</code> to <code>joularcore</code></li>
+<li>You can add other options for your needs, such as <code>-p</code> or <code>-a</code> to monitor a specific process or application inside your virtual machine.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="how-powerjoular-works"><a class="header" href="#how-powerjoular-works">How PowerJoular Works</a></h1>
+<p>PowerJoular monitors the CPU and GPU power consumption in computers and servers. It is written in Ada in order to provide a low-impact tool as Ada is constantly ranked among the most energy efficient programming languages, while also improving code maintainability and safety.</p>
+<p>PowerJoular is aimed to software developers, system administrators and to automated tools, with a goal to help these users understand the power consumption of their devices and software, and to build more in-depth tools using our proposed platform.</p>
+<p>PowerJoular’s power monitoring is based on the Intel RAPL through the <a href="https://www.kernel.org/doc/html/latest/power/powercap/powercap.html">Linux Power Capping Framework</a>, and, optionally <a href="https://developer.nvidia.com/nvidia-system-management-interface">NVIDIA’s System Management Interface</a>.
+PowerJoular automatically detects the computer configuration and supported modules, and provides power data accordingly.</p>
+<p>On Raspberry Pi and Asus Tinker Board (and similar devices), PowerJoular uses its own research-based empirical regression models to estimate the power consumption of the ARM processor.</p>
+<h2 id="cpu-power-monitoring"><a class="header" href="#cpu-power-monitoring">CPU Power Monitoring</a></h2>
+<p>For the CPU, PowerJoular uses the Intel RAPL power data through the Linux powercap interface by reading the appropriate system files (or our regression models on Raspberry Pi and similar devices).</p>
+<p>It first detects which power domains are supported by the CPU:</p>
+<ul>
+<li>Pkg: which is supported since Intel Sandy Bridge CPUs, and provides energy consumption for the CPU cores, integrated graphics, memory controller and last level caches.
+PowerJoular also checks if DRAM power domain is supported (RAM attached to the memory controller) and adds its power readings to the total.</li>
+<li>Psys: which is supported since Intel Skylake CPUs, and provides energy consumption for the entire SOC (including Pkg along with other components, such as eDRAM, PCH, System Agent). If Psys is supported, it will be exclusively used by PowerJoular for CPU power consumption instead of Pkg and DRAM, as it provides a more comprehensive power reading of the CPU SOC.</li>
+</ul>
+<p>On Raspberry Pi and similar devices, PowerJoular uses regression models we developed (which provides high accuracy, and publish in <a href="https://github.com/joular/powermodels">this repository</a>).
+The model uses CPU utilization (calculated from CPU cycles statistics from <code>/proc/stat</code> and <code>/proc/pid/stat</code> files).</p>
+<h2 id="gpu-power-monitoring"><a class="header" href="#gpu-power-monitoring">GPU Power Monitoring</a></h2>
+<p>For the GPU, PowerJoular checks if NVIDIA SMI is installed, then uses it to verify if GPU power monitoring is supported to the specific graphic card, and to read GPU power consumption every second.</p>
+<p>Finally, PowerJoular aggregates power readings from all supported components to provide an overall power consumption.
+For instance, if both Intel RAPL and NVIDIA SMI are supported, the tool will provide an aggregated power value for both CPU and GPU.</p>
+<h2 id="monitoring-a-pid"><a class="header" href="#monitoring-a-pid">Monitoring a PID</a></h2>
+<p>For monitoring a specific process through its ID (PID), PowerJoular uses the Linux statistics in <code>/proc/stat</code> and <code>/proc/pid/stat</code>, and calculates the proportion of CPU cycles used by the process, and thus calculates the power consumed by the process accordingly.</p>
+<h2 id="monitoring-an-application-by-its-name"><a class="header" href="#monitoring-an-application-by-its-name">Monitoring an application by its name</a></h2>
+<p>PowerJoular monitors an application by searching for all its PIDs, on every monitoring cycle (by default, every second) because an application can create or destroy process during its runtime.
+Then, PowerJoular applies the same approach to monitor a PID, but by monitoring all the applications PIDs and calculating the sum of the power of these PIDs.</p>
+<h2 id="systemd-service-1"><a class="header" href="#systemd-service-1">Systemd service</a></h2>
+<p>PowerJoular also provides a systemd service which writes power consumption to /tmp folder, allowing it to bypass the added restrictions on reading powercap energy meters to <a href="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=949dd0104c496fa7c14991a23c03c62e44637e71">non-privileged users in Intel CPUs</a>.
+The restriction was added due to the recently discovered <a href="https://platypusattack.com/">PLATYPUS vulnerability</a>.
+However, the systemd service still requires privileged access (root/sudo) to be enabled, and the data provided is the runtime power consumption (every second) from aggregate sources (CPU and GPU when available).</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-c2a407aa.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+
+    </div>
+    </body>
+</html>
