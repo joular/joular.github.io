@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-9d4e6d68.js";
+            window.path_to_searchindex_js = "../searchindex-dece1898.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-162ede15.js"></script>
@@ -182,12 +182,12 @@ This can only be done by installing on the host OS, a power monitoring tool (suc
 <p>The power data of the VM process need to be written to a shared file between the host and the guest.
 Inside the guest, JoularJX will read this file continuously and use the reported power value as the power of the entire virtual machine.</p>
 <p>JoularJX is agnostic to what power tools in installed in the host and can work with any available tool that is capable of monitoring the VM process.</p>
-<h2 id="use-case-example-with-joularjx-on-guest-and-powerjoular-on-host"><a class="header" href="#use-case-example-with-joularjx-on-guest-and-powerjoular-on-host">Use case example with JoularJX on guest and PowerJoular on host</a></h2>
+<h2 id="use-case-example-with-joularjx-on-guest-and-joular-core-or-powerjoular-on-host"><a class="header" href="#use-case-example-with-joularjx-on-guest-and-joular-core-or-powerjoular-on-host">Use case example with JoularJX on guest and Joular Core or PowerJoular on host</a></h2>
 <p>A use case example is using JoularJX on the guest OS and PowerJoular on the host OS.</p>
 <h3 id="in-the-host-os"><a class="header" href="#in-the-host-os">In the host OS</a></h3>
 <ul>
-<li>Install <a href="https://github.com/joular/powerjoular">PowerJoular</a></li>
-<li>Run PowerJoular while specifying the PID of the virtual machine of the guest OS, and writing the power data in a CSV file in overwrite mode.</li>
+<li>Install <a href="https://github.com/joular/joularcore">Joular Core</a> or <a href="https://github.com/joular/powerjoular">PowerJoular</a></li>
+<li>Run Joular Core or PowerJoular while specifying the PID of the virtual machine of the guest OS, and writing the power data in a CSV file in overwrite mode.</li>
 <li>For instance, you can run PowerJoular with the following command: <code>powerjoular -p $VM_PID -o /home/vm/vm.csv</code></li>
 <li>Share the <code>/home/vm/vm.csv</code> between the host OS and the guest OS</li>
 </ul>

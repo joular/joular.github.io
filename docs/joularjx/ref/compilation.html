@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-9d4e6d68.js";
+            window.path_to_searchindex_js = "../searchindex-dece1898.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-162ede15.js"></script>
@@ -176,15 +176,11 @@
                     <main>
                         <h1 id="compilation"><a class="header" href="#compilation">Compilation</a></h1>
 <p>To build JoularJX, you need Java 11+ and Maven, then just build:</p>
-<pre><code>mvn clean install -DskipTests
+<pre><code>mvn clean install
 </code></pre>
 <p>Alternatively, you can use the Maven wrappen shipped with the project with the command:</p>
-<pre><code>Linux and macOS: ./mvnw clean install -DskipTests
-Windows: mvnw.cmd clean install -DskipTests
-</code></pre>
-<p>To compile the Windows power monitor tool, required by JoularJX on Windows, open the project in Visual Studio and compile there.
-Or open, Developer Command Prompt for VS (or Developer PowerShell for VS), and compile with this command:</p>
-<pre><code>msbuild.exe PowerMonitor.sln /property:Configuration=Release
+<pre><code>Linux and macOS: ./mvnw clean install
+Windows: mvnw.cmd clean install
 </code></pre>
 
                     </main>

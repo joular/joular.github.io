@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-9d4e6d68.js";
+            window.path_to_searchindex_js = "../searchindex-dece1898.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-162ede15.js"></script>
@@ -177,18 +177,22 @@
                         <h1 id="installation"><a class="header" href="#installation">Installation</a></h1>
 <p>JoularJX is a Java agent, and therfore provided as a <code>.jar</code> file.
 Just use the compiled jar package for JoularJX.</p>
-<p>You can also run the installation script in the <code>install/</code> folder:</p>
+<p>JoularJX requires, at minimum, Java 11+.</p>
+<p>JoularJX gets CPU power reading from various sources, depending on the platform or operating system.
+In particuliar, it can get the data from two main approaches:</p>
 <ul>
-<li>On Windows, run in a command line: <code>windows-install.bat</code>. This will install JoularJX jar and ProgramMonitor to <code>C:\joularjx</code>.</li>
-<li>On GNU/Linux, run in a terminal: <code>sh linux-install.sh</code>. This will install JoularJX to <code>/opt/joularjx</code>.</li>
-<li>on macOS, we don’t provide a quick installation script, but you follow the compilation instructions.</li>
+<li>Get the power data from <a href="https://github.com/joular/joularcore">Joular Core</a>, either through its standard output or through a shared memory buffer ring (IPC). Joular Core works on all platforms and operating systems.</li>
+<li>Get the data through its internal calculation from RAPL (Linux, Windows), powermetrics (macOS) or our own regression models (Raspberry Pi).</li>
+<li>In addition, in virtual machines, JoularJX reads the power consumption of the virtual machine (measured in the host) from a file shared between the host and the guest.</li>
 </ul>
-<p>JoularJX requires a minimum version of Java 11+.</p>
-<p>On Windows, JoularJX uses a custom power monitor program that uses the <a href="https://github.com/hubblo-org/windows-rapl-driver">Windows RAPL driver by Hubblo</a>, and therefore require installing the driver first, and runs on Intel or AMD CPUs (since Ryzen).</p>
-<p>On x86_64 Linux, JoularJX uses Intel RAPL interface through powercap, and therefore requires running on an Intel CPU or an AMD Ryzen CPU.</p>
-<p>On supported ARM Linux, JoularJX uses our own research-based regression models to estimate CPU power consumption with support for the following, therefore not requiring any additional dependencies.</p>
-<p>On macOS, JoularJX uses <code>powermetrics</code>, a tool bundled with macOS which requires running with <code>sudo</code> access.
-It is recommended to authorize the current users to run <code>/usr/bin/powermetrics</code> without requiring a password by making the proper modification to the <code>sudoers</code> file.</p>
+<p>If using JoularJX internal calculation, you need:</p>
+<ul>
+<li>On Windows, to read the data from the RAPL driver, we use a custom program monitor called <a href="https://github.com/joular/WinPowerMonitor">Power Monitor for Windows</a>. It used to be part of JoularJX, but now it is in its own repository. Download the binary (or compile the source code), and specify its path in <code>config.properties</code>. Runs on Intel or AMD CPUs (since Ryzen). You can substitute that software with <a href="https://github.com/joular/joularcore">Joular Core</a>.
+Either way (WinPowerMonitor or Joular Core), you need to install the <a href="https://github.com/hubblo-org/windows-rapl-driver">Windows RAPL driver by Hubblo</a>. The easiest way to install the driver is to install the windows version of <a href="https://github.com/hubblo-org/scaphandre">Scaphandre</a> tool from <a href="https://github.com/hubblo-org/scaphandre/releases/download/v1.0.0/scaphandre_v1.0.0_installer.exe">this link directly</a> (release 1.0.0).</li>
+<li>On PC/server GNU/Linux, JoularJX uses Intel RAPL interface through powercap, and therefore requires running on an Intel CPU or an AMD CPU (since Ryzen).</li>
+<li>On macOS, JoularJX uses <code>powermetrics</code>, a tool bundled with macOS which requires running with <code>sudo</code> access. It is recommended to authorize the current users to run <code>/usr/bin/powermetrics</code> without requiring a password by making the proper modification to the <code>sudoers</code> file.</li>
+<li>On Raspberry Pi devices on GNU/Linux, JoularJX uses our own research-based regression models to estimate CPU power consumption with support for the following device models (we support all revisions of each model lineup.</li>
+</ul>
 
                     </main>
 

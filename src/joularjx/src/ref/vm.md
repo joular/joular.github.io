@@ -11,14 +11,14 @@ Inside the guest, JoularJX will read this file continuously and use the reported
 
 JoularJX is agnostic to what power tools in installed in the host and can work with any available tool that is capable of monitoring the VM process.
 
-## Use case example with JoularJX on guest and PowerJoular on host
+## Use case example with JoularJX on guest and Joular Core or PowerJoular on host
 
 A use case example is using JoularJX on the guest OS and PowerJoular on the host OS.
 
 ### In the host OS
 
-- Install [PowerJoular](https://github.com/joular/powerjoular)
-- Run PowerJoular while specifying the PID of the virtual machine of the guest OS, and writing the power data in a CSV file in overwrite mode.
+- Install [Joular Core](https://github.com/joular/joularcore) or [PowerJoular](https://github.com/joular/powerjoular)
+- Run Joular Core or PowerJoular while specifying the PID of the virtual machine of the guest OS, and writing the power data in a CSV file in overwrite mode.
 - For instance, you can run PowerJoular with the following command: ```powerjoular -p $VM_PID -o /home/vm/vm.csv```
 - Share the ```/home/vm/vm.csv``` between the host OS and the guest OS
 

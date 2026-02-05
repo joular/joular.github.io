@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-9d4e6d68.js";
+            window.path_to_searchindex_js = "searchindex-dece1898.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-162ede15.js"></script>
@@ -212,7 +212,7 @@
 </code></pre>
 <h2 id="license"><a class="header" href="#license">License</a></h2>
 <p>JoularJX is licensed under the GNU GPL 3 license only (GPL-3.0-only).</p>
-<p>Copyright (c) 2021-2025, Adel Noureddine, Université de Pau et des Pays de l’Adour.
+<p>Copyright (c) 2021-2026, Adel Noureddine, Université de Pau et des Pays de l’Adour.
 All rights reserved. This program and the accompanying materials are made available under the terms of the GNU General Public License v3.0 only (GPL-3.0-only) which accompanies this distribution, and is available at: https://www.gnu.org/licenses/gpl-3.0.en.html</p>
 <p>Author : <a href="https://www.noureddine.org/">Adel Noureddine</a></p>
 <div style="break-before: page; page-break-before: always;"></div>
@@ -260,18 +260,22 @@ However, the model is generated and trained on a specific revision (listed betwe
 <h1 id="installation"><a class="header" href="#installation">Installation</a></h1>
 <p>JoularJX is a Java agent, and therfore provided as a <code>.jar</code> file.
 Just use the compiled jar package for JoularJX.</p>
-<p>You can also run the installation script in the <code>install/</code> folder:</p>
+<p>JoularJX requires, at minimum, Java 11+.</p>
+<p>JoularJX gets CPU power reading from various sources, depending on the platform or operating system.
+In particuliar, it can get the data from two main approaches:</p>
 <ul>
-<li>On Windows, run in a command line: <code>windows-install.bat</code>. This will install JoularJX jar and ProgramMonitor to <code>C:\joularjx</code>.</li>
-<li>On GNU/Linux, run in a terminal: <code>sh linux-install.sh</code>. This will install JoularJX to <code>/opt/joularjx</code>.</li>
-<li>on macOS, we don’t provide a quick installation script, but you follow the compilation instructions.</li>
+<li>Get the power data from <a href="https://github.com/joular/joularcore">Joular Core</a>, either through its standard output or through a shared memory buffer ring (IPC). Joular Core works on all platforms and operating systems.</li>
+<li>Get the data through its internal calculation from RAPL (Linux, Windows), powermetrics (macOS) or our own regression models (Raspberry Pi).</li>
+<li>In addition, in virtual machines, JoularJX reads the power consumption of the virtual machine (measured in the host) from a file shared between the host and the guest.</li>
 </ul>
-<p>JoularJX requires a minimum version of Java 11+.</p>
-<p>On Windows, JoularJX uses a custom power monitor program that uses the <a href="https://github.com/hubblo-org/windows-rapl-driver">Windows RAPL driver by Hubblo</a>, and therefore require installing the driver first, and runs on Intel or AMD CPUs (since Ryzen).</p>
-<p>On x86_64 Linux, JoularJX uses Intel RAPL interface through powercap, and therefore requires running on an Intel CPU or an AMD Ryzen CPU.</p>
-<p>On supported ARM Linux, JoularJX uses our own research-based regression models to estimate CPU power consumption with support for the following, therefore not requiring any additional dependencies.</p>
-<p>On macOS, JoularJX uses <code>powermetrics</code>, a tool bundled with macOS which requires running with <code>sudo</code> access.
-It is recommended to authorize the current users to run <code>/usr/bin/powermetrics</code> without requiring a password by making the proper modification to the <code>sudoers</code> file.</p>
+<p>If using JoularJX internal calculation, you need:</p>
+<ul>
+<li>On Windows, to read the data from the RAPL driver, we use a custom program monitor called <a href="https://github.com/joular/WinPowerMonitor">Power Monitor for Windows</a>. It used to be part of JoularJX, but now it is in its own repository. Download the binary (or compile the source code), and specify its path in <code>config.properties</code>. Runs on Intel or AMD CPUs (since Ryzen). You can substitute that software with <a href="https://github.com/joular/joularcore">Joular Core</a>.
+Either way (WinPowerMonitor or Joular Core), you need to install the <a href="https://github.com/hubblo-org/windows-rapl-driver">Windows RAPL driver by Hubblo</a>. The easiest way to install the driver is to install the windows version of <a href="https://github.com/hubblo-org/scaphandre">Scaphandre</a> tool from <a href="https://github.com/hubblo-org/scaphandre/releases/download/v1.0.0/scaphandre_v1.0.0_installer.exe">this link directly</a> (release 1.0.0).</li>
+<li>On PC/server GNU/Linux, JoularJX uses Intel RAPL interface through powercap, and therefore requires running on an Intel CPU or an AMD CPU (since Ryzen).</li>
+<li>On macOS, JoularJX uses <code>powermetrics</code>, a tool bundled with macOS which requires running with <code>sudo</code> access. It is recommended to authorize the current users to run <code>/usr/bin/powermetrics</code> without requiring a password by making the proper modification to the <code>sudoers</code> file.</li>
+<li>On Raspberry Pi devices on GNU/Linux, JoularJX uses our own research-based regression models to estimate CPU power consumption with support for the following device models (we support all revisions of each model lineup.</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="quick-usage"><a class="header" href="#quick-usage">Quick Usage</a></h1>
 <p>JoularJX is a Java agent where you can simply hook it to the Java Virtual Machine when starting your Java program’s main class:</p>
@@ -284,15 +288,11 @@ It is recommended to authorize the current users to run <code>/usr/bin/powermetr
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="compilation"><a class="header" href="#compilation">Compilation</a></h1>
 <p>To build JoularJX, you need Java 11+ and Maven, then just build:</p>
-<pre><code>mvn clean install -DskipTests
+<pre><code>mvn clean install
 </code></pre>
 <p>Alternatively, you can use the Maven wrappen shipped with the project with the command:</p>
-<pre><code>Linux and macOS: ./mvnw clean install -DskipTests
-Windows: mvnw.cmd clean install -DskipTests
-</code></pre>
-<p>To compile the Windows power monitor tool, required by JoularJX on Windows, open the project in Visual Studio and compile there.
-Or open, Developer Command Prompt for VS (or Developer PowerShell for VS), and compile with this command:</p>
-<pre><code>msbuild.exe PowerMonitor.sln /property:Configuration=Release
+<pre><code>Linux and macOS: ./mvnw clean install
+Windows: mvnw.cmd clean install
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="configuration-properties"><a class="header" href="#configuration-properties">Configuration Properties</a></h1>
@@ -311,6 +311,12 @@ Or open, Developer Command Prompt for VS (or Developer PowerShell for VS), and c
 <li><code>application-server</code>: properly handles application servers and frameworks (Sprig Boot, Tomcat, etc.). Set <code>true</code> when running on application servers. If <code>false</code>, the monitoring loop will check if the JVM is destroyed, hence closing JoularJX when the application ends (in regular Java application). If <code>true</code>, JoularJX will continue to monitor correctly as the JVM isn’t destroyed in a application server.</li>
 <li><code>vm-power-path</code>: the path for the power consumption of the virtual machine. Inside a virtual machine, indicate the file containing power consumption of the VM (which is usually a file in the host that is shared with the guest).</li>
 <li><code>vm-power-format</code>: power format of the shared VM power file. We currently support two formats: <code>watts</code> (a file containing one float value which is the power consumption of the VM), and <code>powerjoular</code> (a csv file generated by <a href="https://github.com/joular/powerjoular">PowerJoular</a> in the host, containing 3 columns: timestamp, CPU utilization of the VM and CPU power of the VM).</li>
+<li><code>joular-core</code>: if set to <code>true</code>, use Joular Core instead of JoularJX internal CPU power calculations.</li>
+<li><code>joular-core-ring-buffer</code>: if <a href="https://github.com/joular/joularcore">Joular Core</a> is set to <code>true</code>, and this property is also set to <code>true</code>, then get power data from Joular Core through a shareed memory ring buffer.</li>
+<li><code>joular-core-path</code>: the full path of <a href="https://github.com/joular/joularcore">Joular Core</a> binary.</li>
+<li><code>joular-core-parameters</code>: the parameters to run Joular Core with. It must be <code>-c cpu -i</code>.</li>
+<li><code>joular-core-ringbuffer-path</code>: the path to Joular Core ring buffer.</li>
+<li></li>
 </ul>
 <p>You can install the jar package (and the PowerMonitor.exe on Windows) wherever you want, and call it in the <code>javaagent</code> with the full path.
 However, <code>config.properties</code> must be copied to the same folder as where you run the Java command.</p>
@@ -390,12 +396,12 @@ This can only be done by installing on the host OS, a power monitoring tool (suc
 <p>The power data of the VM process need to be written to a shared file between the host and the guest.
 Inside the guest, JoularJX will read this file continuously and use the reported power value as the power of the entire virtual machine.</p>
 <p>JoularJX is agnostic to what power tools in installed in the host and can work with any available tool that is capable of monitoring the VM process.</p>
-<h2 id="use-case-example-with-joularjx-on-guest-and-powerjoular-on-host"><a class="header" href="#use-case-example-with-joularjx-on-guest-and-powerjoular-on-host">Use case example with JoularJX on guest and PowerJoular on host</a></h2>
+<h2 id="use-case-example-with-joularjx-on-guest-and-joular-core-or-powerjoular-on-host"><a class="header" href="#use-case-example-with-joularjx-on-guest-and-joular-core-or-powerjoular-on-host">Use case example with JoularJX on guest and Joular Core or PowerJoular on host</a></h2>
 <p>A use case example is using JoularJX on the guest OS and PowerJoular on the host OS.</p>
 <h3 id="in-the-host-os"><a class="header" href="#in-the-host-os">In the host OS</a></h3>
 <ul>
-<li>Install <a href="https://github.com/joular/powerjoular">PowerJoular</a></li>
-<li>Run PowerJoular while specifying the PID of the virtual machine of the guest OS, and writing the power data in a CSV file in overwrite mode.</li>
+<li>Install <a href="https://github.com/joular/joularcore">Joular Core</a> or <a href="https://github.com/joular/powerjoular">PowerJoular</a></li>
+<li>Run Joular Core or PowerJoular while specifying the PID of the virtual machine of the guest OS, and writing the power data in a CSV file in overwrite mode.</li>
 <li>For instance, you can run PowerJoular with the following command: <code>powerjoular -p $VM_PID -o /home/vm/vm.csv</code></li>
 <li>Share the <code>/home/vm/vm.csv</code> between the host OS and the guest OS</li>
 </ul>
