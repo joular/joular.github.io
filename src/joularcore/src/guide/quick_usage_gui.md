@@ -1,14 +1,46 @@
-# Quick Usage of the graphical user interface (GUI) version
+# Quick Usage — Graphical User Interface
 
-Joular Core is shipped with an easy-to-use, yet powerful and complete, graphical user interface (GUI), which works seamlessly and in a coherent way across all platforms and operating systems.
+## Starting the GUI
 
-To run the GUI, either:
-- Start Joular Core with the `-g` or `--gui` argument.
-- Use the dedicated GUI binary directly (double click for instance): `joularcoregui` (on Linux or macOS) or `joularcoregui.exe` (on Windows).
+There are two ways to open the GUI:
 
-On RAPL-based Linux systems and on macOS, elevated access is needed to monitor CPU energy (hence the need to start it with `sudo`).
+- **Dedicated binary**: launch `joularcoregui` (Linux/macOS) or `joularcoregui.exe` (Windows) directly — double-click in a file manager or run from a terminal.
+- **CLI flag**: add `-g` or `--gui` to any `joularcore` command, for example:
+  ```bash
+  joularcore --gui
+  joularcore -g --api-port 8080
+  ```
 
-Most CLI features are available in the GUI, with easy-to-use buttons and configuration settings to monitor the entire computer, a specific process, or a specific multi-process application.
+On RAPL-based Linux systems, `sudo` is still required:
+```bash
+sudo joularcoregui
+sudo joularcore --gui
+```
 
-If the GUI is executed from a terminal, it also accepted the same CLI arguments as the CLI version.
-For instance, you can start the gui and an HTTP socket to export power data with: `joularcore -g --api-port 8080`
+On macOS, it'll ask for elevated access to read `powermetrics`.
+
+## Interface Overview
+
+The GUI has two screens: **Options** and **Monitor**. Switch between them using the buttons at the top of the window.
+
+### Options Screen
+
+Before starting a monitoring session, the Options screen lets you configure:
+
+- **Monitor mode**: choose between monitoring the whole system, a specific PID, or a named application
+- **Application / PID**: type a process name or PID number directly; a dropdown lists running processes or applications
+- **CSV export**: toggle CSV file output on or off, and choose the file path using the native file picker
+
+Once configured, click **Start Monitoring** to begin.
+
+### Monitor Screen
+
+The Monitor screen shows live power readings updated every second:
+
+- **Total power** (watts)
+- **CPU power** (watts)
+- **GPU power** (watts)
+- **CPU usage** (%)
+- **Process / application power** (watts, if a PID or app was selected)
+
+A rolling graph plots each of these values over the last 60 seconds. Click **Stop** to return to the Options screen.

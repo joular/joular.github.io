@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-e50d2a98.js";
+            window.path_to_searchindex_js = "../searchindex-100edc81.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-cced847a.js"></script>
@@ -175,28 +175,46 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="installation"><a class="header" href="#installation">Installation</a></h1>
-<p>Joular Core is written in Rust and can be easily compiled, and its binaries added to your system PATH.</p>
-<h2 id="installers-and-packages"><a class="header" href="#installers-and-packages">Installers and Packages</a></h2>
-<p>We provide installation packages for a number of CPU architectures and operating systems.</p>
-<p>For Windows:</p>
+<p>Joular Core is distributed as pre-built binaries and installers for the most common platforms. For anything else, you can compile it from source in a few minutes.</p>
+<h2 id="pre-built-packages-and-installers"><a class="header" href="#pre-built-packages-and-installers">Pre-built Packages and Installers</a></h2>
+<h3 id="windows"><a class="header" href="#windows">Windows</a></h3>
 <ul>
-<li>Installation MSI for 64 bits Windows.</li>
+<li>MSI installer for 64-bit Windows (x86_64)</li>
 </ul>
-<p>For macOS:</p>
+<h3 id="macos"><a class="header" href="#macos">macOS</a></h3>
 <ul>
-<li>Installation PKG for Apple Silicon macOS.</li>
+<li>PKG installer for Apple Silicon (aarch64)</li>
 </ul>
-<p>For Linux:</p>
+<h3 id="linux"><a class="header" href="#linux">Linux</a></h3>
 <ul>
-<li>DEB packages for Debian-bases systems (Debian, Ubuntu, Raspberry Pi OS, etc.), for x86_64 and ARM aarch64 architectures.</li>
-<li>RPM packages for Red Hat and Fedora-based systems (RHEL, Fedora, etc.), for x86_64 architecture.</li>
-<li>AUR installation script for Arch-based systems, for x86_64 architecture.</li>
+<li>DEB packages for Debian-based systems (Debian, Ubuntu, Raspberry Pi OS, etc.) — available for x86_64 and arm64 (aarch64)</li>
+<li>RPM packages for Red Hat / Fedora-based systems (RHEL, Fedora, etc.) — x86_64</li>
+<li>AUR package for Arch-based systems — x86_64</li>
 </ul>
-<p>For other architectures and distributions (32 bits Windows, Apple Intel macOS, other distros/architectures in Linux), you can just <a href="../ref/compilation.html">compile</a> Joular Core and you’re good to start energy monitoring.</p>
+<p>For other architectures or distributions (32-bit Windows, Intel macOS, other Linux setups), compile from source. See <a href="../ref/compilation.html">Compilation</a>.</p>
 <h2 id="binaries"><a class="header" href="#binaries">Binaries</a></h2>
-<p>Compiled version are available on our GitHub repository in the latest stable release.
-Just add the path of this binary to your user or system <code>PATH</code> environnemental variable and you’re good to go.
-You can also start the program directly with its full path, or double click to run.</p>
+<p>Compiled binaries for all supported targets are attached to each release on the GitHub repository. Download the binary for your platform, place it somewhere on your <code>PATH</code>, and you’re ready to go. You can also run it from any directory using its full path.</p>
+<p>There are two binaries per release:</p>
+<ul>
+<li><code>joularcore</code> / <code>joularcore.exe</code> — the command-line interface</li>
+<li><code>joularcoregui</code> / <code>joularcoregui.exe</code> — the graphical user interface (opens a window directly, no terminal needed)</li>
+</ul>
+<h2 id="platform-specific-requirements"><a class="header" href="#platform-specific-requirements">Platform-specific Requirements</a></h2>
+<h3 id="linux-pc--servers"><a class="header" href="#linux-pc--servers">Linux (PC / servers)</a></h3>
+<p>CPU power is read via the RAPL sysfs interface. On Linux kernel 5.10 and newer, RAPL files are only readable by root. You have two options:</p>
+<ul>
+<li>Run Joular Core with <code>sudo</code></li>
+<li>Grant read access to the RAPL files for your user (see <a href="https://github.com/joular/joularcore/issues/12">this GitHub issue</a> for instructions)</li>
+</ul>
+<p>GPU monitoring (Nvidia/AMD) requires <code>nvidia-smi</code> or <code>amd-smi</code> / <code>rocm-smi</code> to be installed separately if needed.</p>
+<h3 id="windows-1"><a class="header" href="#windows-1">Windows</a></h3>
+<p>CPU power monitoring requires a RAPL kernel driver. The supported driver is <a href="https://github.com/hubblo-org/windows-rapl-driver">Hubblo’s windows-rapl-driver</a>. The simplest way to install a signed version is via the <a href="https://github.com/hubblo-org/scaphandre/releases/download/v1.0.0/scaphandre_v1.0.0_installer.exe">Scaphandre installer</a>, which installs the driver as a side effect.</p>
+<p>Once the driver is installed, Joular Core itself runs without administrator rights.</p>
+<p>GPU monitoring (Nvidia/AMD) requires <code>nvidia-smi</code> or <code>amd-smi</code> to be installed separately if needed.</p>
+<h3 id="macos-1"><a class="header" href="#macos-1">macOS</a></h3>
+<p>No additional software is required. Power data is read via <code>powermetrics</code>, which ships with macOS. Because <code>powermetrics</code> requires elevated access to read hardware counters, Joular Core will ask for elevated access on start (it can also be run with <code>sudo</code>).</p>
+<h3 id="raspberry-pi-and-sbc"><a class="header" href="#raspberry-pi-and-sbc">Raspberry Pi and SBC</a></h3>
+<p>No dependencies and no <code>sudo</code> required. Just download the binary for your architecture (arm, armv7, or aarch64) and run it.</p>
 
                     </main>
 

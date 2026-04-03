@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-e50d2a98.js";
+            window.path_to_searchindex_js = "../searchindex-100edc81.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-cced847a.js"></script>
@@ -175,11 +175,63 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="integration-with-systems-and-tools"><a class="header" href="#integration-with-systems-and-tools">Integration with Systems and Tools</a></h1>
-<p>Joular Core exports its power data with multiple outputs and approaches: to the terminal, to CSV files, to an HTTP and WebSockets API, and to a ring buffer shared memory (IPC).
-Check <a href="./exports.html">this page</a> for details on these export approaches in Joular Core.</p>
-<p>Therefore, Joular Core can be used in IDEs, integration systems CI/CD, alongside other profilers or debugging tools, connect with dashboard for real-time power monitoring, send data to remote databases, or anywhere needed!</p>
-<p>All what is needed is to start Joular Core and configure the export you want to use, and that’s it.</p>
-<p>Joular Core can also be run as a CLI service, on all platforms.</p>
+<p>Joular Core is designed to be embedded in larger workflows. It exposes power data through multiple channels — terminal, CSV files, a shared-memory ring buffer, and an HTTP/WebSocket API — so it can feed into whatever downstream system you are working with.</p>
+<p>See <a href="./exports.html">Exporting Power Data</a> for the technical details of each channel. This page focuses on integration patterns.</p>
+<h2 id="cicd-pipelines"><a class="header" href="#cicd-pipelines">CI/CD Pipelines</a></h2>
+<p>Run Joular Core alongside your build or test suite to measure the energy cost of a workload.</p>
+<p><strong>Example: measure energy consumed by a test run</strong></p>
+<pre><code class="language-bash"># Start Joular Core silently, writing to CSV
+joularcore -s -f build_power.csv &amp;
+JOULAR_PID=$!
+
+# Run your workload
+cargo test
+
+# Stop monitoring
+kill $JOULAR_PID
+</code></pre>
+<p>The CSV file will contain one row per second of the test run. Sum the power column and multiply by the sample interval (1 second) to get total energy in joules.</p>
+<h2 id="dashboards-and-monitoring-stacks"><a class="header" href="#dashboards-and-monitoring-stacks">Dashboards and Monitoring Stacks</a></h2>
+<p>The HTTP/WebSocket API makes it straightforward to feed power data into any dashboard.</p>
+<p><strong>Example: stream to a Prometheus / Grafana stack via a scraper</strong></p>
+<pre><code class="language-bash">joularcore --api-port 9001 -s &amp;
+</code></pre>
+<p>A small scraper can poll <code>GET http://localhost:9001/data</code> on each Prometheus scrape interval and expose the fields as gauges.</p>
+<p><strong>Example: real-time browser dashboard</strong></p>
+<p>Connect a browser-based dashboard directly to the WebSocket endpoint:</p>
+<pre><code class="language-javascript">const ws = new WebSocket("ws://localhost:8080/ws");
+ws.onmessage = (event) =&gt; {
+  const data = JSON.parse(event.data);
+  updateChart(data.timestamp, data.total_power, data.cpu_power, data.gpu_power);
+};
+</code></pre>
+<h2 id="ide-and-profiler-integration"><a class="header" href="#ide-and-profiler-integration">IDE and Profiler Integration</a></h2>
+<p>Joular Core can run as a background service alongside an IDE or profiler. The ring buffer channel provides the lowest latency option for IPC:</p>
+<ol>
+<li>Start Joular Core with <code>joularcore -r -s</code></li>
+<li>In your IDE plugin or profiler, memory-map the ring buffer path (<code>/dev/shm/joularcorering</code> on Linux, <code>/tmp/joularcorering</code> on macOS, <code>Local\\JoularCoreRing</code> on Windows)</li>
+<li>Read the 5 <code>f64</code> values: CPU power, GPU power, total power, CPU usage, PID/app power</li>
+</ol>
+<p>The ring buffer is updated every second and is safe to read from multiple processes simultaneously.</p>
+<h2 id="remote-power-databases-and-time-series-storage"><a class="header" href="#remote-power-databases-and-time-series-storage">Remote Power Databases and Time-Series Storage</a></h2>
+<p>Joular Core does not push to remote databases directly, but the CSV and API outputs make it easy to bridge to any time-series store.</p>
+<p><strong>Example: push to InfluxDB with a small shell loop</strong></p>
+<pre><code class="language-bash">joularcore -s --api-port 8080 &amp;
+
+while true; do
+  DATA=$(curl -s http://localhost:8080/data)
+  TS=$(echo $DATA | jq '.timestamp')
+  TOTAL=$(echo $DATA | jq '.total_power')
+  curl -s -XPOST "http://influxdb:8086/write?db=energy" \
+    --data-binary "power,host=$(hostname) total=${TOTAL} ${TS}000000000"
+  sleep 1
+done
+</code></pre>
+<h2 id="running-as-a-service"><a class="header" href="#running-as-a-service">Running as a Service</a></h2>
+<p>On Linux, use the included systemd unit file to have Joular Core run continuously in the background without manual intervention. See <a href="./systemd.html">Systemd Service</a>.</p>
+<p>On Windows and macOS, you can register Joular Core as a service using the OS-native service managers (Windows Service Manager or <code>launchd</code> on macOS). The key is to use <code>-s -o -f &lt;path&gt;</code> or <code>--api-port</code> so data is accessible to other programs without a terminal attached.</p>
+<h2 id="virtual-machine-monitoring"><a class="header" href="#virtual-machine-monitoring">Virtual Machine Monitoring</a></h2>
+<p>For monitoring inside VMs, see the dedicated <a href="./vm.html">Virtual Machines</a> page, which covers how to bridge host-level power readings into the guest using the shared-file mechanism.</p>
 
                     </main>
 

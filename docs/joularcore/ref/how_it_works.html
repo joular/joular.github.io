@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-e50d2a98.js";
+            window.path_to_searchindex_js = "../searchindex-100edc81.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-cced847a.js"></script>
@@ -175,7 +175,212 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="how-joular-core-works"><a class="header" href="#how-joular-core-works">How Joular Core Works</a></h1>
-<p>Under construction.</p>
+<p>This page describes the internal architecture of Joular Core: how it reads hardware power data, how it attributes that power to processes and applications, how it produces output, and how the different subsystems fit together.</p>
+<h2 id="high-level-architecture"><a class="header" href="#high-level-architecture">High-Level Architecture</a></h2>
+<p>At startup, Joular Core:</p>
+<ol>
+<li>Parses command-line arguments</li>
+<li>Detects the platform and initialises the appropriate power readers and CPU utilisation trackers</li>
+<li>Optionally calibrates an idle CPU baseline</li>
+<li>Enters a monitoring loop that fires once per second</li>
+<li>On each iteration: reads power, reads CPU utilisation, attributes process/app power, and sends the result to all configured output channels</li>
+<li>On Ctrl+C: flushes outputs and exits cleanly</li>
+</ol>
+<pre><code>┌──────────────────────────────────────────────────────────┐
+│                   Argument Parsing                       │
+└──────────────────────────┬───────────────────────────────┘
+                           │
+┌──────────────────────────▼───────────────────────────────┐
+│                  Platform Setup                          │
+│  Detect OS → create CPU/GPU energy readers               │
+│             → create CPU utilisation trackers            │
+│             → set up ring buffer (if -r)                 │
+│             → set up API server (if --api-port)          │
+└──────┬──────────────────────┬──────────────────┬─────────┘
+       │                      │                  │
+       ▼                      ▼                  ▼
+  Monitor Loop          Ring Buffer          API Server
+  (1 Hz)                Writer               (async)
+       │
+       ├── CPU energy reader
+       ├── GPU energy reader
+       ├── CPU utilisation reader
+       ├── Process tracker (optional)
+       └── App tracker (optional)
+            │
+            ▼
+       MonitorSample
+            │
+            ├── Terminal output
+            ├── CSV file output
+            ├── Ring buffer write
+            └── API broadcast
+</code></pre>
+<h2 id="platform-abstraction"><a class="header" href="#platform-abstraction">Platform Abstraction</a></h2>
+<p>The codebase is built around three traits defined in <code>src/energy.rs</code>:</p>
+<ul>
+<li><strong><code>CPUEnergy</code></strong> — returns the current CPU power in watts via <code>get_power()</code></li>
+<li><strong><code>GPUEnergy</code></strong> — returns the current GPU power in watts via <code>get_power()</code></li>
+<li><strong><code>PlatformEnergy</code></strong> — a factory that creates the above readers and the CPU utilisation trackers, and provides the process/app power attribution formula</li>
+</ul>
+<p>Each supported OS has a concrete implementation of these traits. The monitoring loop talks only to these trait objects, so it is identical on every platform.</p>
+<h3 id="linux"><a class="header" href="#linux">Linux</a></h3>
+<p>CPU power is read from the Intel RAPL (Running Average Power Limit) sysfs interface at <code>/sys/class/powercap/intel-rapl/</code>. RAPL is supported on Intel processors since Sandy Bridge (2011) and on AMD processors since Ryzen. The interface exposes cumulative energy counters in microjoules; Joular Core reads two consecutive values a fixed time apart and converts the delta to watts.</p>
+<p>CPU utilisation is computed from <code>/proc/stat</code>. Joular Core reads the <code>user</code>, <code>nice</code>, <code>system</code>, <code>idle</code>, <code>iowait</code>, <code>irq</code>, <code>softirq</code>, and <code>steal</code> tick counters on each sample, computes the delta from the previous sample, and calculates utilisation as:</p>
+<pre><code>utilisation = 1 − (Δidle / Δtotal)
+</code></pre>
+<p>Per-process utilisation is computed from <code>/proc/&lt;pid&gt;/stat</code>, which exposes cumulative user and kernel CPU time (in clock ticks) for each process. Joular Core computes the delta from the previous sample normalised by the total CPU time delta from <code>/proc/stat</code>.</p>
+<p>GPU power on Linux is read by:</p>
+<ul>
+<li><strong>Nvidia</strong>: calling <code>nvidia-smi --query-gpu=power.draw --format=csv,noheader,nounits</code> and parsing the output. Power values from all GPUs are summed.</li>
+<li><strong>AMD</strong>: calling <code>amd-smi</code> or <code>rocm-smi</code> with JSON output and extracting the power fields.</li>
+</ul>
+<h3 id="windows"><a class="header" href="#windows">Windows</a></h3>
+<p>CPU power is read from Hubblo’s RAPL Windows kernel driver via <code>DeviceIoControl</code>. The driver exposes RAPL data through a Windows device interface, returning power in watts directly.</p>
+<p>CPU utilisation is read from the Win32 API via <code>GetSystemTimes()</code>, which returns <code>idle</code>, <code>kernel</code>, and <code>user</code> times as <code>FILETIME</code> structures. Utilisation is computed from the deltas between two successive calls.</p>
+<p>Per-process CPU time is read via <code>GetProcessTimes()</code>. Application monitoring enumerates processes using the Windows Toolhelp32 API (<code>CreateToolhelp32Snapshot</code>, <code>Process32First</code>, <code>Process32Next</code>).</p>
+<p>GPU power on Windows follows the same approach as Linux: <code>nvidia-smi</code> for Nvidia, <code>amd-smi</code> for AMD.</p>
+<h3 id="macos"><a class="header" href="#macos">macOS</a></h3>
+<p>CPU, GPU, and overall system power are all read from Apple’s <code>powermetrics</code> tool, which ships with macOS. Joular Core spawns <code>powermetrics</code> as a subprocess with JSON output format and parses the result. On Apple Silicon, <code>powermetrics</code> reports CPU and GPU power separately; on Intel Macs it reports CPU power only.</p>
+<p>Because <code>powermetrics</code> requires elevated privileges to access hardware counters, Joular Core must be run with elevated access on macOS.</p>
+<p>CPU utilisation on macOS is read via the Mach kernel API (<code>host_statistics64</code> with <code>HOST_CPU_LOAD_INFO</code>), which returns per-CPU user, system, and idle tick counters.</p>
+<p>Process and application monitoring on macOS uses Mach task info APIs to read per-process CPU times.</p>
+<h3 id="single-board-computers-sbc"><a class="header" href="#single-board-computers-sbc">Single-Board Computers (SBC)</a></h3>
+<p>SBC platforms (Raspberry Pi, Asus Tinker Board) do not have a hardware power interface accessible to software. Instead, Joular Core calculates CPU power from CPU utilisation using polynomial regression models:</p>
+<pre><code>power = c₀ + c₁·u + c₂·u² + … + cₙ·uⁿ
+</code></pre>
+<p>where <code>u</code> is the current CPU utilisation (0–100) and <code>c₀…cₙ</code> are model coefficients measured empirically for each specific board model and revision.</p>
+<p>The built-in models cover all supported Raspberry Pi models. A custom model can be supplied via the <code>SBC_POWER_MODEL_JSON</code> environment variable; the file format must match the <a href="https://github.com/joular/powermodels">Joular Power Models Database</a> schema.</p>
+<p>GPU power is always 0 on SBC platforms.</p>
+<h3 id="virtual-machines"><a class="header" href="#virtual-machines">Virtual Machines</a></h3>
+<p>In a VM, there is no direct hardware interface. Joular Core reads power from a shared file written by the host. The file is read on every sampling cycle. If the file is absent or empty, the power value for that sample is 0. The supported file formats are described in <a href="./vm.html">Virtual Machines</a>.</p>
+<h2 id="the-monitoring-loop"><a class="header" href="#the-monitoring-loop">The Monitoring Loop</a></h2>
+<p>The monitoring loop is in <code>src/monitor.rs</code> (<code>JoularCoreMonitor::poll</code>). It runs once per second and produces a <code>MonitorSample</code>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct MonitorSample {
+    pub timestamp: u64,       // Unix epoch seconds
+    pub cpu_power: f64,       // Watts
+    pub gpu_power: f64,       // Watts
+    pub total_power: f64,     // cpu_power + gpu_power
+    pub cpu_usage: f64,       // Percentage (0–100)
+    pub process_power: Option&lt;f64&gt;,       // Watts, if -p is set
+    pub app_power: Option&lt;(f64, usize)&gt;,  // (Watts, PID count), if -a is set
+}
+<span class="boring">}</span></code></pre>
+<p>Each field:</p>
+<ul>
+<li><strong><code>timestamp</code></strong>: wall-clock time at the moment of reading (<code>SystemTime::now()</code>)</li>
+<li><strong><code>cpu_power</code></strong> / <strong><code>gpu_power</code></strong>: raw readings from the hardware interface</li>
+<li><strong><code>total_power</code></strong>: sum of CPU and GPU power</li>
+<li><strong><code>cpu_usage</code></strong>: system-wide CPU utilisation percentage</li>
+<li><strong><code>process_power</code></strong> / <strong><code>app_power</code></strong>: attributed power, computed as described below</li>
+</ul>
+<p>Before the main loop starts, <code>loop_init()</code> takes one throwaway reading to warm up the energy counters. RAPL counts cumulative energy since boot; the first real delta needs a prior reference value.</p>
+<h2 id="process-and-application-power-attribution"><a class="header" href="#process-and-application-power-attribution">Process and Application Power Attribution</a></h2>
+<p>Joular Core attributes CPU power to a process (or application) using a proportional model:</p>
+<pre><code>process_power = 100 × (process_cpu_utilisation × attributed_cpu_power) / system_cpu_utilisation
+</code></pre>
+<p>where:</p>
+<ul>
+<li><strong><code>process_cpu_utilisation</code></strong> is the fraction of total CPU time used by the process (or the sum of all PIDs for an application) in the last second</li>
+<li><strong><code>attributed_cpu_power</code></strong> is <code>max(0, cpu_power − idle_baseline)</code> — the raw CPU power minus the idle baseline (zero if no baseline is configured)</li>
+<li><strong><code>system_cpu_utilisation</code></strong> is the overall CPU utilisation percentage</li>
+</ul>
+<p>If <code>system_cpu_utilisation</code> is zero (the CPU is completely idle), the attributed power is zero to avoid a division by zero.</p>
+<p>This model assumes that a process’s share of CPU power is proportional to its share of CPU time. This is an approximation — it does not account for frequency scaling within a core, NUMA topology, or work done in kernel threads on behalf of the process — but it is a practical and widely used approach for software-level power attribution.</p>
+<h3 id="cpu-idle-baseline"><a class="header" href="#cpu-idle-baseline">CPU Idle Baseline</a></h3>
+<p>When the <code>--cpu-idle-baseline</code> or <code>--calibrate-cpu-idle-baseline</code> option is set, the baseline is subtracted from the raw CPU power before attribution:</p>
+<pre><code>attributed_cpu_power = max(0, cpu_power − baseline)
+</code></pre>
+<p>This removes the base power the CPU consumes just running the operating system at rest, so that the attributed power more accurately reflects the energy consumed by the workload itself.</p>
+<p>Auto-calibration (<code>--calibrate-cpu-idle-baseline</code>) collects 5 power samples at 1-second intervals before starting the main loop and uses their average as the baseline.</p>
+<h3 id="application-monitoring-and-pid-refresh"><a class="header" href="#application-monitoring-and-pid-refresh">Application Monitoring and PID Refresh</a></h3>
+<p>When monitoring a named application (<code>-a</code>), Joular Core maintains a list of all PIDs whose process name matches the supplied string. This list is refreshed periodically (every <code>--app-refresh-interval</code> seconds, default 3) to pick up new processes spawned after monitoring started and drop ones that have exited. Setting the interval to 0 rescans on every second.</p>
+<h2 id="output-pipeline"><a class="header" href="#output-pipeline">Output Pipeline</a></h2>
+<p>After each <code>poll()</code> call, the <code>MonitorSample</code> is sent to an <code>OutputBundle</code>, which dispatches it to all active output channels:</p>
+<ol>
+<li>
+<p><strong>Terminal</strong> (<code>OutputWriter</code> in <code>Terminal</code> mode): formats the reading with ANSI colour codes and writes it to stdout, overwriting the previous line using carriage return and ANSI erase-line sequences. In numeric mode (<code>-i</code>), a bare float is printed instead.</p>
+</li>
+<li>
+<p><strong>CSV file</strong> (<code>OutputWriter</code> in <code>CsvFile</code> mode): appends one row to the CSV file. In overwrite mode (<code>-o</code>), the file is truncated to zero before each write so only the latest row is kept.</p>
+</li>
+<li>
+<p><strong>Ring buffer</strong> (<code>RingBufferWriter</code>): writes 5 <code>f64</code> values to a shared-memory region. On Linux and macOS this is a memory-mapped file (<code>memmap2</code>); on Windows it uses Win32 file mapping (<code>CreateFileMapping</code> / <code>MapViewOfFile</code>).</p>
+</li>
+<li>
+<p><strong>API</strong> (when the <code>api</code> feature is enabled): broadcasts an <code>ApiData</code> struct to all connected HTTP and WebSocket clients via a Tokio broadcast channel. The HTTP handler (<code>GET /data</code>) reads the latest broadcast value; the WebSocket handler (<code>/ws</code>) streams each new broadcast as a JSON message.</p>
+</li>
+</ol>
+<h2 id="api-server"><a class="header" href="#api-server">API Server</a></h2>
+<p>The API server (<code>src/api.rs</code>) is built with the Axum web framework running on a Tokio async runtime. It runs in a separate async task alongside the synchronous monitoring loop. Communication between the two is done via a <code>tokio::sync::broadcast::Sender&lt;ApiData&gt;</code>.</p>
+<ul>
+<li><strong><code>GET /data</code></strong>: the handler subscribes to the broadcast channel and immediately returns the last received value as JSON.</li>
+<li><strong><code>/ws</code></strong>: the WebSocket handler subscribes to the broadcast channel and pushes each new value as a JSON message to the connected client.</li>
+<li>CORS is enabled via <code>tower-http</code>’s <code>CorsLayer</code>, so the API can be consumed directly from browser-based dashboards.</li>
+</ul>
+<h2 id="graceful-shutdown"><a class="header" href="#graceful-shutdown">Graceful Shutdown</a></h2>
+<p>Joular Core installs a Ctrl+C handler via the <code>ctrlc</code> crate. When the signal is received:</p>
+<ol>
+<li>A shared <code>Arc&lt;AtomicBool&gt;</code> flag is set to <code>false</code>, causing the monitoring loop to exit after the current iteration.</li>
+<li>The ANSI cursor (hidden at startup) is restored.</li>
+<li>All buffered output is flushed and file handles are dropped cleanly.</li>
+</ol>
+<h2 id="code-layout"><a class="header" href="#code-layout">Code Layout</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Path</th><th>Purpose</th></tr>
+</thead>
+<tbody>
+<tr><td><code>src/main.rs</code></td><td>CLI entry point: argument parsing, monitoring loop, output setup</td></tr>
+<tr><td><code>src/maingui.rs</code></td><td>GUI binary entry point</td></tr>
+<tr><td><code>src/lib.rs</code></td><td>Library root: re-exports all public modules</td></tr>
+<tr><td><code>src/args.rs</code></td><td>Clap-derived argument struct</td></tr>
+<tr><td><code>src/common.rs</code></td><td><code>JoularContext</code>: platform detection and component initialisation</td></tr>
+<tr><td><code>src/monitor.rs</code></td><td><code>JoularCoreMonitor</code>: the sampling loop and <code>MonitorSample</code></td></tr>
+<tr><td><code>src/energy.rs</code></td><td><code>CPUEnergy</code>, <code>GPUEnergy</code>, <code>PlatformEnergy</code> traits</td></tr>
+<tr><td><code>src/cpu.rs</code></td><td><code>CPUUtilization</code>, <code>ProcessCPUUtilization</code>, <code>AppCPUUtilization</code> traits and Linux implementations</td></tr>
+<tr><td><code>src/output.rs</code></td><td><code>OutputWriter</code>, <code>OutputBundle</code>, <code>OutputSink</code> traits</td></tr>
+<tr><td><code>src/ringbuffer.rs</code></td><td><code>RingBufferWriter</code>: shared-memory ring buffer for Linux/macOS/Windows</td></tr>
+<tr><td><code>src/api.rs</code></td><td>Axum-based HTTP and WebSocket API server</td></tr>
+<tr><td><code>src/logging.rs</code></td><td><code>tracing</code>-based structured logging helpers</td></tr>
+<tr><td><code>src/platform/linux.rs</code></td><td>Linux-specific power readers and process trackers</td></tr>
+<tr><td><code>src/platform/windows.rs</code></td><td>Windows-specific power readers and process trackers</td></tr>
+<tr><td><code>src/platform/macos.rs</code></td><td>macOS-specific <code>powermetrics</code> integration and process trackers</td></tr>
+<tr><td><code>src/platform/sbc.rs</code></td><td>SBC regression model power calculation</td></tr>
+<tr><td><code>src/platform/nvidia.rs</code></td><td>Nvidia GPU power via <code>nvidia-smi</code></td></tr>
+<tr><td><code>src/platform/amdgpu.rs</code></td><td>AMD GPU power via <code>amd-smi</code> / <code>rocm-smi</code></td></tr>
+<tr><td><code>src/vm.rs</code></td><td>Virtual machine shared-file power reader</td></tr>
+<tr><td><code>src/gui/</code></td><td>egui-based GUI: model, views, history, theme</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="key-dependencies"><a class="header" href="#key-dependencies">Key Dependencies</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Crate</th><th>Version</th><th>Purpose</th></tr>
+</thead>
+<tbody>
+<tr><td><code>clap</code></td><td>4.x</td><td>Command-line argument parsing</td></tr>
+<tr><td><code>egui</code> / <code>eframe</code></td><td>0.34</td><td>Cross-platform GUI framework</td></tr>
+<tr><td><code>axum</code></td><td>0.8</td><td>HTTP and WebSocket API server</td></tr>
+<tr><td><code>tokio</code></td><td>1.x</td><td>Async runtime for the API server</td></tr>
+<tr><td><code>tower-http</code></td><td>0.6</td><td>CORS middleware</td></tr>
+<tr><td><code>serde</code> / <code>serde_json</code></td><td>1.x</td><td>JSON serialisation for the API</td></tr>
+<tr><td><code>sysinfo</code></td><td>0.38</td><td>System and process information (used for process enumeration)</td></tr>
+<tr><td><code>memmap2</code></td><td>0.9</td><td>Memory-mapped I/O for the Unix ring buffer</td></tr>
+<tr><td><code>windows</code></td><td>0.62</td><td>Win32 API bindings</td></tr>
+<tr><td><code>mach2</code></td><td>0.6</td><td>Mach kernel API bindings (macOS)</td></tr>
+<tr><td><code>libc</code></td><td>0.2</td><td>C library bindings (macOS)</td></tr>
+<tr><td><code>ctrlc</code></td><td>3.x</td><td>Cross-platform Ctrl+C handler</td></tr>
+<tr><td><code>tracing</code></td><td>0.1</td><td>Structured logging</td></tr>
+<tr><td><code>rfd</code></td><td>0.17</td><td>Native file dialog (GUI file picker)</td></tr>
+</tbody>
+</table>
+</div>
 
                     </main>
 

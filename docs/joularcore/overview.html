@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-e50d2a98.js";
+            window.path_to_searchindex_js = "searchindex-100edc81.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-cced847a.js"></script>
@@ -175,28 +175,34 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="overview"><a class="header" href="#overview">Overview</a></h1>
-<p><a href="https://www.gnu.org/licenses/gpl-3.0"><img src="https://img.shields.io/badge/License-GPLv3-blue" alt="License: GPL v3"></a> <img src="https://img.shields.io/badge/Made%20with-Rust-2b2b2b?logo=rust&amp;logoColor=white" alt="Made with Rust">
-<img src="joularcore.png" alt="Joular Core Logo"></p>
-<p>Joular Core is a platform to measure power and energy across all systems and devices.</p>
-<p>Joular Core is part of the <a href="https://www.noureddine.org/research/joular/"><img src="https://raw.githubusercontent.com/joular/.github/main/profile/joular.png" alt="Joular Project" width="64" /></a> project.</p>
-<p>Joular Core aims to monitor hardware and software power and energy consumption on all platforms, operating systems and CPU &amp; GPU architectures, <em>i.e.</em>, everywhere.</p>
-<p>The official website of Joular Core is: <a href="https://www.noureddine.org/research/joular/joularcore">https://www.noureddine.org/research/joular/joularcore</a>.</p>
-<h2 id="-key-features"><a class="header" href="#-key-features">🔧 Key Features</a></h2>
+<p><a href="https://www.gnu.org/licenses/gpl-3.0"><img src="https://img.shields.io/badge/License-GPLv3-blue" alt="License: GPL v3"></a> <img src="https://img.shields.io/badge/Made%20with-Rust-2b2b2b?logo=rust&amp;logoColor=white" alt="Made with Rust"></p>
+<p><img src="joularcore.png" alt="Joular Core Logo"></p>
+<p>Joular Core is a cross-platform power and energy monitoring tool that runs on Linux, Windows, macOS, Raspberry Pi, and inside virtual machines. It measures CPU and GPU power consumption in real time, and can break that down to individual processes or named applications.</p>
+<p>Joular Core is part of the <a href="https://www.noureddine.org/research/joular/">Joular project</a>.</p>
+<p>The official website is: <a href="https://www.noureddine.org/research/joular/joularcore">https://www.noureddine.org/research/joular/joularcore</a>.</p>
+<p>It is written in Rust and compiles to a native binary with minimal overhead. It ships with both a command-line interface and a graphical user interface, and can export data to CSV files, a shared-memory ring buffer, and an HTTP/WebSocket API.</p>
+<blockquote>
+<p>Joular Core is under active development and currently in beta quality. Expect rough edges and features still being worked on and polished.</p>
+</blockquote>
+<h2 id="key-features"><a class="header" href="#key-features">Key Features</a></h2>
 <ul>
-<li>📊 Monitor CPU &amp; GPU power consumption on PCs, servers, and SBCs</li>
-<li>🌐 Work seamlessly inside virtual machines</li>
-<li>🔍 Track individual processes and multi-process applications on all platforms</li>
-<li>📈 Export power measurements to the terminal or CSV files (multiple modes available)</li>
-<li>⚙️ Inspect hardware-specific power data (CPU-only, GPU-only, or combined)</li>
-<li>⌨️ Intuitive command-line interface (CLI)</li>
-<li>🎨 Multi-platform graphical user interface (GUI)</li>
-<li>⚡ Low overhead, written in Rust and compiled to native code</li>
+<li>Real-time CPU and GPU power monitoring on PCs, servers, and single-board computers</li>
+<li>Per-process power monitoring: track the energy consumption of a specific PID</li>
+<li>Per-application power monitoring: track a named application across all its processes</li>
+<li>Monitor power from inside virtual machines using data from the hypervisor or an external meter</li>
+<li>Export power data to CSV files (append or overwrite mode)</li>
+<li>Write power data to a shared-memory ring buffer for low-latency IPC with other programs</li>
+<li>Expose power data over HTTP (<code>GET /data</code>) and WebSocket (<code>/ws</code>) endpoints</li>
+<li>Filter output to only show CPU power, GPU power, or both</li>
+<li>CPU idle baseline calibration: automatically or manually subtract idle CPU power before attributing it to a process or application</li>
+<li>Command-line interface (CLI) with colored, human-readable output or a numeric-only mode</li>
+<li>Graphical user interface (GUI) built with egui, with live power graphs and a 60-second rolling history</li>
+<li>Linux systemd service for running as a background daemon</li>
 </ul>
 <h2 id="license"><a class="header" href="#license">License</a></h2>
 <p>Joular Core is licensed under the GNU GPL 3 license only (GPL-3.0-only).</p>
-<p>Copyright (c) 2025-2026, Adel Noureddine.
-All rights reserved. This program and the accompanying materials are made available under the terms of the GNU General Public License v3.0 only (GPL-3.0-only) which accompanies this distribution, and is available at: https://www.gnu.org/licenses/gpl-3.0.en.html</p>
-<p>Author : <a href="https://www.noureddine.org/">Adel Noureddine</a></p>
+<p>Copyright © 2025–2026, Adel Noureddine.<br>All rights reserved. This program and the accompanying materials are made available under the terms of the <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License v3.0 only (GPL-3.0-only)</a>.</p>
+<p>Author: <a href="https://www.noureddine.org/">Adel Noureddine</a></p>
 
                     </main>
 

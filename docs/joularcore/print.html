@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-e50d2a98.js";
+            window.path_to_searchindex_js = "searchindex-100edc81.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-cced847a.js"></script>
@@ -176,333 +176,999 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="overview"><a class="header" href="#overview">Overview</a></h1>
-<p><a href="https://www.gnu.org/licenses/gpl-3.0"><img src="https://img.shields.io/badge/License-GPLv3-blue" alt="License: GPL v3"></a> <img src="https://img.shields.io/badge/Made%20with-Rust-2b2b2b?logo=rust&amp;logoColor=white" alt="Made with Rust">
-<img src="joularcore.png" alt="Joular Core Logo"></p>
-<p>Joular Core is a platform to measure power and energy across all systems and devices.</p>
-<p>Joular Core is part of the <a href="https://www.noureddine.org/research/joular/"><img src="https://raw.githubusercontent.com/joular/.github/main/profile/joular.png" alt="Joular Project" width="64" /></a> project.</p>
-<p>Joular Core aims to monitor hardware and software power and energy consumption on all platforms, operating systems and CPU &amp; GPU architectures, <em>i.e.</em>, everywhere.</p>
-<p>The official website of Joular Core is: <a href="https://www.noureddine.org/research/joular/joularcore">https://www.noureddine.org/research/joular/joularcore</a>.</p>
-<h2 id="-key-features"><a class="header" href="#-key-features">🔧 Key Features</a></h2>
+<p><a href="https://www.gnu.org/licenses/gpl-3.0"><img src="https://img.shields.io/badge/License-GPLv3-blue" alt="License: GPL v3"></a> <img src="https://img.shields.io/badge/Made%20with-Rust-2b2b2b?logo=rust&amp;logoColor=white" alt="Made with Rust"></p>
+<p><img src="joularcore.png" alt="Joular Core Logo"></p>
+<p>Joular Core is a cross-platform power and energy monitoring tool that runs on Linux, Windows, macOS, Raspberry Pi, and inside virtual machines. It measures CPU and GPU power consumption in real time, and can break that down to individual processes or named applications.</p>
+<p>Joular Core is part of the <a href="https://www.noureddine.org/research/joular/">Joular project</a>.</p>
+<p>The official website is: <a href="https://www.noureddine.org/research/joular/joularcore">https://www.noureddine.org/research/joular/joularcore</a>.</p>
+<p>It is written in Rust and compiles to a native binary with minimal overhead. It ships with both a command-line interface and a graphical user interface, and can export data to CSV files, a shared-memory ring buffer, and an HTTP/WebSocket API.</p>
+<blockquote>
+<p>Joular Core is under active development and currently in beta quality. Expect rough edges and features still being worked on and polished.</p>
+</blockquote>
+<h2 id="key-features"><a class="header" href="#key-features">Key Features</a></h2>
 <ul>
-<li>📊 Monitor CPU &amp; GPU power consumption on PCs, servers, and SBCs</li>
-<li>🌐 Work seamlessly inside virtual machines</li>
-<li>🔍 Track individual processes and multi-process applications on all platforms</li>
-<li>📈 Export power measurements to the terminal or CSV files (multiple modes available)</li>
-<li>⚙️ Inspect hardware-specific power data (CPU-only, GPU-only, or combined)</li>
-<li>⌨️ Intuitive command-line interface (CLI)</li>
-<li>🎨 Multi-platform graphical user interface (GUI)</li>
-<li>⚡ Low overhead, written in Rust and compiled to native code</li>
+<li>Real-time CPU and GPU power monitoring on PCs, servers, and single-board computers</li>
+<li>Per-process power monitoring: track the energy consumption of a specific PID</li>
+<li>Per-application power monitoring: track a named application across all its processes</li>
+<li>Monitor power from inside virtual machines using data from the hypervisor or an external meter</li>
+<li>Export power data to CSV files (append or overwrite mode)</li>
+<li>Write power data to a shared-memory ring buffer for low-latency IPC with other programs</li>
+<li>Expose power data over HTTP (<code>GET /data</code>) and WebSocket (<code>/ws</code>) endpoints</li>
+<li>Filter output to only show CPU power, GPU power, or both</li>
+<li>CPU idle baseline calibration: automatically or manually subtract idle CPU power before attributing it to a process or application</li>
+<li>Command-line interface (CLI) with colored, human-readable output or a numeric-only mode</li>
+<li>Graphical user interface (GUI) built with egui, with live power graphs and a 60-second rolling history</li>
+<li>Linux systemd service for running as a background daemon</li>
 </ul>
 <h2 id="license"><a class="header" href="#license">License</a></h2>
 <p>Joular Core is licensed under the GNU GPL 3 license only (GPL-3.0-only).</p>
-<p>Copyright (c) 2025-2026, Adel Noureddine.
-All rights reserved. This program and the accompanying materials are made available under the terms of the GNU General Public License v3.0 only (GPL-3.0-only) which accompanies this distribution, and is available at: https://www.gnu.org/licenses/gpl-3.0.en.html</p>
-<p>Author : <a href="https://www.noureddine.org/">Adel Noureddine</a></p>
+<p>Copyright © 2025–2026, Adel Noureddine.<br>All rights reserved. This program and the accompanying materials are made available under the terms of the <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License v3.0 only (GPL-3.0-only)</a>.</p>
+<p>Author: <a href="https://www.noureddine.org/">Adel Noureddine</a></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="supported-platforms"><a class="header" href="#supported-platforms">Supported Platforms</a></h1>
-<p>Joular Core supports a wide variety of platforms, operating systems and CPU architectures.
-It is as universal as it can get, and most environements are supported.</p>
-<ul>
-<li>💻 <strong>Supported Systems</strong>: 🐧 Linux, 🪟 Windows, 🍎 MacOS, 🍓 Raspberry Pi, 💽 Virtual Machines.</li>
-<li>⚙️ <strong>Supported Architectures</strong>: x86_64 (amd64), x86/i686, aarch64, arm, armv7, GPUs (Nvidia, Apple, AMD).</li>
-</ul>
-<p>In particular:</p>
-<ul>
-<li>PC/Servers using a RAPL supported Intel processor (since Sandy Bridge) or a RAPL supported AMD processor (since Ryzen), on Windows and Linux.</li>
-<li>macOS computers on Intel mac or Apple ARM chip.</li>
-<li>Virtual machines (any supported guest on any host).</li>
-<li>For GPU: Nvidia, AMD and Apple</li>
-<li>Raspberry Pi devices (multiple models) on Linux (all revisions for each model are supported):
-<ul>
-<li>Model Zero W, for 32 bits OS</li>
-<li>Model 1 B, for 32 bits OS</li>
-<li>Model 1 B+, for 32 bits OS</li>
-<li>Model 2 B, for 32 bits OS</li>
-<li>Model 3 B, for 32 bits OS</li>
-<li>Model 3 B+, for 32 bits OS</li>
-<li>Model 4 B, for both 32 bits and 64 bits OS</li>
-<li>Model 400, for 64 bits OS</li>
-<li>Model 5 B, for 64 bits OS</li>
-</ul>
-</li>
-<li>Asus Tinker Board (S)</li>
-</ul>
+<p>Joular Core runs on all major desktop and server operating systems and a selection of single-board computers. The table below summarises what is supported on each platform and architecture.</p>
+<h2 id="operating-systems-and-architectures"><a class="header" href="#operating-systems-and-architectures">Operating Systems and Architectures</a></h2>
+<h3 id="cpu"><a class="header" href="#cpu">CPU</a></h3>
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th style="text-align: center">Platform</th><th style="text-align: center">Supported OS</th><th style="text-align: center">Based on</th><th style="text-align: center">Supported Architecture</th></tr>
+<tr><th>OS / Architecture</th><th style="text-align: center">x86_64</th><th style="text-align: center">i686</th><th style="text-align: center">Apple Silicon</th><th style="text-align: center">arm</th><th style="text-align: center">armv7</th><th style="text-align: center">aarch64</th></tr>
 </thead>
 <tbody>
-<tr><td style="text-align: center">Linux PC/Server</td><td style="text-align: center">Linux</td><td style="text-align: center">RAPL, Nvidia, AMD</td><td style="text-align: center">x86, x86_64</td></tr>
-<tr><td style="text-align: center">Windows PC/Server</td><td style="text-align: center">Windows</td><td style="text-align: center">RAPL, Nvidia, AMD</td><td style="text-align: center">x86, x86_64</td></tr>
-<tr><td style="text-align: center">macOS PC/Server</td><td style="text-align: center">macOS</td><td style="text-align: center">Powermetrics (Apple Silicon CPU, GPU, Intel CPU)</td><td style="text-align: center">x86, x86_64, ARM</td></tr>
-<tr><td style="text-align: center">Raspberry Pi</td><td style="text-align: center">Linux</td><td style="text-align: center">Our regression models (CPU)</td><td style="text-align: center">ARM</td></tr>
-<tr><td style="text-align: center">Asus Tinker Board</td><td style="text-align: center">Linux</td><td style="text-align: center">Our regression models (CPU)</td><td style="text-align: center">ARM</td></tr>
-<tr><td style="text-align: center">Virtual Machine</td><td style="text-align: center">Supported guests (Windows, Linux, macOS), any host</td><td style="text-align: center">Host’s architecture (CPU, GPU)</td><td style="text-align: center">x86, x86_64, ARM</td></tr>
+<tr><td>Linux (PC / servers)</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td></tr>
+<tr><td>Windows</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td></tr>
+<tr><td>macOS</td><td style="text-align: center">✓</td><td style="text-align: center"></td><td style="text-align: center">✓</td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td></tr>
+<tr><td>SBC (Raspberry Pi, Asus)</td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center">✓</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td></tr>
+<tr><td>Virtual Machines</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td></tr>
 </tbody>
 </table>
 </div>
-<p><strong>CPU:</strong></p>
+<h3 id="gpu"><a class="header" href="#gpu">GPU</a></h3>
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>OS</th><th>x86_64</th><th>i686</th><th>Apple Silicon</th><th>arm</th><th>armv7</th><th>aarch64</th></tr>
+<tr><th>OS / Architecture</th><th style="text-align: center">Nvidia</th><th style="text-align: center">AMD</th><th style="text-align: center">Apple GPU</th></tr>
 </thead>
 <tbody>
-<tr><td>Windows</td><td>🌟</td><td>🌟</td><td></td><td></td><td></td><td></td></tr>
-<tr><td>Linux</td><td>🌟</td><td>🌟</td><td></td><td></td><td></td><td></td></tr>
-<tr><td>macOS</td><td>🌟</td><td></td><td>🌟</td><td></td><td></td><td></td></tr>
-<tr><td>SBC (Raspberry Pi, Asus)</td><td></td><td></td><td></td><td>🌟</td><td>🌟</td><td>🌟</td></tr>
-<tr><td>Virtual Machines</td><td>🌟</td><td>🌟</td><td>🌟</td><td>🌟</td><td>🌟</td><td>🌟</td></tr>
+<tr><td>Linux (PC / servers)</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td><td style="text-align: center"></td></tr>
+<tr><td>Windows</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td><td style="text-align: center"></td></tr>
+<tr><td>macOS</td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center">✓</td></tr>
+<tr><td>SBC (Raspberry Pi)</td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td></tr>
+<tr><td>Virtual Machines</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td></tr>
 </tbody>
 </table>
 </div>
-<p><strong>GPU:</strong></p>
+<h2 id="platform-details"><a class="header" href="#platform-details">Platform Details</a></h2>
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>OS</th><th>Nvidia GPU</th><th>AMD GPU</th><th>Apple GPU</th></tr>
+<tr><th>Platform</th><th>OS</th><th>Power source</th><th>Architectures</th></tr>
 </thead>
 <tbody>
-<tr><td>Windows</td><td>🌟</td><td>🌟</td><td></td></tr>
-<tr><td>Linux</td><td>🌟</td><td>🌟</td><td></td></tr>
-<tr><td>macOS</td><td></td><td></td><td>🌟</td></tr>
-<tr><td>SBC (Raspberry Pi, Asus)</td><td></td><td></td><td></td></tr>
-<tr><td>Virtual Machines</td><td>🌟</td><td>🌟</td><td>🌟</td></tr>
+<tr><td>Linux PC / Server</td><td>Linux</td><td>Intel RAPL (sysfs), Nvidia via <code>nvidia-smi</code>, AMD via <code>amd-smi</code> / <code>rocm-smi</code></td><td>x86, x86_64</td></tr>
+<tr><td>Windows PC / Server</td><td>Windows</td><td>Hubblo’s RAPL driver, Nvidia via <code>nvidia-smi</code>, AMD via <code>amd-smi</code></td><td>x86, x86_64</td></tr>
+<tr><td>macOS (Intel)</td><td>macOS</td><td><code>powermetrics</code></td><td>x86_64</td></tr>
+<tr><td>macOS (Apple Silicon)</td><td>macOS</td><td><code>powermetrics</code> (CPU + GPU)</td><td>aarch64</td></tr>
+<tr><td>Raspberry Pi</td><td>Linux</td><td>Regression power models</td><td>arm, armv7, aarch64</td></tr>
+<tr><td>Asus Tinker Board S</td><td>Linux</td><td>Regression power models</td><td>arm</td></tr>
+<tr><td>Virtual Machine (guest)</td><td>Windows, Linux, macOS</td><td>Shared file from host power tool</td><td>x86, x86_64, arm, aarch64</td></tr>
 </tbody>
 </table>
 </div>
-<p><strong>Supported SBC platforms</strong>: Raspberry Pi (models: Zero W, 1 B, 1 B+, 2 B, 3 B, 3 B+, 4 B, 400, 5 B), Asus Tinker Board S.</p>
+<h2 id="supported-single-board-computers"><a class="header" href="#supported-single-board-computers">Supported Single-Board Computers</a></h2>
+<p>The SBC build includes built-in power models for the following devices:</p>
+<p><strong>Raspberry Pi</strong> (all revisions of each model):</p>
+<ul>
+<li>Zero W (32-bit OS)</li>
+<li>1 B, 1 B+ (32-bit OS)</li>
+<li>2 B (32-bit OS)</li>
+<li>3 B, 3 B+ (32-bit OS)</li>
+<li>4 B (32-bit and 64-bit OS)</li>
+<li>400 (64-bit OS)</li>
+<li>5 B (64-bit OS)</li>
+</ul>
+<p><strong>Asus Tinker Board S</strong></p>
+<h2 id="cpu-power-monitoring-details"><a class="header" href="#cpu-power-monitoring-details">CPU Power Monitoring Details</a></h2>
+<p><strong>Linux and Windows (x86 / x86_64)</strong><br>CPU power is read from Intel’s Running Average Power Limit (RAPL) interface. RAPL is supported on Intel processors since Sandy Bridge (2011) and on AMD processors since Ryzen. On Linux, RAPL is exposed via the powercap sysfs interface (<code>/sys/class/powercap/intel-rapl/</code>). On Windows, a kernel driver is required (see <a href="#installation">Installation</a>).</p>
+<p><strong>macOS</strong><br>CPU (and GPU on Apple Silicon) power is read from Apple’s <code>powermetrics</code> command. This tool ships with macOS and covers both Intel and Apple Silicon hardware. It requires elevated access to read power data.</p>
+<p><strong>Raspberry Pi and SBC</strong><br>Power is calculated from CPU utilization using polynomial regression models that were measured against each supported board at various load levels. No hardware interface or special permissions are needed.</p>
+<p><strong>Virtual Machines</strong><br>Power is read from a shared file written by a monitoring tool running on the host OS. See <a href="#virtual-machines-1">Virtual Machines</a> for the setup details.</p>
+<h2 id="gpu-power-monitoring-details"><a class="header" href="#gpu-power-monitoring-details">GPU Power Monitoring Details</a></h2>
+<p><strong>Nvidia (Linux and Windows)</strong><br>GPU power is read by calling <code>nvidia-smi --query-gpu=power.draw</code>. Power values from all detected GPUs are summed. If <code>nvidia-smi</code> is not installed or no Nvidia GPUs are found, the GPU power reading is 0 and monitoring continues normally.</p>
+<p><strong>AMD (Linux and Windows)</strong><br>GPU power is read by calling <code>amd-smi</code> or <code>rocm-smi</code> (whichever is available). As with Nvidia, if neither tool is available the GPU reading is 0.</p>
+<p><strong>Apple Silicon</strong><br>GPU power is included in the output from <code>powermetrics</code> alongside CPU power.</p>
+<p><strong>SBC</strong><br>GPU monitoring is not supported on single-board computers. GPU power is always reported as 0.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="installation"><a class="header" href="#installation">Installation</a></h1>
-<p>Joular Core is written in Rust and can be easily compiled, and its binaries added to your system PATH.</p>
-<h2 id="installers-and-packages"><a class="header" href="#installers-and-packages">Installers and Packages</a></h2>
-<p>We provide installation packages for a number of CPU architectures and operating systems.</p>
-<p>For Windows:</p>
+<p>Joular Core is distributed as pre-built binaries and installers for the most common platforms. For anything else, you can compile it from source in a few minutes.</p>
+<h2 id="pre-built-packages-and-installers"><a class="header" href="#pre-built-packages-and-installers">Pre-built Packages and Installers</a></h2>
+<h3 id="windows"><a class="header" href="#windows">Windows</a></h3>
 <ul>
-<li>Installation MSI for 64 bits Windows.</li>
+<li>MSI installer for 64-bit Windows (x86_64)</li>
 </ul>
-<p>For macOS:</p>
+<h3 id="macos"><a class="header" href="#macos">macOS</a></h3>
 <ul>
-<li>Installation PKG for Apple Silicon macOS.</li>
+<li>PKG installer for Apple Silicon (aarch64)</li>
 </ul>
-<p>For Linux:</p>
+<h3 id="linux"><a class="header" href="#linux">Linux</a></h3>
 <ul>
-<li>DEB packages for Debian-bases systems (Debian, Ubuntu, Raspberry Pi OS, etc.), for x86_64 and ARM aarch64 architectures.</li>
-<li>RPM packages for Red Hat and Fedora-based systems (RHEL, Fedora, etc.), for x86_64 architecture.</li>
-<li>AUR installation script for Arch-based systems, for x86_64 architecture.</li>
+<li>DEB packages for Debian-based systems (Debian, Ubuntu, Raspberry Pi OS, etc.) — available for x86_64 and arm64 (aarch64)</li>
+<li>RPM packages for Red Hat / Fedora-based systems (RHEL, Fedora, etc.) — x86_64</li>
+<li>AUR package for Arch-based systems — x86_64</li>
 </ul>
-<p>For other architectures and distributions (32 bits Windows, Apple Intel macOS, other distros/architectures in Linux), you can just <a href="#compilation">compile</a> Joular Core and you’re good to start energy monitoring.</p>
+<p>For other architectures or distributions (32-bit Windows, Intel macOS, other Linux setups), compile from source. See <a href="#compilation">Compilation</a>.</p>
 <h2 id="binaries"><a class="header" href="#binaries">Binaries</a></h2>
-<p>Compiled version are available on our GitHub repository in the latest stable release.
-Just add the path of this binary to your user or system <code>PATH</code> environnemental variable and you’re good to go.
-You can also start the program directly with its full path, or double click to run.</p>
+<p>Compiled binaries for all supported targets are attached to each release on the GitHub repository. Download the binary for your platform, place it somewhere on your <code>PATH</code>, and you’re ready to go. You can also run it from any directory using its full path.</p>
+<p>There are two binaries per release:</p>
+<ul>
+<li><code>joularcore</code> / <code>joularcore.exe</code> — the command-line interface</li>
+<li><code>joularcoregui</code> / <code>joularcoregui.exe</code> — the graphical user interface (opens a window directly, no terminal needed)</li>
+</ul>
+<h2 id="platform-specific-requirements"><a class="header" href="#platform-specific-requirements">Platform-specific Requirements</a></h2>
+<h3 id="linux-pc--servers"><a class="header" href="#linux-pc--servers">Linux (PC / servers)</a></h3>
+<p>CPU power is read via the RAPL sysfs interface. On Linux kernel 5.10 and newer, RAPL files are only readable by root. You have two options:</p>
+<ul>
+<li>Run Joular Core with <code>sudo</code></li>
+<li>Grant read access to the RAPL files for your user (see <a href="https://github.com/joular/joularcore/issues/12">this GitHub issue</a> for instructions)</li>
+</ul>
+<p>GPU monitoring (Nvidia/AMD) requires <code>nvidia-smi</code> or <code>amd-smi</code> / <code>rocm-smi</code> to be installed separately if needed.</p>
+<h3 id="windows-1"><a class="header" href="#windows-1">Windows</a></h3>
+<p>CPU power monitoring requires a RAPL kernel driver. The supported driver is <a href="https://github.com/hubblo-org/windows-rapl-driver">Hubblo’s windows-rapl-driver</a>. The simplest way to install a signed version is via the <a href="https://github.com/hubblo-org/scaphandre/releases/download/v1.0.0/scaphandre_v1.0.0_installer.exe">Scaphandre installer</a>, which installs the driver as a side effect.</p>
+<p>Once the driver is installed, Joular Core itself runs without administrator rights.</p>
+<p>GPU monitoring (Nvidia/AMD) requires <code>nvidia-smi</code> or <code>amd-smi</code> to be installed separately if needed.</p>
+<h3 id="macos-1"><a class="header" href="#macos-1">macOS</a></h3>
+<p>No additional software is required. Power data is read via <code>powermetrics</code>, which ships with macOS. Because <code>powermetrics</code> requires elevated access to read hardware counters, Joular Core will ask for elevated access on start (it can also be run with <code>sudo</code>).</p>
+<h3 id="raspberry-pi-and-sbc"><a class="header" href="#raspberry-pi-and-sbc">Raspberry Pi and SBC</a></h3>
+<p>No dependencies and no <code>sudo</code> required. Just download the binary for your architecture (arm, armv7, or aarch64) and run it.</p>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="quick-usage-of-the-command-line-version"><a class="header" href="#quick-usage-of-the-command-line-version">Quick Usage of the command-line version</a></h1>
-<p>To use Joular Core, just run the command <code>joularcore</code> (on Linux or macOS), or <code>joularcore.exe</code> (on Windows).</p>
-<p>On Intel or AMD PC/servers on Linux, Joular Core uses Intel’s RAPL through the Linux powercap sysfs, and therefore requires root/sudo access on the latest Linux kernels (5.10 and newer): <code>sudo joularcore</code>.
-An alternative is to change the permissions on the RAPL powercap files to provide read access to all. Check <a href="https://github.com/joular/joularcore/issues/12">this issue in our GitHub</a> on the matter. This is a limitation for all power monitoring tools on Linux using RAPL, and not specific to Joular Core.</p>
-<p>On macOS, you also need to run Joular Core with elevated access (thus <code>sudo</code>): <code>sudo joularcore</code>.</p>
-<p>On Windows, just run <code>joularcore.exe</code>.</p>
-<p>On Raspberry Pi devices with Linux, just run <code>joularcore</code>.</p>
-<p>By default, the software will show the power consumption of the CPU, GPU, total power, and CPU utilization.</p>
-<p>To monitor a specific application, just run PowerJoular with the <code>-a appName</code> parameter, and a specific process with the <code>-p PID</code>.
-PowerJoular is a powerful tool with many functionalities that can be accessed using specific parameters. Check the <a href="#command-line-options">Command Line Options page</a> for the detailed list.</p>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="quick-usage-of-the-graphical-user-interface-gui-version"><a class="header" href="#quick-usage-of-the-graphical-user-interface-gui-version">Quick Usage of the graphical user interface (GUI) version</a></h1>
-<p>Joular Core is shipped with an easy-to-use, yet powerful and complete, graphical user interface (GUI), which works seamlessly and in a coherent way across all platforms and operating systems.</p>
-<p>To run the GUI, either:</p>
-<ul>
-<li>Start Joular Core with the <code>-g</code> or <code>--gui</code> argument.</li>
-<li>Use the dedicated GUI binary directly (double click for instance): <code>joularcoregui</code> (on Linux or macOS) or <code>joularcoregui.exe</code> (on Windows).</li>
-</ul>
-<p>On RAPL-based Linux systems and on macOS, elevated access is needed to monitor CPU energy (hence the need to start it with <code>sudo</code>).</p>
-<p>Most CLI features are available in the GUI, with easy-to-use buttons and configuration settings to monitor the entire computer, a specific process, or a specific multi-process application.</p>
-<p>If the GUI is executed from a terminal, it also accepted the same CLI arguments as the CLI version.
-For instance, you can start the gui and an HTTP socket to export power data with: <code>joularcore -g --api-port 8080</code></p>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="compilation"><a class="header" href="#compilation">Compilation</a></h1>
-<p>Joular Core is written in Rust and uses Cargo for compilation.</p>
-<h2 id="default-build"><a class="header" href="#default-build">Default build:</a></h2>
-<pre><code class="language-bash">cargo build --release
+<h1 id="quick-usage--command-line-interface"><a class="header" href="#quick-usage--command-line-interface">Quick Usage — Command-Line Interface</a></h1>
+<h2 id="starting-joular-core"><a class="header" href="#starting-joular-core">Starting Joular Core</a></h2>
+<p>Run <code>joularcore</code> (Linux / macOS) or <code>joularcore.exe</code> (Windows). The program starts monitoring immediately and updates the terminal display once per second.</p>
+<p><strong>Linux (PC/server)</strong> — requires elevated access to read RAPL power files:</p>
+<pre><code class="language-bash">sudo joularcore
 </code></pre>
-<p>This will build Joular Core with the virtual machine and GUI features, but not with SBC support.</p>
-<h2 id="sbc-raspberry-pi-build"><a class="header" href="#sbc-raspberry-pi-build">SBC (Raspberry Pi) build:</a></h2>
-<pre><code class="language-bash">cargo build --release --features sbc
+<p><strong>macOS</strong> — requires elevated access for <code>powermetrics</code> or run with <code>sudo</code>:</p>
+<pre><code class="language-bash">joularcore
 </code></pre>
-<p>This will build Joular Core with the virtual machine and GUI features, and with SBC support.</p>
-<h2 id="feature-selection"><a class="header" href="#feature-selection">Feature selection:</a></h2>
-<p>You can build Joular Core with or without virtual machine support or the GUI.
-For instane, this is useful when you don’t need the GUI (<em>i.e.</em>, in server environments) and want to build a smaller binary.</p>
-<pre><code class="language-bash">cargo build --release --no-default-features
+<p><strong>Windows</strong>:</p>
+<pre><code>joularcore.exe
 </code></pre>
-<p>⚙️ <strong>Available Features:</strong></p>
-<ul>
-<li><code>vm</code> <em>(default: ON)</em>: Enables support for monitoring inside virtual machines.</li>
-<li><code>api</code> <em>(default: OFF)</em>: Enables support for the API with an HTTP server or WebSockets. Exporting power data to CSV files or to a ring buffer is enabled by default regardless of this feature.</li>
-<li><code>gui</code> <em>(default: ON)</em>: Compiles the application with the graphical user interface.</li>
-<li><code>sbc</code> <em>(default: OFF)</em>: Enables support for monitoring on single-board computers (<em>e.g.</em>, Raspberry Pi) running Linux.
-<ul>
-<li>This disables RAPL-based monitoring and uses our SBC-specific power models.</li>
-</ul>
-</li>
-</ul>
-<p>You can mix and match features, for example:</p>
-<pre><code class="language-bash"># No GUI, but with VM
-cargo build --release --no-default-features --features vm
-
-# No GUI, no VM, but with SBC
-cargo build --release --no-default-features --features sbc
-
-# No VM, but with GUI and SBC
-cargo build --release --no-default-features --features gui,sbc
+<p><strong>Raspberry Pi and SBC</strong> — no <code>sudo</code> needed:</p>
+<pre><code class="language-bash">joularcore
 </code></pre>
-<h2 id="cross-compilation"><a class="header" href="#cross-compilation">Cross-Compilation</a></h2>
-<p>To cross-compile, use <code>cargo-make</code> with one of the targets defined in <code>Makefile.toml</code>.</p>
-<p>For example, to build for all supported Raspberry Pi architectures (<code>aarch64</code>, <code>arm</code>, <code>armv7</code>):</p>
-<pre><code class="language-bash">cargo make build-sbc
+<p>Press <strong>Ctrl+C</strong> to stop.</p>
+<h2 id="default-output"><a class="header" href="#default-output">Default Output</a></h2>
+<p>With no arguments, Joular Core displays total power, CPU power, GPU power, and CPU usage — updated every second in place on the same terminal line:</p>
+<pre><code>⚡ Total 18.45 W | CPU 15.20 W | GPU 3.25 W | CPU Usage 24.60%
 </code></pre>
-<p>With the proper Rust targets installed, you can hence cross-compile on all architectures and operating systems.</p>
-<h2 id="dependencies"><a class="header" href="#dependencies">Dependencies</a></h2>
-<ul>
-<li><strong>Linux (PC, servers)</strong>: Requires the RAPL interface for CPU power readings. RAPL files are usually readable only by the administrator, so you must either grant read access to these files or run Joular Core with sudo. <a href="https://github.com/joular/joularcore/issues/12">More information in this issue</a>.</li>
-<li><strong>Windows</strong>: a RAPL driver. We currently support <a href="https://github.com/hubblo-org/windows-rapl-driver">Hubblo’s RAPL driver</a>. The easiest way to install a signed version of the driver is to install the <a href="https://github.com/hubblo-org/scaphandre">Scaphandre</a> tool from <a href="https://github.com/hubblo-org/scaphandre/releases/download/v1.0.0/scaphandre_v1.0.0_installer.exe">this installer</a>.</li>
-<li><strong>macOS</strong>: no dependencies required 😇 Uses powermetrics (already installed by default).</li>
-<li>Raspberry Pi: No dependencies required 😇</li>
-</ul>
-<h2 id="virtual-machines"><a class="header" href="#virtual-machines">Virtual Machines</a></h2>
-<p>For virtual machines, two environment variables must be set depending on whether you want to monitor the CPU, the GPU, or both:</p>
-<ul>
-<li><code>VM_CPU_POWER_FILE</code>: Path to the CPU power data file</li>
-<li><code>VM_CPU_POWER_FORMAT</code>: Format of the CPU power data (<code>joularcore</code>  or <code>powerjoular</code> or <code>watts</code>, default is <code>watts</code> if not set)</li>
-<li><code>VM_GPU_POWER_FILE</code>: Path to the GPU power data file</li>
-<li><code>VM_GPU_POWER_FORMAT</code>: Format of the GPU power data (<code>joularcore</code> or <code>powerjoular</code> or <code>watts</code>, default is <code>watts</code> if not set)</li>
-</ul>
-<h2 id="single-board-computers-sbc"><a class="header" href="#single-board-computers-sbc">Single-Board Computers (SBC)</a></h2>
-<p>On SBC (Raspberry Pi, Asus TinkerBoard), Joular Core uses our own regression models to calculate CPU power consumption.
-These models are hard-coded in the code, but you can use your own models by supplying a JSON file with the model detail with the <code>SBC_POWER_MODEL_JSON</code> environmental variable.
-The format needs to follow the one used in our <a href="https://github.com/joular/powermodels">Power Models Database</a>.</p>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="command-line-options"><a class="header" href="#command-line-options">Command Line Options</a></h1>
-<p>To use Joular Core, just run the command <code>joularcore</code> or <code>joularcore.exe</code>.</p>
-<p>The following options are available:</p>
-<ul>
-<li><code>-p</code>, <code>--pid &lt;PID&gt;</code>              : Monitor a specific process by its PID</li>
-<li><code>-a</code>, <code>--app &lt;APP&gt;</code>              : Monitor a specific application by its name (all PIDs)</li>
-<li><code>-f</code>, <code>--file &lt;FILE&gt;</code>            : Write output to CSV file</li>
-<li><code>-c</code>, <code>--component &lt;COMPONENT&gt;</code>  : Monitor only specific component (values: <code>cpu</code>, <code>gpu</code>)</li>
-<li><code>-i</code>, <code>--numeric</code>                : Output only numeric value (no formatting)</li>
-<li><code>-o</code>, <code>--overwrite</code>              : Overwrite file instead of append (only with -f)</li>
-<li><code>-g</code>, <code>--gui</code>                    : Start GUI interface</li>
-<li><code>-r</code>, <code>--ringbuffer</code>             : Send power data to ring buffer</li>
-<li><code>-h</code>, <code>--help</code>                   : Print help</li>
-<li><code>-V</code>, <code>--version</code>                : Print version</li>
-</ul>
-<p>To use Joular Core inside virtual machines, two environment variables must be set depending on whether you want to monitor the CPU, the GPU, or both:</p>
-<ul>
-<li><code>VM_CPU_POWER_FILE</code>: Path to the CPU power data file</li>
-<li><code>VM_CPU_POWER_FORMAT</code>: Format of the CPU power data (<code>joularcore</code>  or <code>powerjoular</code> or <code>watts</code>, default is <code>watts</code> if not set)</li>
-<li><code>VM_GPU_POWER_FILE</code>: Path to the GPU power data file</li>
-<li><code>VM_GPU_POWER_FORMAT</code>: Format of the GPU power data (<code>joularcore</code> or <code>powerjoular</code> or <code>watts</code>, default is <code>watts</code> if not set)</li>
-</ul>
-<p>On SBC (Raspberry Pi, Asus TinkerBoard), Joular Core uses our own regression models to calculate CPU power consumption.
-These models are hard-coded in the code, but you can use your own models by supplying a JSON file with the model detail with the <code>SBC_POWER_MODEL_JSON</code> environmental variable.
-The format needs to follow the one used in our <a href="https://github.com/joular/powermodels">Power Models Database</a>.</p>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="exporting-power-and-energy-measurements"><a class="header" href="#exporting-power-and-energy-measurements">Exporting power and energy measurements</a></h1>
-<p>Joular Core can export the power and energy measurements through multiple interfaces and approaches.
-All the following export approaches works on all supported platforms and operating systems.</p>
-<h2 id="write-on-terminal-and-stdout-redirection"><a class="header" href="#write-on-terminal-and-stdout-redirection">Write on terminal and stdout redirection</a></h2>
-<p>By default, Joular Core will write data to the terminal.
-However, this data could be friendly for stdout redirection by using the <code>-i</code> argument: <code>joularcore -i</code> or <code>joularcore.exe -i</code></p>
-<p>This will output just a float on the terminal that can be redirected anywhere.
-By default, the float will be the total power consumption.
-If combined with other arguments, such as the <code>-c</code> argument to select a specific component, it will provide only that specific component.</p>
-<h2 id="csv-files"><a class="header" href="#csv-files">CSV files</a></h2>
-<p>Joular Core can export data to a CSV file with the <code>-f</code> argument, while supplying a filename or path.</p>
-<p><code>joularcore -f myfile.csv</code> will write a CSV with a header and a new line for every second of power monitoring.
-The format of the CSV file is the following:
-<code>Timestamp,Total Power (W), CPU Power (W),GPU Power (W),CPU Usage (%),Process Power (W)</code></p>
-<h2 id="inter-process-communication-with-a-shared-memory-ring-buffer"><a class="header" href="#inter-process-communication-with-a-shared-memory-ring-buffer">Inter-process communication with a shared memory ring buffer</a></h2>
-<p>Joular Core can also write data to a shared memory ring buffer, on all OSes, when executed with the <code>-r</code> argument: <code>joularcore -r</code> or <code>joularcore.exe -r</code>
-This allows much faster communication and sharing power data between Joular Core and other programs.</p>
-<p>Default ring buffer paths are:</p>
-<ul>
-<li><code>/dev/shm/joularcorering</code> on Linux</li>
-<li><code>/tmp/joularcorering</code> on macOS</li>
-<li><code>Local\\JoularCoreRing</code> on Windows</li>
-</ul>
-<p>The ring buffer have a size of 5 data stuctures with the following values (by order): <code>CPU power</code>, <code>GPU power</code>, <code>Total power</code>, <code>CPU usage</code>, and <code>PID or APP power</code>.
-Unavailable values, such as when monitoring entire CPU and not a specific application, will be at 0.</p>
-<h2 id="http-and-websockets-api"><a class="header" href="#http-and-websockets-api">HTTP and WebSockets API</a></h2>
-<p>Joular Core can expose power data through an HTTP server or WebSockets.
-To use this API, you need to enable the <code>api</code> feature when building Joular Core.</p>
-<p>To run Joular Core and export data through the API, use the <code>--api-port</code> option to specify the port for the HTTP and WebSockets server endpoint. For example:</p>
+<h2 id="common-use-cases"><a class="header" href="#common-use-cases">Common Use Cases</a></h2>
+<h3 id="monitor-a-specific-process-by-pid"><a class="header" href="#monitor-a-specific-process-by-pid">Monitor a specific process by PID</a></h3>
+<pre><code class="language-bash">joularcore -p 1234
+</code></pre>
+<p>Output includes the power attributed to that process:</p>
+<pre><code>⚡ Total 18.45 W | CPU 15.20 W | GPU 3.25 W | CPU Usage 24.60% | PID 1.84 W
+</code></pre>
+<h3 id="monitor-an-application-by-name"><a class="header" href="#monitor-an-application-by-name">Monitor an application by name</a></h3>
+<pre><code class="language-bash">joularcore -a firefox
+</code></pre>
+<p>Joular Core finds all processes whose name matches <code>firefox</code> and sums their attributed power:</p>
+<pre><code>⚡ Total 18.45 W | CPU 15.20 W | GPU 3.25 W | CPU Usage 24.60% | App 3.12 W (4 PIDs)
+</code></pre>
+<h3 id="write-output-to-a-csv-file"><a class="header" href="#write-output-to-a-csv-file">Write output to a CSV file</a></h3>
+<pre><code class="language-bash">joularcore -f power.csv
+</code></pre>
+<p>A new row is appended every second. See <a href="#exporting-power-data">Exporting Power Data</a> for the exact CSV format.</p>
+<h3 id="run-silently-and-only-write-to-csv"><a class="header" href="#run-silently-and-only-write-to-csv">Run silently and only write to CSV</a></h3>
+<pre><code class="language-bash">joularcore -s -f power.csv
+</code></pre>
+<p>The <code>-s</code> flag suppresses terminal output while keeping all other outputs (CSV, ring buffer, API) active.</p>
+<h3 id="show-only-cpu-or-only-gpu-power"><a class="header" href="#show-only-cpu-or-only-gpu-power">Show only CPU or only GPU power</a></h3>
+<pre><code class="language-bash">joularcore -c cpu
+joularcore -c gpu
+</code></pre>
+<h3 id="numeric-only-output-for-scripting-and-piping"><a class="header" href="#numeric-only-output-for-scripting-and-piping">Numeric-only output (for scripting and piping)</a></h3>
+<pre><code class="language-bash">joularcore -i
+</code></pre>
+<p>Prints a single float (total power in watts) per line with no labels or formatting. Combined with <code>-c</code>, it prints only the selected component:</p>
+<pre><code class="language-bash">joularcore -c cpu -i
+</code></pre>
+<h3 id="expose-power-data-over-http-and-websocket"><a class="header" href="#expose-power-data-over-http-and-websocket">Expose power data over HTTP and WebSocket</a></h3>
 <pre><code class="language-bash">joularcore --api-port 8080
 </code></pre>
-<p>The API will expose the following endpoints:</p>
-<ul>
-<li><code>/data</code>: HTTP endpoint to get the latest power data</li>
-<li><code>/ws</code>: WebSockets endpoint for real-time power data</li>
-</ul>
-<p>The API exposes data in JSON format:</p>
-<ul>
-<li><code>cpu_power</code>: CPU power in Watts</li>
-<li><code>gpu_power</code>: GPU power in Watts</li>
-<li><code>total_power</code>: Total power in Watts</li>
-<li><code>cpu_usage</code>: CPU usage in percentage</li>
-<li><code>pid_or_app_power</code>: PID or application power in Watts (0 if option not selected)</li>
-</ul>
+<p>Starts an HTTP server. <code>GET http://localhost:8080/data</code> returns the latest reading as JSON, and <code>ws://localhost:8080/ws</code> streams a new JSON reading every second.</p>
+<h3 id="expose-power-data-over-a-shared-memory-buffer-ring"><a class="header" href="#expose-power-data-over-a-shared-memory-buffer-ring">Expose power data over a shared memory buffer ring</a></h3>
+<pre><code class="language-bash">joularcore -r
+</code></pre>
+<h3 id="subtract-idle-cpu-baseline-for-process-attribution"><a class="header" href="#subtract-idle-cpu-baseline-for-process-attribution">Subtract idle CPU baseline for process attribution</a></h3>
+<pre><code class="language-bash"># Auto-calibrate: measure idle power over 5 seconds, then start monitoring
+joularcore -p 1234 --calibrate-cpu-idle-baseline
+
+# Or supply a known baseline manually
+joularcore -p 1234 --cpu-idle-baseline 4.5
+</code></pre>
+<h2 id="full-options-reference"><a class="header" href="#full-options-reference">Full Options Reference</a></h2>
+<p>See the <a href="#command-line-options">Command Line Options</a> page for a complete list of all flags and their descriptions.</p>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="systemd-service"><a class="header" href="#systemd-service">Systemd Service</a></h1>
-<p>A systemd service is provided and can be installed (by copying <code>joularcore.service</code> in <code>systemd</code> folder to <code>/etc/systemd/system/</code>).
-The service will run the program with the <code>-o</code> option (which only saves the latest power data) and the <code>-f</code> option to save data to <code>/tmp/joularcore-service.csv</code>.
-The service can be enabled to run automatically on boot.</p>
-<p>You can modify the service as needed to start Joular Core with any argument and output the data with any format (CSV, HTTP API, ring buffer shared memory, etc.).</p>
-<p>The systemd service is automatically installed when installing Joular Core using the installer script.</p>
+<h1 id="quick-usage--graphical-user-interface"><a class="header" href="#quick-usage--graphical-user-interface">Quick Usage — Graphical User Interface</a></h1>
+<h2 id="starting-the-gui"><a class="header" href="#starting-the-gui">Starting the GUI</a></h2>
+<p>There are two ways to open the GUI:</p>
+<ul>
+<li><strong>Dedicated binary</strong>: launch <code>joularcoregui</code> (Linux/macOS) or <code>joularcoregui.exe</code> (Windows) directly — double-click in a file manager or run from a terminal.</li>
+<li><strong>CLI flag</strong>: add <code>-g</code> or <code>--gui</code> to any <code>joularcore</code> command, for example:
+<pre><code class="language-bash">joularcore --gui
+joularcore -g --api-port 8080
+</code></pre>
+</li>
+</ul>
+<p>On RAPL-based Linux systems, <code>sudo</code> is still required:</p>
+<pre><code class="language-bash">sudo joularcoregui
+sudo joularcore --gui
+</code></pre>
+<p>On macOS, it’ll ask for elevated access to read <code>powermetrics</code>.</p>
+<h2 id="interface-overview"><a class="header" href="#interface-overview">Interface Overview</a></h2>
+<p>The GUI has two screens: <strong>Options</strong> and <strong>Monitor</strong>. Switch between them using the buttons at the top of the window.</p>
+<h3 id="options-screen"><a class="header" href="#options-screen">Options Screen</a></h3>
+<p>Before starting a monitoring session, the Options screen lets you configure:</p>
+<ul>
+<li><strong>Monitor mode</strong>: choose between monitoring the whole system, a specific PID, or a named application</li>
+<li><strong>Application / PID</strong>: type a process name or PID number directly; a dropdown lists running processes or applications</li>
+<li><strong>CSV export</strong>: toggle CSV file output on or off, and choose the file path using the native file picker</li>
+</ul>
+<p>Once configured, click <strong>Start Monitoring</strong> to begin.</p>
+<h3 id="monitor-screen"><a class="header" href="#monitor-screen">Monitor Screen</a></h3>
+<p>The Monitor screen shows live power readings updated every second:</p>
+<ul>
+<li><strong>Total power</strong> (watts)</li>
+<li><strong>CPU power</strong> (watts)</li>
+<li><strong>GPU power</strong> (watts)</li>
+<li><strong>CPU usage</strong> (%)</li>
+<li><strong>Process / application power</strong> (watts, if a PID or app was selected)</li>
+</ul>
+<p>A rolling graph plots each of these values over the last 60 seconds. Click <strong>Stop</strong> to return to the Options screen.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="compilation"><a class="header" href="#compilation">Compilation</a></h1>
+<p>Joular Core is written in Rust and uses Cargo. A stable Rust toolchain is the only requirement.</p>
+<h2 id="default-build"><a class="header" href="#default-build">Default Build</a></h2>
+<pre><code class="language-bash">cargo build --release
+</code></pre>
+<p>Produces two binaries in <code>target/release/</code>:</p>
+<ul>
+<li><code>joularcore</code> / <code>joularcore.exe</code> — command-line interface</li>
+<li><code>joularcoregui</code> / <code>joularcoregui.exe</code> — graphical user interface</li>
+</ul>
+<p>The default build includes virtual machine support (<code>vm</code>), the HTTP/WebSocket API (<code>api</code>), and the GUI (<code>gui</code>). SBC support is not included by default.</p>
+<h2 id="sbc-raspberry-pi-build"><a class="header" href="#sbc-raspberry-pi-build">SBC (Raspberry Pi) Build</a></h2>
+<pre><code class="language-bash">cargo build --release --features sbc
+</code></pre>
+<p>Adds single-board computer support on top of the defaults. The <code>sbc</code> feature replaces RAPL-based CPU monitoring with polynomial regression models tuned for each supported SBC. See <a href="#supported-platforms">Supported Platforms</a> for the full list of supported boards.</p>
+<h2 id="feature-selection"><a class="header" href="#feature-selection">Feature Selection</a></h2>
+<p>Use <code>--no-default-features</code> to start from a minimal build and enable only what you need:</p>
+<pre><code class="language-bash">cargo build --release --no-default-features
+</code></pre>
+<p>This produces a CLI-only binary with no VM support, no API, and no GUI — useful for constrained environments where binary size matters.</p>
+<h3 id="available-features"><a class="header" href="#available-features">Available Features</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Feature</th><th style="text-align: center">Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>vm</code></td><td style="text-align: center"><strong>on</strong></td><td>Enables monitoring inside virtual machines. Joular Core reads power from a shared file written by the host.</td></tr>
+<tr><td><code>api</code></td><td style="text-align: center"><strong>on</strong></td><td>Enables the HTTP and WebSocket API server. CSV export and ring buffer output work regardless of this feature.</td></tr>
+<tr><td><code>gui</code></td><td style="text-align: center"><strong>on</strong></td><td>Compiles the GUI binary (<code>joularcoregui</code>).</td></tr>
+<tr><td><code>sbc</code></td><td style="text-align: center">off</td><td>Enables SBC support. Replaces RAPL-based monitoring with regression models for Raspberry Pi and Asus Tinker Board.</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="mix-and-match-examples"><a class="header" href="#mix-and-match-examples">Mix-and-Match Examples</a></h3>
+<pre><code class="language-bash"># CLI only — no VM, no API, no GUI
+cargo build --release --no-default-features
+
+# CLI with VM support, no GUI or API
+cargo build --release --no-default-features --features vm
+
+# CLI with VM and API, no GUI (good for headless servers)
+cargo build --release --no-default-features --features vm,api
+
+# SBC with GUI, no VM or API
+cargo build --release --no-default-features --features gui,sbc
+
+# SBC with everything
+cargo build --release --features sbc
+</code></pre>
+<h2 id="cross-compilation"><a class="header" href="#cross-compilation">Cross-Compilation</a></h2>
+<p>Use <code>cargo-make</code> with the targets defined in <code>Makefile.toml</code>. The targets cover all supported architectures for each OS.</p>
+<p>To build for all supported Raspberry Pi architectures (<code>aarch64</code>, <code>arm</code>, <code>armv7</code>) at once:</p>
+<pre><code class="language-bash">cargo make build-sbc
+</code></pre>
+<p>With the appropriate Rust cross-compilation targets installed (via <code>rustup target add</code>), you can cross-compile from any host to any supported target.</p>
+<h2 id="release-profile"><a class="header" href="#release-profile">Release Profile</a></h2>
+<p>The release profile in <code>Cargo.toml</code> is configured for maximum optimization and smallest binary size:</p>
+<ul>
+<li>LTO (link-time optimization) enabled</li>
+<li>Single codegen unit (full cross-crate optimization)</li>
+<li><code>panic = "abort"</code> (no unwinding machinery)</li>
+<li>Debug symbols stripped</li>
+</ul>
+<p>These settings mean release builds can be slow to compile but produce fast, lean binaries.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="command-line-options"><a class="header" href="#command-line-options">Command-Line Options</a></h1>
+<p>Run <code>joularcore --help</code> for the full list of options. This page documents each option in detail.</p>
+<h2 id="synopsis"><a class="header" href="#synopsis">Synopsis</a></h2>
+<pre><code>joularcore [OPTIONS]
+</code></pre>
+<h2 id="options"><a class="header" href="#options">Options</a></h2>
+<h3 id="monitoring-target"><a class="header" href="#monitoring-target">Monitoring Target</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Option</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>-p</code>, <code>--pid &lt;PID&gt;</code></td><td>Monitor a specific process by its PID. The output will include the power attributed to that process.</td></tr>
+<tr><td><code>-a</code>, <code>--app &lt;APP&gt;</code></td><td>Monitor an application by name. Joular Core finds all running processes whose name matches <code>&lt;APP&gt;</code> and sums their attributed power.</td></tr>
+</tbody>
+</table>
+</div>
+<p><code>--pid</code> and <code>--app</code> are mutually exclusive — only one may be used at a time.</p>
+<h3 id="output-and-export"><a class="header" href="#output-and-export">Output and Export</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Option</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>-f</code>, <code>--file &lt;FILE&gt;</code></td><td>Write power measurements to a CSV file. A header line is written once, then one row per second is appended.</td></tr>
+<tr><td><code>-o</code>, <code>--overwrite</code></td><td>When used with <code>-f</code>, overwrite the file on each write instead of appending. Only the latest measurement is kept in the file. Useful when another program is polling the file.</td></tr>
+<tr><td><code>-i</code>, <code>--numeric</code></td><td>Print only a bare numeric value (watts, two decimal places) with no labels or ANSI formatting. Useful for piping or scripting. The value printed is total power by default, or the selected component if <code>-c</code> is set.</td></tr>
+<tr><td><code>-s</code>, <code>--silent</code></td><td>Suppress all terminal output. CSV export, ring buffer, and API remain active. Useful when running in the background.</td></tr>
+<tr><td><code>-r</code>, <code>--ringbuffer</code></td><td>Write power data to a shared-memory ring buffer every second. See <a href="#exporting-power-data">Exporting Power Data</a> for paths and data layout.</td></tr>
+<tr><td><code>--api-port &lt;PORT&gt;</code></td><td>Start an HTTP and WebSocket API server on the given port. Requires the <code>api</code> feature. See <a href="#exporting-power-data">Exporting Power Data</a> for endpoint details.</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="component-filter"><a class="header" href="#component-filter">Component Filter</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Option</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>-c</code>, <code>--component &lt;cpu|gpu&gt;</code></td><td>Restrict output to a single hardware component. Use <code>cpu</code> for CPU-only power, <code>gpu</code> for GPU-only power. When set, only that component’s power is shown on the terminal and written to CSV or numeric output.</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="cpu-idle-baseline"><a class="header" href="#cpu-idle-baseline">CPU Idle Baseline</a></h3>
+<p>These options subtract idle CPU power before attributing energy to a process or application. This gives a more accurate picture of how much power the workload itself is consuming, rather than including the base system cost.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Option</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--cpu-idle-baseline &lt;WATTS&gt;</code></td><td>Subtract a fixed value (in watts) from CPU power before calculating process or application attribution.</td></tr>
+<tr><td><code>--calibrate-cpu-idle-baseline</code></td><td>Automatically measure idle CPU power. Joular Core collects 5 samples at 1-second intervals before starting the main monitoring loop, averages them, and uses the result as the baseline.</td></tr>
+</tbody>
+</table>
+</div>
+<p><code>--cpu-idle-baseline</code> and <code>--calibrate-cpu-idle-baseline</code> are mutually exclusive.</p>
+<h3 id="application-monitoring-refresh"><a class="header" href="#application-monitoring-refresh">Application Monitoring Refresh</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Option</th><th style="text-align: center">Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--app-refresh-interval &lt;SECONDS&gt;</code></td><td style="text-align: center">3</td><td>How often (in seconds) to rescan running processes when monitoring an application by name with <code>-a</code>. Setting this to <code>0</code> disables caching and rescans on every second. Lower values catch short-lived processes faster at the cost of more frequent process enumeration.</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="interface"><a class="header" href="#interface">Interface</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Option</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>-g</code>, <code>--gui</code></td><td>Launch the graphical user interface instead of (or alongside) the terminal output.</td></tr>
+<tr><td><code>-h</code>, <code>--help</code></td><td>Print help and exit.</td></tr>
+<tr><td><code>-V</code>, <code>--version</code></td><td>Print the version number and exit.</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="environment-variables"><a class="header" href="#environment-variables">Environment Variables</a></h2>
+<p>These environment variables control behaviour that cannot be set via CLI flags.</p>
+<h3 id="virtual-machines"><a class="header" href="#virtual-machines">Virtual Machines</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Variable</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>VM_CPU_POWER_FILE</code></td><td>Path to a file containing CPU power data written by the host</td></tr>
+<tr><td><code>VM_CPU_POWER_FORMAT</code></td><td>Format of that file: <code>joularcore</code>, <code>powerjoular</code>, or <code>watts</code> (default: <code>watts</code>)</td></tr>
+<tr><td><code>VM_GPU_POWER_FILE</code></td><td>Path to a file containing GPU power data written by the host</td></tr>
+<tr><td><code>VM_GPU_POWER_FORMAT</code></td><td>Format of that file: <code>joularcore</code>, <code>powerjoular</code>, or <code>watts</code> (default: <code>watts</code>)</td></tr>
+</tbody>
+</table>
+</div>
+<p>See <a href="#virtual-machines-1">Virtual Machines</a> for details.</p>
+<h3 id="single-board-computers"><a class="header" href="#single-board-computers">Single-Board Computers</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Variable</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>SBC_POWER_MODEL_JSON</code></td><td>Path to a JSON file containing a custom SBC power model. If unset, built-in models for supported boards are used. The file format must match the <a href="https://github.com/joular/powermodels">Joular Power Models Database</a> schema.</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="constraints-and-combinations"><a class="header" href="#constraints-and-combinations">Constraints and Combinations</a></h2>
+<ul>
+<li><code>-p</code> and <code>-a</code> are mutually exclusive.</li>
+<li><code>-o</code> only has effect when <code>-f</code> is also set.</li>
+<li><code>--cpu-idle-baseline</code> and <code>--calibrate-cpu-idle-baseline</code> are mutually exclusive.</li>
+<li><code>--api-port</code> requires that Joular Core was compiled with the <code>api</code> feature (enabled by default).</li>
+<li><code>-g</code> / <code>--gui</code> requires the <code>gui</code> feature (enabled by default); alternatively, use the <code>joularcoregui</code> binary.</li>
+</ul>
+<h2 id="examples"><a class="header" href="#examples">Examples</a></h2>
+<pre><code class="language-bash"># Monitor whole system
+joularcore
+
+# Monitor a specific process
+joularcore -p 1234
+
+# Monitor application, write to CSV
+joularcore -a firefox -f power.csv
+
+# Run silently, write to CSV, overwrite mode
+joularcore -s -f /tmp/power.csv -o
+
+# Expose API, suppress terminal output
+joularcore -s --api-port 8080
+
+# Write ring buffer + CSV simultaneously
+joularcore -r -f power.csv
+
+# CPU-only numeric output (for scripting)
+joularcore -c cpu -i
+
+# Monitor process with auto-calibrated idle baseline
+joularcore -p 1234 --calibrate-cpu-idle-baseline
+
+# Monitor app, refresh PID list every second
+joularcore -a myapp --app-refresh-interval 0
+
+# Launch GUI with API enabled
+joularcore -g --api-port 9000
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="exporting-power-data"><a class="header" href="#exporting-power-data">Exporting Power Data</a></h1>
+<p>Joular Core can send power measurements to multiple destinations. All export mechanisms work on all supported platforms and operating systems.</p>
+<h2 id="terminal-output-default"><a class="header" href="#terminal-output-default">Terminal Output (default)</a></h2>
+<p>By default, Joular Core writes a live display to the terminal. The line is updated in place every second using ANSI escape codes:</p>
+<pre><code>⚡ Total 18.45 W | CPU 15.20 W | GPU 3.25 W | CPU Usage 24.60%
+</code></pre>
+<p>When monitoring a process or application:</p>
+<pre><code>⚡ Total 18.45 W | CPU 15.20 W | GPU 3.25 W | CPU Usage 24.60% | PID 1.84 W
+⚡ Total 18.45 W | CPU 15.20 W | GPU 3.25 W | CPU Usage 24.60% | App 3.12 W (4 PIDs)
+</code></pre>
+<p>When a component filter (<code>-c cpu</code> or <code>-c gpu</code>) is set, only that component is shown:</p>
+<pre><code>CPU 15.20 W
+GPU 3.25 W
+</code></pre>
+<p>Use <code>-s</code> / <code>--silent</code> to suppress terminal output while keeping other export channels active.</p>
+<h3 id="numeric-only-mode--i"><a class="header" href="#numeric-only-mode--i">Numeric-only mode (<code>-i</code>)</a></h3>
+<p>Adding <code>-i</code> prints a bare float with no labels or formatting, one value per line:</p>
+<pre><code class="language-bash">joularcore -i        # prints total power
+joularcore -c cpu -i # prints CPU power only
+</code></pre>
+<p>This mode is useful for stdout redirection or piping into other tools.</p>
+<h2 id="csv-files--f"><a class="header" href="#csv-files--f">CSV Files (<code>-f</code>)</a></h2>
+<p>Use <code>-f &lt;FILE&gt;</code> to write measurements to a CSV file. A header line is written once at the start, then one data row is appended every second.</p>
+<h3 id="csv-formats"><a class="header" href="#csv-formats">CSV Formats</a></h3>
+<p>The columns depend on which options are active:</p>
+<p><strong>Default (no process/app/component filter)</strong></p>
+<pre><code>Timestamp,Total Power (W),CPU Power (W),GPU Power (W),CPU Usage (%)
+1712345678,18.45,15.20,3.25,24.60
+</code></pre>
+<p><strong>Process monitoring (<code>-p</code>)</strong></p>
+<pre><code>Timestamp,Total Power (W),CPU Power (W),GPU Power (W),CPU Usage (%),Process Power (W)
+1712345678,18.45,15.20,3.25,24.60,1.84
+</code></pre>
+<p><strong>Application monitoring (<code>-a</code>)</strong></p>
+<pre><code>Timestamp,Total Power (W),CPU Power (W),GPU Power (W),CPU Usage (%),App Power (W),App PIDs
+1712345678,18.45,15.20,3.25,24.60,3.12,4
+</code></pre>
+<p><strong>CPU-only component filter (<code>-c cpu</code>)</strong></p>
+<pre><code>Timestamp,CPU Power (W)
+1712345678,15.20
+</code></pre>
+<p><strong>GPU-only component filter (<code>-c gpu</code>)</strong></p>
+<pre><code>Timestamp,GPU Power (W)
+1712345678,3.25
+</code></pre>
+<p>The <code>Timestamp</code> column contains a Unix epoch timestamp in seconds.</p>
+<h3 id="overwrite-mode--o"><a class="header" href="#overwrite-mode--o">Overwrite Mode (<code>-o</code>)</a></h3>
+<p>By default, rows are appended to the file. With <code>-o</code>, the file is truncated before each write so it always contains exactly one data row (plus the header). This is useful when another program is polling the file for the latest value.</p>
+<h2 id="shared-memory-ring-buffer--r"><a class="header" href="#shared-memory-ring-buffer--r">Shared-Memory Ring Buffer (<code>-r</code>)</a></h2>
+<p>Use <code>-r</code> or <code>--ringbuffer</code> to write power data to a shared-memory region. Any process on the same machine can read from this region without file I/O or network overhead.</p>
+<h3 id="ring-buffer-paths"><a class="header" href="#ring-buffer-paths">Ring Buffer Paths</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>OS</th><th>Path</th></tr>
+</thead>
+<tbody>
+<tr><td>Linux</td><td><code>/dev/shm/joularcorering</code></td></tr>
+<tr><td>macOS</td><td><code>/tmp/joularcorering</code></td></tr>
+<tr><td>Windows</td><td><code>Local\\JoularCoreRing</code></td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="ring-buffer-layout"><a class="header" href="#ring-buffer-layout">Ring Buffer Layout</a></h3>
+<p>The ring buffer holds 5 consecutive <code>f64</code> (double-precision float) values:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th style="text-align: center">Index</th><th>Field</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td style="text-align: center">0</td><td><code>cpu_power</code></td><td>CPU power in watts</td></tr>
+<tr><td style="text-align: center">1</td><td><code>gpu_power</code></td><td>GPU power in watts</td></tr>
+<tr><td style="text-align: center">2</td><td><code>total_power</code></td><td>Total (CPU + GPU) power in watts</td></tr>
+<tr><td style="text-align: center">3</td><td><code>cpu_usage</code></td><td>System CPU usage as a percentage (0–100)</td></tr>
+<tr><td style="text-align: center">4</td><td><code>pid_or_app_power</code></td><td>Power attributed to the monitored PID or application in watts; <code>0.0</code> if no process/app is selected</td></tr>
+</tbody>
+</table>
+</div>
+<p>The structure is C-compatible (repr C, packed), so it can be read directly from any language that supports memory-mapped files or shared memory.</p>
+<h3 id="multiple-ring-buffer-entries"><a class="header" href="#multiple-ring-buffer-entries">Multiple Ring Buffer Entries</a></h3>
+<p>The buffer holds 5 slots. The writer advances a head index on each update. Readers should track the head index to detect new data.</p>
+<h2 id="http-and-websocket-api---api-port"><a class="header" href="#http-and-websocket-api---api-port">HTTP and WebSocket API (<code>--api-port</code>)</a></h2>
+<p>When built with the <code>api</code> feature (on by default), Joular Core can expose power data over a local HTTP and WebSocket server. Start it with:</p>
+<pre><code class="language-bash">joularcore --api-port 8080
+</code></pre>
+<p>The server binds to <code>0.0.0.0:&lt;PORT&gt;</code> and has CORS enabled, so it can be reached from browser-based dashboards.</p>
+<h3 id="endpoints"><a class="header" href="#endpoints">Endpoints</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Endpoint</th><th>Protocol</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>/data</code></td><td>HTTP GET</td><td>Returns the latest power reading as JSON</td></tr>
+<tr><td><code>/ws</code></td><td>WebSocket</td><td>Pushes a new JSON reading every second</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="json-format"><a class="header" href="#json-format">JSON Format</a></h3>
+<p>Both endpoints use the same JSON schema:</p>
+<pre><code class="language-json">{
+  "timestamp": 1712345678,
+  "cpu_power": 15.20,
+  "gpu_power": 3.25,
+  "total_power": 18.45,
+  "cpu_usage": 24.60,
+  "pid_or_app_power": 1.84
+}
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>timestamp</code></td><td>integer</td><td>Unix timestamp in seconds</td></tr>
+<tr><td><code>cpu_power</code></td><td>float</td><td>CPU power in watts</td></tr>
+<tr><td><code>gpu_power</code></td><td>float</td><td>GPU power in watts</td></tr>
+<tr><td><code>total_power</code></td><td>float</td><td>Total power (CPU + GPU) in watts</td></tr>
+<tr><td><code>cpu_usage</code></td><td>float</td><td>System CPU usage as a percentage (0–100)</td></tr>
+<tr><td><code>pid_or_app_power</code></td><td>float</td><td>Power attributed to the monitored PID or application in watts; <code>0.0</code> if none selected</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="example-fetching-via-curl"><a class="header" href="#example-fetching-via-curl">Example: Fetching via curl</a></h3>
+<pre><code class="language-bash">curl http://localhost:8080/data
+</code></pre>
+<h3 id="example-websocket-with-websocat"><a class="header" href="#example-websocket-with-websocat">Example: WebSocket with websocat</a></h3>
+<pre><code class="language-bash">websocat ws://localhost:8080/ws
+</code></pre>
+<h2 id="combining-export-channels"><a class="header" href="#combining-export-channels">Combining Export Channels</a></h2>
+<p>All export channels can be active at the same time. For example:</p>
+<pre><code class="language-bash"># CSV file + ring buffer + API, no terminal output
+joularcore -s -f power.csv -r --api-port 8080
+</code></pre>
+<pre><code class="language-bash"># Process monitoring, CSV, and API
+joularcore -p 1234 -f power.csv --api-port 8080
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="systemd-service-linux"><a class="header" href="#systemd-service-linux">Systemd Service (Linux)</a></h1>
+<p>Joular Core ships with a ready-to-use systemd unit file located at <code>systemd/joularcore.service</code>. It lets you run Joular Core as a background daemon that starts on boot and restarts automatically if it crashes.</p>
+<h2 id="default-service-configuration"><a class="header" href="#default-service-configuration">Default Service Configuration</a></h2>
+<p>The included unit file looks like this:</p>
+<pre><code class="language-ini">[Unit]
+Description=Joular Core service
+
+[Service]
+Type=simple
+Restart=always
+User=root
+ExecStart=/usr/bin/joularcore -o -f /tmp/joularcore-service.csv
+
+[Install]
+WantedBy=multi-user.target
+</code></pre>
+<p>By default it runs Joular Core as root (required for RAPL access on Linux), writes the latest power reading to <code>/tmp/joularcore-service.csv</code> in overwrite mode (<code>-o</code>), and restarts automatically on failure.</p>
+<h2 id="installation-1"><a class="header" href="#installation-1">Installation</a></h2>
+<p>Copy the unit file to the systemd directory and reload the daemon:</p>
+<pre><code class="language-bash">sudo cp systemd/joularcore.service /etc/systemd/system/
+sudo systemctl daemon-reload
+</code></pre>
+<p>Enable automatic start on boot and then start the service immediately:</p>
+<pre><code class="language-bash">sudo systemctl enable joularcore
+sudo systemctl start joularcore
+</code></pre>
+<p>Check that it is running:</p>
+<pre><code class="language-bash">sudo systemctl status joularcore
+</code></pre>
+<h2 id="customisation"><a class="header" href="#customisation">Customisation</a></h2>
+<p>You can edit the <code>ExecStart</code> line to pass any Joular Core arguments. For example, to also expose an HTTP API and monitor a specific application:</p>
+<pre><code class="language-ini">ExecStart=/usr/bin/joularcore -o -f /tmp/joularcore-service.csv --api-port 8080
+</code></pre>
+<p>Or to write to a ring buffer without any file output:</p>
+<pre><code class="language-ini">ExecStart=/usr/bin/joularcore -s -r
+</code></pre>
+<p>After editing the file, reload systemd for the change to take effect:</p>
+<pre><code class="language-bash">sudo systemctl daemon-reload
+sudo systemctl restart joularcore
+</code></pre>
+<h2 id="reading-the-output-file"><a class="header" href="#reading-the-output-file">Reading the Output File</a></h2>
+<p>When using the default <code>-o -f /tmp/joularcore-service.csv</code> configuration, the file always contains exactly one data row — the most recent measurement. Any script or tool can poll this file at its own pace:</p>
+<pre><code class="language-bash">cat /tmp/joularcore-service.csv
+</code></pre>
+<p>Example output:</p>
+<pre><code>Timestamp,Total Power (W),CPU Power (W),GPU Power (W),CPU Usage (%)
+1712345678,18.45,15.20,3.25,24.60
+</code></pre>
+<h2 id="stopping-and-disabling"><a class="header" href="#stopping-and-disabling">Stopping and Disabling</a></h2>
+<pre><code class="language-bash">sudo systemctl stop joularcore
+sudo systemctl disable joularcore
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="integration-with-systems-and-tools"><a class="header" href="#integration-with-systems-and-tools">Integration with Systems and Tools</a></h1>
-<p>Joular Core exports its power data with multiple outputs and approaches: to the terminal, to CSV files, to an HTTP and WebSockets API, and to a ring buffer shared memory (IPC).
-Check <a href="#exporting-power-and-energy-measurements">this page</a> for details on these export approaches in Joular Core.</p>
-<p>Therefore, Joular Core can be used in IDEs, integration systems CI/CD, alongside other profilers or debugging tools, connect with dashboard for real-time power monitoring, send data to remote databases, or anywhere needed!</p>
-<p>All what is needed is to start Joular Core and configure the export you want to use, and that’s it.</p>
-<p>Joular Core can also be run as a CLI service, on all platforms.</p>
+<p>Joular Core is designed to be embedded in larger workflows. It exposes power data through multiple channels — terminal, CSV files, a shared-memory ring buffer, and an HTTP/WebSocket API — so it can feed into whatever downstream system you are working with.</p>
+<p>See <a href="#exporting-power-data">Exporting Power Data</a> for the technical details of each channel. This page focuses on integration patterns.</p>
+<h2 id="cicd-pipelines"><a class="header" href="#cicd-pipelines">CI/CD Pipelines</a></h2>
+<p>Run Joular Core alongside your build or test suite to measure the energy cost of a workload.</p>
+<p><strong>Example: measure energy consumed by a test run</strong></p>
+<pre><code class="language-bash"># Start Joular Core silently, writing to CSV
+joularcore -s -f build_power.csv &amp;
+JOULAR_PID=$!
+
+# Run your workload
+cargo test
+
+# Stop monitoring
+kill $JOULAR_PID
+</code></pre>
+<p>The CSV file will contain one row per second of the test run. Sum the power column and multiply by the sample interval (1 second) to get total energy in joules.</p>
+<h2 id="dashboards-and-monitoring-stacks"><a class="header" href="#dashboards-and-monitoring-stacks">Dashboards and Monitoring Stacks</a></h2>
+<p>The HTTP/WebSocket API makes it straightforward to feed power data into any dashboard.</p>
+<p><strong>Example: stream to a Prometheus / Grafana stack via a scraper</strong></p>
+<pre><code class="language-bash">joularcore --api-port 9001 -s &amp;
+</code></pre>
+<p>A small scraper can poll <code>GET http://localhost:9001/data</code> on each Prometheus scrape interval and expose the fields as gauges.</p>
+<p><strong>Example: real-time browser dashboard</strong></p>
+<p>Connect a browser-based dashboard directly to the WebSocket endpoint:</p>
+<pre><code class="language-javascript">const ws = new WebSocket("ws://localhost:8080/ws");
+ws.onmessage = (event) =&gt; {
+  const data = JSON.parse(event.data);
+  updateChart(data.timestamp, data.total_power, data.cpu_power, data.gpu_power);
+};
+</code></pre>
+<h2 id="ide-and-profiler-integration"><a class="header" href="#ide-and-profiler-integration">IDE and Profiler Integration</a></h2>
+<p>Joular Core can run as a background service alongside an IDE or profiler. The ring buffer channel provides the lowest latency option for IPC:</p>
+<ol>
+<li>Start Joular Core with <code>joularcore -r -s</code></li>
+<li>In your IDE plugin or profiler, memory-map the ring buffer path (<code>/dev/shm/joularcorering</code> on Linux, <code>/tmp/joularcorering</code> on macOS, <code>Local\\JoularCoreRing</code> on Windows)</li>
+<li>Read the 5 <code>f64</code> values: CPU power, GPU power, total power, CPU usage, PID/app power</li>
+</ol>
+<p>The ring buffer is updated every second and is safe to read from multiple processes simultaneously.</p>
+<h2 id="remote-power-databases-and-time-series-storage"><a class="header" href="#remote-power-databases-and-time-series-storage">Remote Power Databases and Time-Series Storage</a></h2>
+<p>Joular Core does not push to remote databases directly, but the CSV and API outputs make it easy to bridge to any time-series store.</p>
+<p><strong>Example: push to InfluxDB with a small shell loop</strong></p>
+<pre><code class="language-bash">joularcore -s --api-port 8080 &amp;
+
+while true; do
+  DATA=$(curl -s http://localhost:8080/data)
+  TS=$(echo $DATA | jq '.timestamp')
+  TOTAL=$(echo $DATA | jq '.total_power')
+  curl -s -XPOST "http://influxdb:8086/write?db=energy" \
+    --data-binary "power,host=$(hostname) total=${TOTAL} ${TS}000000000"
+  sleep 1
+done
+</code></pre>
+<h2 id="running-as-a-service"><a class="header" href="#running-as-a-service">Running as a Service</a></h2>
+<p>On Linux, use the included systemd unit file to have Joular Core run continuously in the background without manual intervention. See <a href="#systemd-service-linux">Systemd Service</a>.</p>
+<p>On Windows and macOS, you can register Joular Core as a service using the OS-native service managers (Windows Service Manager or <code>launchd</code> on macOS). The key is to use <code>-s -o -f &lt;path&gt;</code> or <code>--api-port</code> so data is accessible to other programs without a terminal attached.</p>
+<h2 id="virtual-machine-monitoring"><a class="header" href="#virtual-machine-monitoring">Virtual Machine Monitoring</a></h2>
+<p>For monitoring inside VMs, see the dedicated <a href="#virtual-machines-1">Virtual Machines</a> page, which covers how to bridge host-level power readings into the guest using the shared-file mechanism.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="virtual-machines-1"><a class="header" href="#virtual-machines-1">Virtual Machines</a></h1>
-<p>Joular Core also works inside virtual machines.
-All its functionalities (such as monitoring a PID or an application) work the same inside a virtual machine as with bare metal installation.</p>
-<p>In virtual machines, Joular Core in the guest OS needs to get the power consumption of the virtual machine instance itself.
-This can only be done by installing on the host OS, a power monitoring tool (such as Joular Core itself or other ones), and monitoring the power consumption of the specific guest virtual machine process.</p>
-<p>The power data of the VM process need to be written to a shared file between the host and the guest.
-Inside the guest, Joular Core will read this file continuously and use the reported power value as the power of the entire virtual machine.</p>
-<p>Joular Core is agnostic to what power tools in installed in the host and can work with any available tool that is capable of monitoring the VM process.</p>
-<p>For virtual machines, two environment variables must be set depending on whether you want to monitor the CPU, the GPU, or both:</p>
+<p>Joular Core works inside virtual machines with the same feature set as on bare metal: system-wide monitoring, per-process monitoring, per-application monitoring, and all export channels.</p>
+<p>The challenge specific to virtual machines is that the guest OS has no direct access to RAPL or other hardware power interfaces — those are managed by the hypervisor. Joular Core solves this by reading power data from a file written by a tool running on the host.</p>
+<h2 id="how-it-works"><a class="header" href="#how-it-works">How It Works</a></h2>
+<ol>
+<li>On the <strong>host OS</strong>, run a power monitoring tool (Joular Core itself, or any other tool) and have it continuously write the power consumption of the VM process to a file that is shared between the host and the guest.</li>
+<li>On the <strong>guest OS</strong>, set environment variables telling Joular Core where that file is and what format it uses.</li>
+<li>Joular Core in the guest reads the file every second and treats the reported value as its total CPU (or GPU) power.</li>
+<li>From there, process and application attribution works normally — proportional to CPU utilisation within the guest.</li>
+</ol>
+<p>Joular Core is agnostic to what tool runs on the host. Any tool that can write power data in one of the supported formats will work.</p>
+<h2 id="environment-variables-1"><a class="header" href="#environment-variables-1">Environment Variables</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Variable</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>VM_CPU_POWER_FILE</code></td><td>Path (inside the guest) to the file containing CPU power data</td></tr>
+<tr><td><code>VM_CPU_POWER_FORMAT</code></td><td>Format of that file: <code>joularcore</code>, <code>powerjoular</code>, or <code>watts</code> (default: <code>watts</code>)</td></tr>
+<tr><td><code>VM_GPU_POWER_FILE</code></td><td>Path (inside the guest) to the file containing GPU power data</td></tr>
+<tr><td><code>VM_GPU_POWER_FORMAT</code></td><td>Format of that file: <code>joularcore</code>, <code>powerjoular</code>, or <code>watts</code> (default: <code>watts</code>)</td></tr>
+</tbody>
+</table>
+</div>
+<p>You only need to set the variables for the components you want to monitor. If <code>VM_CPU_POWER_FILE</code> is not set, the VM feature is inactive and Joular Core falls back to whatever hardware interface is available in the guest (which may return 0 if there is none).</p>
+<h2 id="supported-file-formats"><a class="header" href="#supported-file-formats">Supported File Formats</a></h2>
+<h3 id="watts"><a class="header" href="#watts"><code>watts</code></a></h3>
+<p>A plain text file containing a single numeric value in watts, with no header. Updated by the host on every measurement cycle.</p>
+<pre><code>18.45
+</code></pre>
+<h3 id="powerjoular"><a class="header" href="#powerjoular"><code>powerjoular</code></a></h3>
+<p>A CSV file with at least three columns. The third column (index 2) contains the power value in watts.</p>
+<pre><code>...,18.45,...
+</code></pre>
+<h3 id="joularcore"><a class="header" href="#joularcore"><code>joularcore</code></a></h3>
+<p>A CSV file in Joular Core’s standard output format, with a header row. The file should be written in overwrite mode (<code>-o</code>) so it always contains exactly one data row.</p>
+<pre><code>Timestamp,Total Power (W),CPU Power (W),GPU Power (W),CPU Usage (%)
+1712345678,18.45,15.20,3.25,24.60
+</code></pre>
+<p>When using this format, Joular Core reads the <code>CPU Power (W)</code> column for CPU power and <code>GPU Power (W)</code> for GPU power.</p>
+<h2 id="step-by-step-example-joular-core-on-both-host-and-guest"><a class="header" href="#step-by-step-example-joular-core-on-both-host-and-guest">Step-by-Step Example: Joular Core on Both Host and Guest</a></h2>
+<p>This example uses Joular Core itself on the host to monitor the VM process, and Joular Core inside the guest to attribute that power to individual processes.</p>
+<h3 id="host-setup"><a class="header" href="#host-setup">Host Setup</a></h3>
+<p>Find the PID of the virtual machine process (for QEMU/KVM this is <code>qemu-system-x86_64</code>, for VirtualBox it is <code>VirtualBoxVM</code>, etc.).</p>
+<p>Run Joular Core on the host, monitoring that process and writing to a shared file in overwrite mode:</p>
+<pre><code class="language-bash">joularcore -p &lt;VM_PID&gt; -o -f /shared/vm_power.csv -s
+</code></pre>
+<p>The file <code>/shared/vm_power.csv</code> must be accessible from inside the guest — mount the directory using VirtFS, a shared folder, or any other mechanism supported by your hypervisor.</p>
+<h3 id="guest-setup"><a class="header" href="#guest-setup">Guest Setup</a></h3>
+<p>Inside the guest, set the environment variables so Joular Core knows where to find the power data. Assuming the shared file is mounted at <code>/mnt/host/vm_power.csv</code> inside the guest:</p>
+<pre><code class="language-bash">export VM_CPU_POWER_FILE=/mnt/host/vm_power.csv
+export VM_CPU_POWER_FORMAT=joularcore
+</code></pre>
+<p>Then run Joular Core as usual. You can monitor any process or application inside the guest:</p>
+<pre><code class="language-bash">joularcore -a myapp
+</code></pre>
+<p>Joular Core reads the total VM power from the shared file and distributes it proportionally to processes based on their CPU utilisation within the guest.</p>
+<h2 id="notes"><a class="header" href="#notes">Notes</a></h2>
 <ul>
-<li><code>VM_CPU_POWER_FILE</code>: Path to the CPU power data file</li>
-<li><code>VM_CPU_POWER_FORMAT</code>: Format of the CPU power data (<code>joularcore</code>  or <code>powerjoular</code> or <code>watts</code>, default is <code>watts</code> if not set)</li>
-<li><code>VM_GPU_POWER_FILE</code>: Path to the GPU power data file</li>
-<li><code>VM_GPU_POWER_FORMAT</code>: Format of the GPU power data (<code>joularcore</code> or <code>powerjoular</code> or <code>watts</code>, default is <code>watts</code> if not set)</li>
-</ul>
-<h2 id="use-case-example-with-joular-core-on-host-and-guest"><a class="header" href="#use-case-example-with-joular-core-on-host-and-guest">Use case example with Joular Core on host and guest</a></h2>
-<p>A use case example is using Joular Core on both the host and the guest.</p>
-<h3 id="in-the-host-os"><a class="header" href="#in-the-host-os">In the host OS</a></h3>
-<ul>
-<li>Install Joular Core</li>
-<li>Run Joular Core while specifying the PID of the virtual machine of the guest OS (or the application name), and writing the power data in a CSV file in overwrite mode.</li>
-<li>For instance, you can run Joular Core with the following command: <code>joularcore -p $VM_PID -o /home/vm/vm.csv</code></li>
-<li>Share the <code>/home/vm/vm.csv</code> between the host OS and the guest OS</li>
-</ul>
-<h3 id="in-the-guest-os"><a class="header" href="#in-the-guest-os">In the guest OS</a></h3>
-<ul>
-<li>Install Joular Core</li>
-<li>Share the <code>/home/vm/vm.csv</code> between the host OS and the guest OS, potentially having a different path of the file inside the guest. For instance, <code>/opt/vm/vm.csv</code></li>
-<li>Run Joular Core after setting the needed environemental variables.</li>
-<li>For example, in our use case example, set <code>VM_CPU_POWER_FILE</code> to <code>/opt/vm/vm.csv</code>, and <code>VM_CPU_POWER_FORMAT</code> to <code>joularcore</code></li>
-<li>You can add other options for your needs, such as <code>-p</code> or <code>-a</code> to monitor a specific process or application inside your virtual machine.</li>
+<li>The shared file must be on a file system visible to both host and guest. tmpfs (<code>/dev/shm</code>) on Linux is a good choice for low-latency sharing.</li>
+<li>Write the file in overwrite mode (<code>-o</code>) on the host so Joular Core in the guest always sees the latest value rather than stale data from earlier rows.</li>
+<li>If the file is temporarily unavailable or empty, Joular Core in the guest treats power as 0 for that sample and continues.</li>
+<li>The <code>VM_CPU_POWER_FILE</code> and <code>VM_GPU_POWER_FILE</code> paths are interpreted inside the guest. They do not need to match the host path.</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="how-joular-core-works"><a class="header" href="#how-joular-core-works">How Joular Core Works</a></h1>
-<p>Under construction.</p>
+<p>This page describes the internal architecture of Joular Core: how it reads hardware power data, how it attributes that power to processes and applications, how it produces output, and how the different subsystems fit together.</p>
+<h2 id="high-level-architecture"><a class="header" href="#high-level-architecture">High-Level Architecture</a></h2>
+<p>At startup, Joular Core:</p>
+<ol>
+<li>Parses command-line arguments</li>
+<li>Detects the platform and initialises the appropriate power readers and CPU utilisation trackers</li>
+<li>Optionally calibrates an idle CPU baseline</li>
+<li>Enters a monitoring loop that fires once per second</li>
+<li>On each iteration: reads power, reads CPU utilisation, attributes process/app power, and sends the result to all configured output channels</li>
+<li>On Ctrl+C: flushes outputs and exits cleanly</li>
+</ol>
+<pre><code>┌──────────────────────────────────────────────────────────┐
+│                   Argument Parsing                       │
+└──────────────────────────┬───────────────────────────────┘
+                           │
+┌──────────────────────────▼───────────────────────────────┐
+│                  Platform Setup                          │
+│  Detect OS → create CPU/GPU energy readers               │
+│             → create CPU utilisation trackers            │
+│             → set up ring buffer (if -r)                 │
+│             → set up API server (if --api-port)          │
+└──────┬──────────────────────┬──────────────────┬─────────┘
+       │                      │                  │
+       ▼                      ▼                  ▼
+  Monitor Loop          Ring Buffer          API Server
+  (1 Hz)                Writer               (async)
+       │
+       ├── CPU energy reader
+       ├── GPU energy reader
+       ├── CPU utilisation reader
+       ├── Process tracker (optional)
+       └── App tracker (optional)
+            │
+            ▼
+       MonitorSample
+            │
+            ├── Terminal output
+            ├── CSV file output
+            ├── Ring buffer write
+            └── API broadcast
+</code></pre>
+<h2 id="platform-abstraction"><a class="header" href="#platform-abstraction">Platform Abstraction</a></h2>
+<p>The codebase is built around three traits defined in <code>src/energy.rs</code>:</p>
+<ul>
+<li><strong><code>CPUEnergy</code></strong> — returns the current CPU power in watts via <code>get_power()</code></li>
+<li><strong><code>GPUEnergy</code></strong> — returns the current GPU power in watts via <code>get_power()</code></li>
+<li><strong><code>PlatformEnergy</code></strong> — a factory that creates the above readers and the CPU utilisation trackers, and provides the process/app power attribution formula</li>
+</ul>
+<p>Each supported OS has a concrete implementation of these traits. The monitoring loop talks only to these trait objects, so it is identical on every platform.</p>
+<h3 id="linux-1"><a class="header" href="#linux-1">Linux</a></h3>
+<p>CPU power is read from the Intel RAPL (Running Average Power Limit) sysfs interface at <code>/sys/class/powercap/intel-rapl/</code>. RAPL is supported on Intel processors since Sandy Bridge (2011) and on AMD processors since Ryzen. The interface exposes cumulative energy counters in microjoules; Joular Core reads two consecutive values a fixed time apart and converts the delta to watts.</p>
+<p>CPU utilisation is computed from <code>/proc/stat</code>. Joular Core reads the <code>user</code>, <code>nice</code>, <code>system</code>, <code>idle</code>, <code>iowait</code>, <code>irq</code>, <code>softirq</code>, and <code>steal</code> tick counters on each sample, computes the delta from the previous sample, and calculates utilisation as:</p>
+<pre><code>utilisation = 1 − (Δidle / Δtotal)
+</code></pre>
+<p>Per-process utilisation is computed from <code>/proc/&lt;pid&gt;/stat</code>, which exposes cumulative user and kernel CPU time (in clock ticks) for each process. Joular Core computes the delta from the previous sample normalised by the total CPU time delta from <code>/proc/stat</code>.</p>
+<p>GPU power on Linux is read by:</p>
+<ul>
+<li><strong>Nvidia</strong>: calling <code>nvidia-smi --query-gpu=power.draw --format=csv,noheader,nounits</code> and parsing the output. Power values from all GPUs are summed.</li>
+<li><strong>AMD</strong>: calling <code>amd-smi</code> or <code>rocm-smi</code> with JSON output and extracting the power fields.</li>
+</ul>
+<h3 id="windows-2"><a class="header" href="#windows-2">Windows</a></h3>
+<p>CPU power is read from Hubblo’s RAPL Windows kernel driver via <code>DeviceIoControl</code>. The driver exposes RAPL data through a Windows device interface, returning power in watts directly.</p>
+<p>CPU utilisation is read from the Win32 API via <code>GetSystemTimes()</code>, which returns <code>idle</code>, <code>kernel</code>, and <code>user</code> times as <code>FILETIME</code> structures. Utilisation is computed from the deltas between two successive calls.</p>
+<p>Per-process CPU time is read via <code>GetProcessTimes()</code>. Application monitoring enumerates processes using the Windows Toolhelp32 API (<code>CreateToolhelp32Snapshot</code>, <code>Process32First</code>, <code>Process32Next</code>).</p>
+<p>GPU power on Windows follows the same approach as Linux: <code>nvidia-smi</code> for Nvidia, <code>amd-smi</code> for AMD.</p>
+<h3 id="macos-2"><a class="header" href="#macos-2">macOS</a></h3>
+<p>CPU, GPU, and overall system power are all read from Apple’s <code>powermetrics</code> tool, which ships with macOS. Joular Core spawns <code>powermetrics</code> as a subprocess with JSON output format and parses the result. On Apple Silicon, <code>powermetrics</code> reports CPU and GPU power separately; on Intel Macs it reports CPU power only.</p>
+<p>Because <code>powermetrics</code> requires elevated privileges to access hardware counters, Joular Core must be run with elevated access on macOS.</p>
+<p>CPU utilisation on macOS is read via the Mach kernel API (<code>host_statistics64</code> with <code>HOST_CPU_LOAD_INFO</code>), which returns per-CPU user, system, and idle tick counters.</p>
+<p>Process and application monitoring on macOS uses Mach task info APIs to read per-process CPU times.</p>
+<h3 id="single-board-computers-sbc"><a class="header" href="#single-board-computers-sbc">Single-Board Computers (SBC)</a></h3>
+<p>SBC platforms (Raspberry Pi, Asus Tinker Board) do not have a hardware power interface accessible to software. Instead, Joular Core calculates CPU power from CPU utilisation using polynomial regression models:</p>
+<pre><code>power = c₀ + c₁·u + c₂·u² + … + cₙ·uⁿ
+</code></pre>
+<p>where <code>u</code> is the current CPU utilisation (0–100) and <code>c₀…cₙ</code> are model coefficients measured empirically for each specific board model and revision.</p>
+<p>The built-in models cover all supported Raspberry Pi models. A custom model can be supplied via the <code>SBC_POWER_MODEL_JSON</code> environment variable; the file format must match the <a href="https://github.com/joular/powermodels">Joular Power Models Database</a> schema.</p>
+<p>GPU power is always 0 on SBC platforms.</p>
+<h3 id="virtual-machines-2"><a class="header" href="#virtual-machines-2">Virtual Machines</a></h3>
+<p>In a VM, there is no direct hardware interface. Joular Core reads power from a shared file written by the host. The file is read on every sampling cycle. If the file is absent or empty, the power value for that sample is 0. The supported file formats are described in <a href="#virtual-machines-1">Virtual Machines</a>.</p>
+<h2 id="the-monitoring-loop"><a class="header" href="#the-monitoring-loop">The Monitoring Loop</a></h2>
+<p>The monitoring loop is in <code>src/monitor.rs</code> (<code>JoularCoreMonitor::poll</code>). It runs once per second and produces a <code>MonitorSample</code>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct MonitorSample {
+    pub timestamp: u64,       // Unix epoch seconds
+    pub cpu_power: f64,       // Watts
+    pub gpu_power: f64,       // Watts
+    pub total_power: f64,     // cpu_power + gpu_power
+    pub cpu_usage: f64,       // Percentage (0–100)
+    pub process_power: Option&lt;f64&gt;,       // Watts, if -p is set
+    pub app_power: Option&lt;(f64, usize)&gt;,  // (Watts, PID count), if -a is set
+}
+<span class="boring">}</span></code></pre>
+<p>Each field:</p>
+<ul>
+<li><strong><code>timestamp</code></strong>: wall-clock time at the moment of reading (<code>SystemTime::now()</code>)</li>
+<li><strong><code>cpu_power</code></strong> / <strong><code>gpu_power</code></strong>: raw readings from the hardware interface</li>
+<li><strong><code>total_power</code></strong>: sum of CPU and GPU power</li>
+<li><strong><code>cpu_usage</code></strong>: system-wide CPU utilisation percentage</li>
+<li><strong><code>process_power</code></strong> / <strong><code>app_power</code></strong>: attributed power, computed as described below</li>
+</ul>
+<p>Before the main loop starts, <code>loop_init()</code> takes one throwaway reading to warm up the energy counters. RAPL counts cumulative energy since boot; the first real delta needs a prior reference value.</p>
+<h2 id="process-and-application-power-attribution"><a class="header" href="#process-and-application-power-attribution">Process and Application Power Attribution</a></h2>
+<p>Joular Core attributes CPU power to a process (or application) using a proportional model:</p>
+<pre><code>process_power = 100 × (process_cpu_utilisation × attributed_cpu_power) / system_cpu_utilisation
+</code></pre>
+<p>where:</p>
+<ul>
+<li><strong><code>process_cpu_utilisation</code></strong> is the fraction of total CPU time used by the process (or the sum of all PIDs for an application) in the last second</li>
+<li><strong><code>attributed_cpu_power</code></strong> is <code>max(0, cpu_power − idle_baseline)</code> — the raw CPU power minus the idle baseline (zero if no baseline is configured)</li>
+<li><strong><code>system_cpu_utilisation</code></strong> is the overall CPU utilisation percentage</li>
+</ul>
+<p>If <code>system_cpu_utilisation</code> is zero (the CPU is completely idle), the attributed power is zero to avoid a division by zero.</p>
+<p>This model assumes that a process’s share of CPU power is proportional to its share of CPU time. This is an approximation — it does not account for frequency scaling within a core, NUMA topology, or work done in kernel threads on behalf of the process — but it is a practical and widely used approach for software-level power attribution.</p>
+<h3 id="cpu-idle-baseline-1"><a class="header" href="#cpu-idle-baseline-1">CPU Idle Baseline</a></h3>
+<p>When the <code>--cpu-idle-baseline</code> or <code>--calibrate-cpu-idle-baseline</code> option is set, the baseline is subtracted from the raw CPU power before attribution:</p>
+<pre><code>attributed_cpu_power = max(0, cpu_power − baseline)
+</code></pre>
+<p>This removes the base power the CPU consumes just running the operating system at rest, so that the attributed power more accurately reflects the energy consumed by the workload itself.</p>
+<p>Auto-calibration (<code>--calibrate-cpu-idle-baseline</code>) collects 5 power samples at 1-second intervals before starting the main loop and uses their average as the baseline.</p>
+<h3 id="application-monitoring-and-pid-refresh"><a class="header" href="#application-monitoring-and-pid-refresh">Application Monitoring and PID Refresh</a></h3>
+<p>When monitoring a named application (<code>-a</code>), Joular Core maintains a list of all PIDs whose process name matches the supplied string. This list is refreshed periodically (every <code>--app-refresh-interval</code> seconds, default 3) to pick up new processes spawned after monitoring started and drop ones that have exited. Setting the interval to 0 rescans on every second.</p>
+<h2 id="output-pipeline"><a class="header" href="#output-pipeline">Output Pipeline</a></h2>
+<p>After each <code>poll()</code> call, the <code>MonitorSample</code> is sent to an <code>OutputBundle</code>, which dispatches it to all active output channels:</p>
+<ol>
+<li>
+<p><strong>Terminal</strong> (<code>OutputWriter</code> in <code>Terminal</code> mode): formats the reading with ANSI colour codes and writes it to stdout, overwriting the previous line using carriage return and ANSI erase-line sequences. In numeric mode (<code>-i</code>), a bare float is printed instead.</p>
+</li>
+<li>
+<p><strong>CSV file</strong> (<code>OutputWriter</code> in <code>CsvFile</code> mode): appends one row to the CSV file. In overwrite mode (<code>-o</code>), the file is truncated to zero before each write so only the latest row is kept.</p>
+</li>
+<li>
+<p><strong>Ring buffer</strong> (<code>RingBufferWriter</code>): writes 5 <code>f64</code> values to a shared-memory region. On Linux and macOS this is a memory-mapped file (<code>memmap2</code>); on Windows it uses Win32 file mapping (<code>CreateFileMapping</code> / <code>MapViewOfFile</code>).</p>
+</li>
+<li>
+<p><strong>API</strong> (when the <code>api</code> feature is enabled): broadcasts an <code>ApiData</code> struct to all connected HTTP and WebSocket clients via a Tokio broadcast channel. The HTTP handler (<code>GET /data</code>) reads the latest broadcast value; the WebSocket handler (<code>/ws</code>) streams each new broadcast as a JSON message.</p>
+</li>
+</ol>
+<h2 id="api-server"><a class="header" href="#api-server">API Server</a></h2>
+<p>The API server (<code>src/api.rs</code>) is built with the Axum web framework running on a Tokio async runtime. It runs in a separate async task alongside the synchronous monitoring loop. Communication between the two is done via a <code>tokio::sync::broadcast::Sender&lt;ApiData&gt;</code>.</p>
+<ul>
+<li><strong><code>GET /data</code></strong>: the handler subscribes to the broadcast channel and immediately returns the last received value as JSON.</li>
+<li><strong><code>/ws</code></strong>: the WebSocket handler subscribes to the broadcast channel and pushes each new value as a JSON message to the connected client.</li>
+<li>CORS is enabled via <code>tower-http</code>’s <code>CorsLayer</code>, so the API can be consumed directly from browser-based dashboards.</li>
+</ul>
+<h2 id="graceful-shutdown"><a class="header" href="#graceful-shutdown">Graceful Shutdown</a></h2>
+<p>Joular Core installs a Ctrl+C handler via the <code>ctrlc</code> crate. When the signal is received:</p>
+<ol>
+<li>A shared <code>Arc&lt;AtomicBool&gt;</code> flag is set to <code>false</code>, causing the monitoring loop to exit after the current iteration.</li>
+<li>The ANSI cursor (hidden at startup) is restored.</li>
+<li>All buffered output is flushed and file handles are dropped cleanly.</li>
+</ol>
+<h2 id="code-layout"><a class="header" href="#code-layout">Code Layout</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Path</th><th>Purpose</th></tr>
+</thead>
+<tbody>
+<tr><td><code>src/main.rs</code></td><td>CLI entry point: argument parsing, monitoring loop, output setup</td></tr>
+<tr><td><code>src/maingui.rs</code></td><td>GUI binary entry point</td></tr>
+<tr><td><code>src/lib.rs</code></td><td>Library root: re-exports all public modules</td></tr>
+<tr><td><code>src/args.rs</code></td><td>Clap-derived argument struct</td></tr>
+<tr><td><code>src/common.rs</code></td><td><code>JoularContext</code>: platform detection and component initialisation</td></tr>
+<tr><td><code>src/monitor.rs</code></td><td><code>JoularCoreMonitor</code>: the sampling loop and <code>MonitorSample</code></td></tr>
+<tr><td><code>src/energy.rs</code></td><td><code>CPUEnergy</code>, <code>GPUEnergy</code>, <code>PlatformEnergy</code> traits</td></tr>
+<tr><td><code>src/cpu.rs</code></td><td><code>CPUUtilization</code>, <code>ProcessCPUUtilization</code>, <code>AppCPUUtilization</code> traits and Linux implementations</td></tr>
+<tr><td><code>src/output.rs</code></td><td><code>OutputWriter</code>, <code>OutputBundle</code>, <code>OutputSink</code> traits</td></tr>
+<tr><td><code>src/ringbuffer.rs</code></td><td><code>RingBufferWriter</code>: shared-memory ring buffer for Linux/macOS/Windows</td></tr>
+<tr><td><code>src/api.rs</code></td><td>Axum-based HTTP and WebSocket API server</td></tr>
+<tr><td><code>src/logging.rs</code></td><td><code>tracing</code>-based structured logging helpers</td></tr>
+<tr><td><code>src/platform/linux.rs</code></td><td>Linux-specific power readers and process trackers</td></tr>
+<tr><td><code>src/platform/windows.rs</code></td><td>Windows-specific power readers and process trackers</td></tr>
+<tr><td><code>src/platform/macos.rs</code></td><td>macOS-specific <code>powermetrics</code> integration and process trackers</td></tr>
+<tr><td><code>src/platform/sbc.rs</code></td><td>SBC regression model power calculation</td></tr>
+<tr><td><code>src/platform/nvidia.rs</code></td><td>Nvidia GPU power via <code>nvidia-smi</code></td></tr>
+<tr><td><code>src/platform/amdgpu.rs</code></td><td>AMD GPU power via <code>amd-smi</code> / <code>rocm-smi</code></td></tr>
+<tr><td><code>src/vm.rs</code></td><td>Virtual machine shared-file power reader</td></tr>
+<tr><td><code>src/gui/</code></td><td>egui-based GUI: model, views, history, theme</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="key-dependencies"><a class="header" href="#key-dependencies">Key Dependencies</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Crate</th><th>Version</th><th>Purpose</th></tr>
+</thead>
+<tbody>
+<tr><td><code>clap</code></td><td>4.x</td><td>Command-line argument parsing</td></tr>
+<tr><td><code>egui</code> / <code>eframe</code></td><td>0.34</td><td>Cross-platform GUI framework</td></tr>
+<tr><td><code>axum</code></td><td>0.8</td><td>HTTP and WebSocket API server</td></tr>
+<tr><td><code>tokio</code></td><td>1.x</td><td>Async runtime for the API server</td></tr>
+<tr><td><code>tower-http</code></td><td>0.6</td><td>CORS middleware</td></tr>
+<tr><td><code>serde</code> / <code>serde_json</code></td><td>1.x</td><td>JSON serialisation for the API</td></tr>
+<tr><td><code>sysinfo</code></td><td>0.38</td><td>System and process information (used for process enumeration)</td></tr>
+<tr><td><code>memmap2</code></td><td>0.9</td><td>Memory-mapped I/O for the Unix ring buffer</td></tr>
+<tr><td><code>windows</code></td><td>0.62</td><td>Win32 API bindings</td></tr>
+<tr><td><code>mach2</code></td><td>0.6</td><td>Mach kernel API bindings (macOS)</td></tr>
+<tr><td><code>libc</code></td><td>0.2</td><td>C library bindings (macOS)</td></tr>
+<tr><td><code>ctrlc</code></td><td>3.x</td><td>Cross-platform Ctrl+C handler</td></tr>
+<tr><td><code>tracing</code></td><td>0.1</td><td>Structured logging</td></tr>
+<tr><td><code>rfd</code></td><td>0.17</td><td>Native file dialog (GUI file picker)</td></tr>
+</tbody>
+</table>
+</div>
 
                     </main>
 

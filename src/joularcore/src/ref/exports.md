@@ -1,55 +1,177 @@
-# Exporting power and energy measurements
+# Exporting Power Data
 
-Joular Core can export the power and energy measurements through multiple interfaces and approaches.
-All the following export approaches works on all supported platforms and operating systems.
+Joular Core can send power measurements to multiple destinations. All export mechanisms work on all supported platforms and operating systems.
 
-## Write on terminal and stdout redirection
+## Terminal Output (default)
 
-By default, Joular Core will write data to the terminal.
-However, this data could be friendly for stdout redirection by using the `-i` argument: `joularcore -i` or `joularcore.exe -i`
+By default, Joular Core writes a live display to the terminal. The line is updated in place every second using ANSI escape codes:
 
-This will output just a float on the terminal that can be redirected anywhere.
-By default, the float will be the total power consumption.
-If combined with other arguments, such as the `-c` argument to select a specific component, it will provide only that specific component.
+```
+⚡ Total 18.45 W | CPU 15.20 W | GPU 3.25 W | CPU Usage 24.60%
+```
 
-## CSV files
+When monitoring a process or application:
+```
+⚡ Total 18.45 W | CPU 15.20 W | GPU 3.25 W | CPU Usage 24.60% | PID 1.84 W
+⚡ Total 18.45 W | CPU 15.20 W | GPU 3.25 W | CPU Usage 24.60% | App 3.12 W (4 PIDs)
+```
 
-Joular Core can export data to a CSV file with the `-f` argument, while supplying a filename or path.
+When a component filter (`-c cpu` or `-c gpu`) is set, only that component is shown:
+```
+CPU 15.20 W
+GPU 3.25 W
+```
 
-```joularcore -f myfile.csv``` will write a CSV with a header and a new line for every second of power monitoring.
-The format of the CSV file is the following:
-```Timestamp,Total Power (W), CPU Power (W),GPU Power (W),CPU Usage (%),Process Power (W)```
+Use `-s` / `--silent` to suppress terminal output while keeping other export channels active.
 
-## Inter-process communication with a shared memory ring buffer
+### Numeric-only mode (`-i`)
 
-Joular Core can also write data to a shared memory ring buffer, on all OSes, when executed with the `-r` argument: `joularcore -r` or `joularcore.exe -r`
-This allows much faster communication and sharing power data between Joular Core and other programs.
+Adding `-i` prints a bare float with no labels or formatting, one value per line:
 
-Default ring buffer paths are:
-- `/dev/shm/joularcorering` on Linux
-- `/tmp/joularcorering` on macOS
-- `Local\\JoularCoreRing` on Windows
+```bash
+joularcore -i        # prints total power
+joularcore -c cpu -i # prints CPU power only
+```
 
-The ring buffer have a size of 5 data stuctures with the following values (by order): `CPU power`, `GPU power`, `Total power`, `CPU usage`, and `PID or APP power`.
-Unavailable values, such as when monitoring entire CPU and not a specific application, will be at 0.
+This mode is useful for stdout redirection or piping into other tools.
 
-## HTTP and WebSockets API
+## CSV Files (`-f`)
 
-Joular Core can expose power data through an HTTP server or WebSockets.
-To use this API, you need to enable the `api` feature when building Joular Core.
+Use `-f <FILE>` to write measurements to a CSV file. A header line is written once at the start, then one data row is appended every second.
 
-To run Joular Core and export data through the API, use the `--api-port` option to specify the port for the HTTP and WebSockets server endpoint. For example:
+### CSV Formats
+
+The columns depend on which options are active:
+
+**Default (no process/app/component filter)**
+```
+Timestamp,Total Power (W),CPU Power (W),GPU Power (W),CPU Usage (%)
+1712345678,18.45,15.20,3.25,24.60
+```
+
+**Process monitoring (`-p`)**
+```
+Timestamp,Total Power (W),CPU Power (W),GPU Power (W),CPU Usage (%),Process Power (W)
+1712345678,18.45,15.20,3.25,24.60,1.84
+```
+
+**Application monitoring (`-a`)**
+```
+Timestamp,Total Power (W),CPU Power (W),GPU Power (W),CPU Usage (%),App Power (W),App PIDs
+1712345678,18.45,15.20,3.25,24.60,3.12,4
+```
+
+**CPU-only component filter (`-c cpu`)**
+```
+Timestamp,CPU Power (W)
+1712345678,15.20
+```
+
+**GPU-only component filter (`-c gpu`)**
+```
+Timestamp,GPU Power (W)
+1712345678,3.25
+```
+
+The `Timestamp` column contains a Unix epoch timestamp in seconds.
+
+### Overwrite Mode (`-o`)
+
+By default, rows are appended to the file. With `-o`, the file is truncated before each write so it always contains exactly one data row (plus the header). This is useful when another program is polling the file for the latest value.
+
+## Shared-Memory Ring Buffer (`-r`)
+
+Use `-r` or `--ringbuffer` to write power data to a shared-memory region. Any process on the same machine can read from this region without file I/O or network overhead.
+
+### Ring Buffer Paths
+
+| OS      | Path |
+|---------|------|
+| Linux   | `/dev/shm/joularcorering` |
+| macOS   | `/tmp/joularcorering` |
+| Windows | `Local\\JoularCoreRing` |
+
+### Ring Buffer Layout
+
+The ring buffer holds 5 consecutive `f64` (double-precision float) values:
+
+| Index | Field | Description |
+|:-----:|-------|-------------|
+| 0 | `cpu_power` | CPU power in watts |
+| 1 | `gpu_power` | GPU power in watts |
+| 2 | `total_power` | Total (CPU + GPU) power in watts |
+| 3 | `cpu_usage` | System CPU usage as a percentage (0–100) |
+| 4 | `pid_or_app_power` | Power attributed to the monitored PID or application in watts; `0.0` if no process/app is selected |
+
+The structure is C-compatible (repr C, packed), so it can be read directly from any language that supports memory-mapped files or shared memory.
+
+### Multiple Ring Buffer Entries
+
+The buffer holds 5 slots. The writer advances a head index on each update. Readers should track the head index to detect new data.
+
+## HTTP and WebSocket API (`--api-port`)
+
+When built with the `api` feature (on by default), Joular Core can expose power data over a local HTTP and WebSocket server. Start it with:
+
 ```bash
 joularcore --api-port 8080
 ```
 
-The API will expose the following endpoints:
-- `/data`: HTTP endpoint to get the latest power data
-- `/ws`: WebSockets endpoint for real-time power data
+The server binds to `0.0.0.0:<PORT>` and has CORS enabled, so it can be reached from browser-based dashboards.
 
-The API exposes data in JSON format:
-- `cpu_power`: CPU power in Watts
-- `gpu_power`: GPU power in Watts
-- `total_power`: Total power in Watts
-- `cpu_usage`: CPU usage in percentage
-- `pid_or_app_power`: PID or application power in Watts (0 if option not selected)
+### Endpoints
+
+| Endpoint | Protocol | Description |
+|----------|----------|-------------|
+| `/data`  | HTTP GET | Returns the latest power reading as JSON |
+| `/ws`    | WebSocket | Pushes a new JSON reading every second |
+
+### JSON Format
+
+Both endpoints use the same JSON schema:
+
+```json
+{
+  "timestamp": 1712345678,
+  "cpu_power": 15.20,
+  "gpu_power": 3.25,
+  "total_power": 18.45,
+  "cpu_usage": 24.60,
+  "pid_or_app_power": 1.84
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `timestamp` | integer | Unix timestamp in seconds |
+| `cpu_power` | float | CPU power in watts |
+| `gpu_power` | float | GPU power in watts |
+| `total_power` | float | Total power (CPU + GPU) in watts |
+| `cpu_usage` | float | System CPU usage as a percentage (0–100) |
+| `pid_or_app_power` | float | Power attributed to the monitored PID or application in watts; `0.0` if none selected |
+
+### Example: Fetching via curl
+
+```bash
+curl http://localhost:8080/data
+```
+
+### Example: WebSocket with websocat
+
+```bash
+websocat ws://localhost:8080/ws
+```
+
+## Combining Export Channels
+
+All export channels can be active at the same time. For example:
+
+```bash
+# CSV file + ring buffer + API, no terminal output
+joularcore -s -f power.csv -r --api-port 8080
+```
+
+```bash
+# Process monitoring, CSV, and API
+joularcore -p 1234 -f power.csv --api-port 8080
+```

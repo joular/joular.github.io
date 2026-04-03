@@ -1,56 +1,80 @@
 # Supported Platforms
 
-Joular Core supports a wide variety of platforms, operating systems and CPU architectures.
-It is as universal as it can get, and most environements are supported.
+Joular Core runs on all major desktop and server operating systems and a selection of single-board computers. The table below summarises what is supported on each platform and architecture.
 
-- 💻 **Supported Systems**: 🐧 Linux, 🪟 Windows, 🍎 MacOS, 🍓 Raspberry Pi, 💽 Virtual Machines.
-- ⚙️ **Supported Architectures**: x86_64 (amd64), x86/i686, aarch64, arm, armv7, GPUs (Nvidia, Apple, AMD).
+## Operating Systems and Architectures
 
-In particular:
-- PC/Servers using a RAPL supported Intel processor (since Sandy Bridge) or a RAPL supported AMD processor (since Ryzen), on Windows and Linux.
-- macOS computers on Intel mac or Apple ARM chip.
-- Virtual machines (any supported guest on any host).
-- For GPU: Nvidia, AMD and Apple
-- Raspberry Pi devices (multiple models) on Linux (all revisions for each model are supported):
-  - Model Zero W, for 32 bits OS
-  - Model 1 B, for 32 bits OS
-  - Model 1 B+, for 32 bits OS
-  - Model 2 B, for 32 bits OS
-  - Model 3 B, for 32 bits OS
-  - Model 3 B+, for 32 bits OS
-  - Model 4 B, for both 32 bits and 64 bits OS
-  - Model 400, for 64 bits OS
-  - Model 5 B, for 64 bits OS
-- Asus Tinker Board (S)
+### CPU
 
+| OS / Architecture     | x86_64 | i686 | Apple Silicon | arm | armv7 | aarch64 |
+|-----------------------|:------:|:----:|:-------------:|:---:|:-----:|:-------:|
+| Linux (PC / servers)  | ✓      | ✓    |               |     |       |         |
+| Windows               | ✓      | ✓    |               |     |       |         |
+| macOS                 | ✓      |      | ✓             |     |       |         |
+| SBC (Raspberry Pi, Asus) |     |      |               | ✓   | ✓     | ✓       |
+| Virtual Machines      | ✓      | ✓    | ✓             | ✓   | ✓     | ✓       |
 
-| Platform | Supported OS | Based on | Supported Architecture |
-|:--------------:|:---------------------:|:-----------------------------:|:-----------------------------:|
-|     Linux PC/Server    |        Linux        |             RAPL, Nvidia, AMD            |             x86, x86_64            |
-|     Windows PC/Server    |        Windows        |             RAPL, Nvidia, AMD            |             x86, x86_64            |
-|     macOS PC/Server    |        macOS        |             Powermetrics (Apple Silicon CPU, GPU, Intel CPU)           |             x86, x86_64, ARM            |
-|        Raspberry Pi       |        Linux       |             Our regression models (CPU)             |             ARM            |
-|        Asus Tinker Board       |        Linux       |             Our regression models (CPU)             |             ARM            |
-|     Virtual Machine    |        Supported guests (Windows, Linux, macOS), any host       |             Host's architecture (CPU, GPU)            |             x86, x86_64, ARM            |
+### GPU
 
-**CPU:**
+| OS / Architecture    | Nvidia | AMD | Apple GPU |
+|----------------------|:------:|:---:|:---------:|
+| Linux (PC / servers) | ✓      | ✓   |           |
+| Windows              | ✓      | ✓   |           |
+| macOS                |        |     | ✓         |
+| SBC (Raspberry Pi)   |        |     |           |
+| Virtual Machines     | ✓      | ✓   | ✓         |
 
-| OS                              | x86_64 | i686 | Apple Silicon | arm  | armv7 | aarch64 |
-|---------------------------------|--------|------|---------------|------|-------|---------|
-| Windows                         | 🌟     | 🌟   |               |      |       |         |
-| Linux                           | 🌟     | 🌟   |               |      |       |         |
-| macOS                           | 🌟     |      | 🌟            |      |       |         |
-| SBC (Raspberry Pi, Asus)        |        |      |               | 🌟   | 🌟    | 🌟      |
-| Virtual Machines                | 🌟     | 🌟   | 🌟            | 🌟   | 🌟    | 🌟      |
+## Platform Details
 
-**GPU:**
+| Platform | OS | Power source | Architectures |
+|---|---|---|---|
+| Linux PC / Server | Linux | Intel RAPL (sysfs), Nvidia via `nvidia-smi`, AMD via `amd-smi` / `rocm-smi` | x86, x86_64 |
+| Windows PC / Server | Windows | Hubblo's RAPL driver, Nvidia via `nvidia-smi`, AMD via `amd-smi` | x86, x86_64 |
+| macOS (Intel) | macOS | `powermetrics` | x86_64 |
+| macOS (Apple Silicon) | macOS | `powermetrics` (CPU + GPU) | aarch64 |
+| Raspberry Pi | Linux | Regression power models | arm, armv7, aarch64 |
+| Asus Tinker Board S | Linux | Regression power models | arm |
+| Virtual Machine (guest) | Windows, Linux, macOS | Shared file from host power tool | x86, x86_64, arm, aarch64 |
 
-| OS                           | Nvidia GPU | AMD GPU | Apple GPU |
-|------------------------------|------------|---------|-----------|
-| Windows                      | 🌟         | 🌟      |           |
-| Linux                        | 🌟         | 🌟      |           |
-| macOS                        |            |         | 🌟        |
-| SBC (Raspberry Pi, Asus)     |            |         |           |
-| Virtual Machines             | 🌟         | 🌟      | 🌟        |
+## Supported Single-Board Computers
 
-**Supported SBC platforms**: Raspberry Pi (models: Zero W, 1 B, 1 B+, 2 B, 3 B, 3 B+, 4 B, 400, 5 B), Asus Tinker Board S.
+The SBC build includes built-in power models for the following devices:
+
+**Raspberry Pi** (all revisions of each model):
+- Zero W (32-bit OS)
+- 1 B, 1 B+ (32-bit OS)
+- 2 B (32-bit OS)
+- 3 B, 3 B+ (32-bit OS)
+- 4 B (32-bit and 64-bit OS)
+- 400 (64-bit OS)
+- 5 B (64-bit OS)
+
+**Asus Tinker Board S**
+
+## CPU Power Monitoring Details
+
+**Linux and Windows (x86 / x86_64)**  
+CPU power is read from Intel's Running Average Power Limit (RAPL) interface. RAPL is supported on Intel processors since Sandy Bridge (2011) and on AMD processors since Ryzen. On Linux, RAPL is exposed via the powercap sysfs interface (`/sys/class/powercap/intel-rapl/`). On Windows, a kernel driver is required (see [Installation](./installation.md)).
+
+**macOS**  
+CPU (and GPU on Apple Silicon) power is read from Apple's `powermetrics` command. This tool ships with macOS and covers both Intel and Apple Silicon hardware. It requires elevated access to read power data.
+
+**Raspberry Pi and SBC**  
+Power is calculated from CPU utilization using polynomial regression models that were measured against each supported board at various load levels. No hardware interface or special permissions are needed.
+
+**Virtual Machines**  
+Power is read from a shared file written by a monitoring tool running on the host OS. See [Virtual Machines](../ref/vm.md) for the setup details.
+
+## GPU Power Monitoring Details
+
+**Nvidia (Linux and Windows)**  
+GPU power is read by calling `nvidia-smi --query-gpu=power.draw`. Power values from all detected GPUs are summed. If `nvidia-smi` is not installed or no Nvidia GPUs are found, the GPU power reading is 0 and monitoring continues normally.
+
+**AMD (Linux and Windows)**  
+GPU power is read by calling `amd-smi` or `rocm-smi` (whichever is available). As with Nvidia, if neither tool is available the GPU reading is 0.
+
+**Apple Silicon**  
+GPU power is included in the output from `powermetrics` alongside CPU power.
+
+**SBC**  
+GPU monitoring is not supported on single-board computers. GPU power is always reported as 0.

@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-e50d2a98.js";
+            window.path_to_searchindex_js = "../searchindex-100edc81.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-cced847a.js"></script>
@@ -174,17 +174,42 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="quick-usage-of-the-graphical-user-interface-gui-version"><a class="header" href="#quick-usage-of-the-graphical-user-interface-gui-version">Quick Usage of the graphical user interface (GUI) version</a></h1>
-<p>Joular Core is shipped with an easy-to-use, yet powerful and complete, graphical user interface (GUI), which works seamlessly and in a coherent way across all platforms and operating systems.</p>
-<p>To run the GUI, either:</p>
+                        <h1 id="quick-usage--graphical-user-interface"><a class="header" href="#quick-usage--graphical-user-interface">Quick Usage — Graphical User Interface</a></h1>
+<h2 id="starting-the-gui"><a class="header" href="#starting-the-gui">Starting the GUI</a></h2>
+<p>There are two ways to open the GUI:</p>
 <ul>
-<li>Start Joular Core with the <code>-g</code> or <code>--gui</code> argument.</li>
-<li>Use the dedicated GUI binary directly (double click for instance): <code>joularcoregui</code> (on Linux or macOS) or <code>joularcoregui.exe</code> (on Windows).</li>
+<li><strong>Dedicated binary</strong>: launch <code>joularcoregui</code> (Linux/macOS) or <code>joularcoregui.exe</code> (Windows) directly — double-click in a file manager or run from a terminal.</li>
+<li><strong>CLI flag</strong>: add <code>-g</code> or <code>--gui</code> to any <code>joularcore</code> command, for example:
+<pre><code class="language-bash">joularcore --gui
+joularcore -g --api-port 8080
+</code></pre>
+</li>
 </ul>
-<p>On RAPL-based Linux systems and on macOS, elevated access is needed to monitor CPU energy (hence the need to start it with <code>sudo</code>).</p>
-<p>Most CLI features are available in the GUI, with easy-to-use buttons and configuration settings to monitor the entire computer, a specific process, or a specific multi-process application.</p>
-<p>If the GUI is executed from a terminal, it also accepted the same CLI arguments as the CLI version.
-For instance, you can start the gui and an HTTP socket to export power data with: <code>joularcore -g --api-port 8080</code></p>
+<p>On RAPL-based Linux systems, <code>sudo</code> is still required:</p>
+<pre><code class="language-bash">sudo joularcoregui
+sudo joularcore --gui
+</code></pre>
+<p>On macOS, it’ll ask for elevated access to read <code>powermetrics</code>.</p>
+<h2 id="interface-overview"><a class="header" href="#interface-overview">Interface Overview</a></h2>
+<p>The GUI has two screens: <strong>Options</strong> and <strong>Monitor</strong>. Switch between them using the buttons at the top of the window.</p>
+<h3 id="options-screen"><a class="header" href="#options-screen">Options Screen</a></h3>
+<p>Before starting a monitoring session, the Options screen lets you configure:</p>
+<ul>
+<li><strong>Monitor mode</strong>: choose between monitoring the whole system, a specific PID, or a named application</li>
+<li><strong>Application / PID</strong>: type a process name or PID number directly; a dropdown lists running processes or applications</li>
+<li><strong>CSV export</strong>: toggle CSV file output on or off, and choose the file path using the native file picker</li>
+</ul>
+<p>Once configured, click <strong>Start Monitoring</strong> to begin.</p>
+<h3 id="monitor-screen"><a class="header" href="#monitor-screen">Monitor Screen</a></h3>
+<p>The Monitor screen shows live power readings updated every second:</p>
+<ul>
+<li><strong>Total power</strong> (watts)</li>
+<li><strong>CPU power</strong> (watts)</li>
+<li><strong>GPU power</strong> (watts)</li>
+<li><strong>CPU usage</strong> (%)</li>
+<li><strong>Process / application power</strong> (watts, if a PID or app was selected)</li>
+</ul>
+<p>A rolling graph plots each of these values over the last 60 seconds. Click <strong>Stop</strong> to return to the Options screen.</p>
 
                     </main>
 

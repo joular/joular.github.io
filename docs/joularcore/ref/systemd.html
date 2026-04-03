@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-e50d2a98.js";
+            window.path_to_searchindex_js = "../searchindex-100edc81.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-cced847a.js"></script>
@@ -174,12 +174,58 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="systemd-service"><a class="header" href="#systemd-service">Systemd Service</a></h1>
-<p>A systemd service is provided and can be installed (by copying <code>joularcore.service</code> in <code>systemd</code> folder to <code>/etc/systemd/system/</code>).
-The service will run the program with the <code>-o</code> option (which only saves the latest power data) and the <code>-f</code> option to save data to <code>/tmp/joularcore-service.csv</code>.
-The service can be enabled to run automatically on boot.</p>
-<p>You can modify the service as needed to start Joular Core with any argument and output the data with any format (CSV, HTTP API, ring buffer shared memory, etc.).</p>
-<p>The systemd service is automatically installed when installing Joular Core using the installer script.</p>
+                        <h1 id="systemd-service-linux"><a class="header" href="#systemd-service-linux">Systemd Service (Linux)</a></h1>
+<p>Joular Core ships with a ready-to-use systemd unit file located at <code>systemd/joularcore.service</code>. It lets you run Joular Core as a background daemon that starts on boot and restarts automatically if it crashes.</p>
+<h2 id="default-service-configuration"><a class="header" href="#default-service-configuration">Default Service Configuration</a></h2>
+<p>The included unit file looks like this:</p>
+<pre><code class="language-ini">[Unit]
+Description=Joular Core service
+
+[Service]
+Type=simple
+Restart=always
+User=root
+ExecStart=/usr/bin/joularcore -o -f /tmp/joularcore-service.csv
+
+[Install]
+WantedBy=multi-user.target
+</code></pre>
+<p>By default it runs Joular Core as root (required for RAPL access on Linux), writes the latest power reading to <code>/tmp/joularcore-service.csv</code> in overwrite mode (<code>-o</code>), and restarts automatically on failure.</p>
+<h2 id="installation"><a class="header" href="#installation">Installation</a></h2>
+<p>Copy the unit file to the systemd directory and reload the daemon:</p>
+<pre><code class="language-bash">sudo cp systemd/joularcore.service /etc/systemd/system/
+sudo systemctl daemon-reload
+</code></pre>
+<p>Enable automatic start on boot and then start the service immediately:</p>
+<pre><code class="language-bash">sudo systemctl enable joularcore
+sudo systemctl start joularcore
+</code></pre>
+<p>Check that it is running:</p>
+<pre><code class="language-bash">sudo systemctl status joularcore
+</code></pre>
+<h2 id="customisation"><a class="header" href="#customisation">Customisation</a></h2>
+<p>You can edit the <code>ExecStart</code> line to pass any Joular Core arguments. For example, to also expose an HTTP API and monitor a specific application:</p>
+<pre><code class="language-ini">ExecStart=/usr/bin/joularcore -o -f /tmp/joularcore-service.csv --api-port 8080
+</code></pre>
+<p>Or to write to a ring buffer without any file output:</p>
+<pre><code class="language-ini">ExecStart=/usr/bin/joularcore -s -r
+</code></pre>
+<p>After editing the file, reload systemd for the change to take effect:</p>
+<pre><code class="language-bash">sudo systemctl daemon-reload
+sudo systemctl restart joularcore
+</code></pre>
+<h2 id="reading-the-output-file"><a class="header" href="#reading-the-output-file">Reading the Output File</a></h2>
+<p>When using the default <code>-o -f /tmp/joularcore-service.csv</code> configuration, the file always contains exactly one data row — the most recent measurement. Any script or tool can poll this file at its own pace:</p>
+<pre><code class="language-bash">cat /tmp/joularcore-service.csv
+</code></pre>
+<p>Example output:</p>
+<pre><code>Timestamp,Total Power (W),CPU Power (W),GPU Power (W),CPU Usage (%)
+1712345678,18.45,15.20,3.25,24.60
+</code></pre>
+<h2 id="stopping-and-disabling"><a class="header" href="#stopping-and-disabling">Stopping and Disabling</a></h2>
+<pre><code class="language-bash">sudo systemctl stop joularcore
+sudo systemctl disable joularcore
+</code></pre>
 
                     </main>
 

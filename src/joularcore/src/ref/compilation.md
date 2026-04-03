@@ -1,80 +1,84 @@
 # Compilation
 
-Joular Core is written in Rust and uses Cargo for compilation.
+Joular Core is written in Rust and uses Cargo. A stable Rust toolchain is the only requirement.
 
-## Default build:
+## Default Build
 
 ```bash
 cargo build --release
 ```
 
-This will build Joular Core with the virtual machine and GUI features, but not with SBC support.
+Produces two binaries in `target/release/`:
+- `joularcore` / `joularcore.exe` — command-line interface
+- `joularcoregui` / `joularcoregui.exe` — graphical user interface
 
-## SBC (Raspberry Pi) build:
+The default build includes virtual machine support (`vm`), the HTTP/WebSocket API (`api`), and the GUI (`gui`). SBC support is not included by default.
+
+## SBC (Raspberry Pi) Build
 
 ```bash
 cargo build --release --features sbc
 ```
 
-This will build Joular Core with the virtual machine and GUI features, and with SBC support.
+Adds single-board computer support on top of the defaults. The `sbc` feature replaces RAPL-based CPU monitoring with polynomial regression models tuned for each supported SBC. See [Supported Platforms](../guide/supported_platforms.md) for the full list of supported boards.
 
-## Feature selection:
+## Feature Selection
 
-You can build Joular Core with or without virtual machine support or the GUI.
-For instane, this is useful when you don't need the GUI (*i.e.*, in server environments) and want to build a smaller binary.
+Use `--no-default-features` to start from a minimal build and enable only what you need:
 
 ```bash
 cargo build --release --no-default-features
 ```
 
-⚙️ **Available Features:**
+This produces a CLI-only binary with no VM support, no API, and no GUI — useful for constrained environments where binary size matters.
 
-- `vm` *(default: ON)*: Enables support for monitoring inside virtual machines.
-- `api` *(default: OFF)*: Enables support for the API with an HTTP server or WebSockets. Exporting power data to CSV files or to a ring buffer is enabled by default regardless of this feature.
-- `gui` *(default: ON)*: Compiles the application with the graphical user interface.
-- `sbc` *(default: OFF)*: Enables support for monitoring on single-board computers (*e.g.*, Raspberry Pi) running Linux.  
-  - This disables RAPL-based monitoring and uses our SBC-specific power models.
+### Available Features
 
-You can mix and match features, for example:
+| Feature | Default | Description |
+|---------|:-------:|-------------|
+| `vm`    | **on**  | Enables monitoring inside virtual machines. Joular Core reads power from a shared file written by the host. |
+| `api`   | **on**  | Enables the HTTP and WebSocket API server. CSV export and ring buffer output work regardless of this feature. |
+| `gui`   | **on**  | Compiles the GUI binary (`joularcoregui`). |
+| `sbc`   | off     | Enables SBC support. Replaces RAPL-based monitoring with regression models for Raspberry Pi and Asus Tinker Board. |
+
+### Mix-and-Match Examples
+
 ```bash
-# No GUI, but with VM
+# CLI only — no VM, no API, no GUI
+cargo build --release --no-default-features
+
+# CLI with VM support, no GUI or API
 cargo build --release --no-default-features --features vm
 
-# No GUI, no VM, but with SBC
-cargo build --release --no-default-features --features sbc
+# CLI with VM and API, no GUI (good for headless servers)
+cargo build --release --no-default-features --features vm,api
 
-# No VM, but with GUI and SBC
+# SBC with GUI, no VM or API
 cargo build --release --no-default-features --features gui,sbc
+
+# SBC with everything
+cargo build --release --features sbc
 ```
 
 ## Cross-Compilation
 
-To cross-compile, use `cargo-make` with one of the targets defined in `Makefile.toml`.
+Use `cargo-make` with the targets defined in `Makefile.toml`. The targets cover all supported architectures for each OS.
 
-For example, to build for all supported Raspberry Pi architectures (`aarch64`, `arm`, `armv7`):
+To build for all supported Raspberry Pi architectures (`aarch64`, `arm`, `armv7`) at once:
 
 ```bash
 cargo make build-sbc
 ```
 
-With the proper Rust targets installed, you can hence cross-compile on all architectures and operating systems.
+With the appropriate Rust cross-compilation targets installed (via `rustup target add`), you can cross-compile from any host to any supported target.
 
-## Dependencies
-- **Linux (PC, servers)**: Requires the RAPL interface for CPU power readings. RAPL files are usually readable only by the administrator, so you must either grant read access to these files or run Joular Core with sudo. [More information in this issue](https://github.com/joular/joularcore/issues/12).
-- **Windows**: a RAPL driver. We currently support [Hubblo's RAPL driver](https://github.com/hubblo-org/windows-rapl-driver). The easiest way to install a signed version of the driver is to install the [Scaphandre](https://github.com/hubblo-org/scaphandre) tool from [this installer](https://github.com/hubblo-org/scaphandre/releases/download/v1.0.0/scaphandre_v1.0.0_installer.exe).
-- **macOS**: no dependencies required 😇 Uses powermetrics (already installed by default).
-- Raspberry Pi: No dependencies required 😇
+## Release Profile
 
-## Virtual Machines
+The release profile in `Cargo.toml` is configured for maximum optimization and smallest binary size:
 
-For virtual machines, two environment variables must be set depending on whether you want to monitor the CPU, the GPU, or both:
-- `VM_CPU_POWER_FILE`: Path to the CPU power data file
-- `VM_CPU_POWER_FORMAT`: Format of the CPU power data (`joularcore`  or `powerjoular` or `watts`, default is `watts` if not set)
-- `VM_GPU_POWER_FILE`: Path to the GPU power data file
-- `VM_GPU_POWER_FORMAT`: Format of the GPU power data (`joularcore` or `powerjoular` or `watts`, default is `watts` if not set)
+- LTO (link-time optimization) enabled
+- Single codegen unit (full cross-crate optimization)
+- `panic = "abort"` (no unwinding machinery)
+- Debug symbols stripped
 
-## Single-Board Computers (SBC)
-
-On SBC (Raspberry Pi, Asus TinkerBoard), Joular Core uses our own regression models to calculate CPU power consumption.
-These models are hard-coded in the code, but you can use your own models by supplying a JSON file with the model detail with the `SBC_POWER_MODEL_JSON` environmental variable.
-The format needs to follow the one used in our [Power Models Database](https://github.com/joular/powermodels).
+These settings mean release builds can be slow to compile but produce fast, lean binaries.

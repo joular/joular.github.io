@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-e50d2a98.js";
+            window.path_to_searchindex_js = "../searchindex-100edc81.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-cced847a.js"></script>
@@ -175,79 +175,78 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="supported-platforms"><a class="header" href="#supported-platforms">Supported Platforms</a></h1>
-<p>Joular Core supports a wide variety of platforms, operating systems and CPU architectures.
-It is as universal as it can get, and most environements are supported.</p>
-<ul>
-<li>💻 <strong>Supported Systems</strong>: 🐧 Linux, 🪟 Windows, 🍎 MacOS, 🍓 Raspberry Pi, 💽 Virtual Machines.</li>
-<li>⚙️ <strong>Supported Architectures</strong>: x86_64 (amd64), x86/i686, aarch64, arm, armv7, GPUs (Nvidia, Apple, AMD).</li>
-</ul>
-<p>In particular:</p>
-<ul>
-<li>PC/Servers using a RAPL supported Intel processor (since Sandy Bridge) or a RAPL supported AMD processor (since Ryzen), on Windows and Linux.</li>
-<li>macOS computers on Intel mac or Apple ARM chip.</li>
-<li>Virtual machines (any supported guest on any host).</li>
-<li>For GPU: Nvidia, AMD and Apple</li>
-<li>Raspberry Pi devices (multiple models) on Linux (all revisions for each model are supported):
-<ul>
-<li>Model Zero W, for 32 bits OS</li>
-<li>Model 1 B, for 32 bits OS</li>
-<li>Model 1 B+, for 32 bits OS</li>
-<li>Model 2 B, for 32 bits OS</li>
-<li>Model 3 B, for 32 bits OS</li>
-<li>Model 3 B+, for 32 bits OS</li>
-<li>Model 4 B, for both 32 bits and 64 bits OS</li>
-<li>Model 400, for 64 bits OS</li>
-<li>Model 5 B, for 64 bits OS</li>
-</ul>
-</li>
-<li>Asus Tinker Board (S)</li>
-</ul>
+<p>Joular Core runs on all major desktop and server operating systems and a selection of single-board computers. The table below summarises what is supported on each platform and architecture.</p>
+<h2 id="operating-systems-and-architectures"><a class="header" href="#operating-systems-and-architectures">Operating Systems and Architectures</a></h2>
+<h3 id="cpu"><a class="header" href="#cpu">CPU</a></h3>
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th style="text-align: center">Platform</th><th style="text-align: center">Supported OS</th><th style="text-align: center">Based on</th><th style="text-align: center">Supported Architecture</th></tr>
+<tr><th>OS / Architecture</th><th style="text-align: center">x86_64</th><th style="text-align: center">i686</th><th style="text-align: center">Apple Silicon</th><th style="text-align: center">arm</th><th style="text-align: center">armv7</th><th style="text-align: center">aarch64</th></tr>
 </thead>
 <tbody>
-<tr><td style="text-align: center">Linux PC/Server</td><td style="text-align: center">Linux</td><td style="text-align: center">RAPL, Nvidia, AMD</td><td style="text-align: center">x86, x86_64</td></tr>
-<tr><td style="text-align: center">Windows PC/Server</td><td style="text-align: center">Windows</td><td style="text-align: center">RAPL, Nvidia, AMD</td><td style="text-align: center">x86, x86_64</td></tr>
-<tr><td style="text-align: center">macOS PC/Server</td><td style="text-align: center">macOS</td><td style="text-align: center">Powermetrics (Apple Silicon CPU, GPU, Intel CPU)</td><td style="text-align: center">x86, x86_64, ARM</td></tr>
-<tr><td style="text-align: center">Raspberry Pi</td><td style="text-align: center">Linux</td><td style="text-align: center">Our regression models (CPU)</td><td style="text-align: center">ARM</td></tr>
-<tr><td style="text-align: center">Asus Tinker Board</td><td style="text-align: center">Linux</td><td style="text-align: center">Our regression models (CPU)</td><td style="text-align: center">ARM</td></tr>
-<tr><td style="text-align: center">Virtual Machine</td><td style="text-align: center">Supported guests (Windows, Linux, macOS), any host</td><td style="text-align: center">Host’s architecture (CPU, GPU)</td><td style="text-align: center">x86, x86_64, ARM</td></tr>
+<tr><td>Linux (PC / servers)</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td></tr>
+<tr><td>Windows</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td></tr>
+<tr><td>macOS</td><td style="text-align: center">✓</td><td style="text-align: center"></td><td style="text-align: center">✓</td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td></tr>
+<tr><td>SBC (Raspberry Pi, Asus)</td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center">✓</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td></tr>
+<tr><td>Virtual Machines</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td></tr>
 </tbody>
 </table>
 </div>
-<p><strong>CPU:</strong></p>
+<h3 id="gpu"><a class="header" href="#gpu">GPU</a></h3>
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>OS</th><th>x86_64</th><th>i686</th><th>Apple Silicon</th><th>arm</th><th>armv7</th><th>aarch64</th></tr>
+<tr><th>OS / Architecture</th><th style="text-align: center">Nvidia</th><th style="text-align: center">AMD</th><th style="text-align: center">Apple GPU</th></tr>
 </thead>
 <tbody>
-<tr><td>Windows</td><td>🌟</td><td>🌟</td><td></td><td></td><td></td><td></td></tr>
-<tr><td>Linux</td><td>🌟</td><td>🌟</td><td></td><td></td><td></td><td></td></tr>
-<tr><td>macOS</td><td>🌟</td><td></td><td>🌟</td><td></td><td></td><td></td></tr>
-<tr><td>SBC (Raspberry Pi, Asus)</td><td></td><td></td><td></td><td>🌟</td><td>🌟</td><td>🌟</td></tr>
-<tr><td>Virtual Machines</td><td>🌟</td><td>🌟</td><td>🌟</td><td>🌟</td><td>🌟</td><td>🌟</td></tr>
+<tr><td>Linux (PC / servers)</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td><td style="text-align: center"></td></tr>
+<tr><td>Windows</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td><td style="text-align: center"></td></tr>
+<tr><td>macOS</td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center">✓</td></tr>
+<tr><td>SBC (Raspberry Pi)</td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td></tr>
+<tr><td>Virtual Machines</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td></tr>
 </tbody>
 </table>
 </div>
-<p><strong>GPU:</strong></p>
+<h2 id="platform-details"><a class="header" href="#platform-details">Platform Details</a></h2>
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>OS</th><th>Nvidia GPU</th><th>AMD GPU</th><th>Apple GPU</th></tr>
+<tr><th>Platform</th><th>OS</th><th>Power source</th><th>Architectures</th></tr>
 </thead>
 <tbody>
-<tr><td>Windows</td><td>🌟</td><td>🌟</td><td></td></tr>
-<tr><td>Linux</td><td>🌟</td><td>🌟</td><td></td></tr>
-<tr><td>macOS</td><td></td><td></td><td>🌟</td></tr>
-<tr><td>SBC (Raspberry Pi, Asus)</td><td></td><td></td><td></td></tr>
-<tr><td>Virtual Machines</td><td>🌟</td><td>🌟</td><td>🌟</td></tr>
+<tr><td>Linux PC / Server</td><td>Linux</td><td>Intel RAPL (sysfs), Nvidia via <code>nvidia-smi</code>, AMD via <code>amd-smi</code> / <code>rocm-smi</code></td><td>x86, x86_64</td></tr>
+<tr><td>Windows PC / Server</td><td>Windows</td><td>Hubblo’s RAPL driver, Nvidia via <code>nvidia-smi</code>, AMD via <code>amd-smi</code></td><td>x86, x86_64</td></tr>
+<tr><td>macOS (Intel)</td><td>macOS</td><td><code>powermetrics</code></td><td>x86_64</td></tr>
+<tr><td>macOS (Apple Silicon)</td><td>macOS</td><td><code>powermetrics</code> (CPU + GPU)</td><td>aarch64</td></tr>
+<tr><td>Raspberry Pi</td><td>Linux</td><td>Regression power models</td><td>arm, armv7, aarch64</td></tr>
+<tr><td>Asus Tinker Board S</td><td>Linux</td><td>Regression power models</td><td>arm</td></tr>
+<tr><td>Virtual Machine (guest)</td><td>Windows, Linux, macOS</td><td>Shared file from host power tool</td><td>x86, x86_64, arm, aarch64</td></tr>
 </tbody>
 </table>
 </div>
-<p><strong>Supported SBC platforms</strong>: Raspberry Pi (models: Zero W, 1 B, 1 B+, 2 B, 3 B, 3 B+, 4 B, 400, 5 B), Asus Tinker Board S.</p>
+<h2 id="supported-single-board-computers"><a class="header" href="#supported-single-board-computers">Supported Single-Board Computers</a></h2>
+<p>The SBC build includes built-in power models for the following devices:</p>
+<p><strong>Raspberry Pi</strong> (all revisions of each model):</p>
+<ul>
+<li>Zero W (32-bit OS)</li>
+<li>1 B, 1 B+ (32-bit OS)</li>
+<li>2 B (32-bit OS)</li>
+<li>3 B, 3 B+ (32-bit OS)</li>
+<li>4 B (32-bit and 64-bit OS)</li>
+<li>400 (64-bit OS)</li>
+<li>5 B (64-bit OS)</li>
+</ul>
+<p><strong>Asus Tinker Board S</strong></p>
+<h2 id="cpu-power-monitoring-details"><a class="header" href="#cpu-power-monitoring-details">CPU Power Monitoring Details</a></h2>
+<p><strong>Linux and Windows (x86 / x86_64)</strong><br>CPU power is read from Intel’s Running Average Power Limit (RAPL) interface. RAPL is supported on Intel processors since Sandy Bridge (2011) and on AMD processors since Ryzen. On Linux, RAPL is exposed via the powercap sysfs interface (<code>/sys/class/powercap/intel-rapl/</code>). On Windows, a kernel driver is required (see <a href="./installation.html">Installation</a>).</p>
+<p><strong>macOS</strong><br>CPU (and GPU on Apple Silicon) power is read from Apple’s <code>powermetrics</code> command. This tool ships with macOS and covers both Intel and Apple Silicon hardware. It requires elevated access to read power data.</p>
+<p><strong>Raspberry Pi and SBC</strong><br>Power is calculated from CPU utilization using polynomial regression models that were measured against each supported board at various load levels. No hardware interface or special permissions are needed.</p>
+<p><strong>Virtual Machines</strong><br>Power is read from a shared file written by a monitoring tool running on the host OS. See <a href="../ref/vm.html">Virtual Machines</a> for the setup details.</p>
+<h2 id="gpu-power-monitoring-details"><a class="header" href="#gpu-power-monitoring-details">GPU Power Monitoring Details</a></h2>
+<p><strong>Nvidia (Linux and Windows)</strong><br>GPU power is read by calling <code>nvidia-smi --query-gpu=power.draw</code>. Power values from all detected GPUs are summed. If <code>nvidia-smi</code> is not installed or no Nvidia GPUs are found, the GPU power reading is 0 and monitoring continues normally.</p>
+<p><strong>AMD (Linux and Windows)</strong><br>GPU power is read by calling <code>amd-smi</code> or <code>rocm-smi</code> (whichever is available). As with Nvidia, if neither tool is available the GPU reading is 0.</p>
+<p><strong>Apple Silicon</strong><br>GPU power is included in the output from <code>powermetrics</code> alongside CPU power.</p>
+<p><strong>SBC</strong><br>GPU monitoring is not supported on single-board computers. GPU power is always reported as 0.</p>
 
                     </main>
 
