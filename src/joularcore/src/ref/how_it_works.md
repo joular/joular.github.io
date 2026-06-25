@@ -57,7 +57,7 @@ Each supported OS has a concrete implementation of these traits. The monitoring 
 
 ### Linux
 
-CPU power is read from the Intel RAPL (Running Average Power Limit) sysfs interface at `/sys/class/powercap/intel-rapl/`. RAPL is supported on Intel processors since Sandy Bridge (2011) and on AMD processors since Ryzen. The interface exposes cumulative energy counters in microjoules; Joular Core reads two consecutive values a fixed time apart and converts the delta to watts.
+CPU power is read from the RAPL (Running Average Power Limit) package counter exposed through the powercap sysfs interface at `/sys/class/powercap/intel-rapl/`. The interface exposes cumulative energy counters in microjoules; Joular Core reads two consecutive values and converts the energy delta over elapsed time to watts. If the package counter is absent or unreadable, Joular Core warns once and reports 0 W for CPU power until the interface becomes usable.
 
 CPU utilisation is computed from `/proc/stat`. Joular Core reads the `user`, `nice`, `system`, `idle`, `iowait`, `irq`, `softirq`, and `steal` tick counters on each sample, computes the delta from the previous sample, and calculates utilisation as:
 
@@ -73,7 +73,7 @@ GPU power on Linux is read by:
 
 ### Windows
 
-CPU power is read from Hubblo's RAPL Windows kernel driver via `DeviceIoControl`. The driver exposes RAPL data through a Windows device interface, returning power in watts directly.
+CPU power is read from Hubblo's/Scaphandre's RAPL Windows kernel driver via `DeviceIoControl`. The driver exposes Intel or AMD RAPL MSR energy counters through a Windows device interface; Joular Core reads those counters and converts energy deltas over elapsed time to watts.
 
 CPU utilisation is read from the Win32 API via `GetSystemTimes()`, which returns `idle`, `kernel`, and `user` times as `FILETIME` structures. Utilisation is computed from the deltas between two successive calls.
 
@@ -83,7 +83,7 @@ GPU power on Windows follows the same approach as Linux: `nvidia-smi` for Nvidia
 
 ### macOS
 
-CPU, GPU, and overall system power are all read from Apple's `powermetrics` tool, which ships with macOS. Joular Core spawns `powermetrics` as a subprocess with JSON output format and parses the result. On Apple Silicon, `powermetrics` reports CPU and GPU power separately; on Intel Macs it reports CPU power only.
+CPU power, and GPU power on Apple Silicon, are read from Apple's `powermetrics` tool, which ships with macOS. Joular Core spawns `powermetrics` as a subprocess, forces the C locale, and parses the text sample blocks. On Apple Silicon, `powermetrics` reports CPU and GPU power separately; on Intel Macs it reports CPU package power only.
 
 Because `powermetrics` requires elevated privileges to access hardware counters, Joular Core must be run with elevated access on macOS.
 
@@ -99,9 +99,9 @@ SBC platforms (Raspberry Pi, Asus Tinker Board) do not have a hardware power int
 power = c₀ + c₁·u + c₂·u² + … + cₙ·uⁿ
 ```
 
-where `u` is the current CPU utilisation (0–100) and `c₀…cₙ` are model coefficients measured empirically for each specific board model and revision.
+where `u` is the current CPU utilisation as a fraction from 0.0 to 1.0 and `c₀…cₙ` are model coefficients measured empirically for each specific board model and revision.
 
-The built-in models cover all supported Raspberry Pi models. A custom model can be supplied via the `SBC_POWER_MODEL_JSON` environment variable; the file format must match the [Joular Power Models Database](https://github.com/joular/powermodels) schema.
+The built-in models cover the supported Raspberry Pi and Asus Tinker Board models when the binary is built with the `sbc` feature. A custom model can be supplied via the `SBC_POWER_MODEL_JSON` environment variable; the file format must match the [Joular Power Models Database](https://github.com/joular/powermodels) schema. Unsupported boards return 0 W.
 
 GPU power is always 0 on SBC platforms.
 
@@ -149,7 +149,7 @@ where:
 - **`attributed_cpu_power`** is `max(0, cpu_power − idle_baseline)` — the raw CPU power minus the idle baseline (zero if no baseline is configured)
 - **`system_cpu_utilisation`** is the overall CPU utilisation percentage
 
-If `system_cpu_utilisation` is zero (the CPU is completely idle), the attributed power is zero to avoid a division by zero.
+If `system_cpu_utilisation` is below a tiny threshold, the attributed power is zero to avoid dividing by idle noise.
 
 This model assumes that a process's share of CPU power is proportional to its share of CPU time. This is an approximation — it does not account for frequency scaling within a core, NUMA topology, or work done in kernel threads on behalf of the process — but it is a practical and widely used approach for software-level power attribution.
 
@@ -175,19 +175,19 @@ After each `poll()` call, the `MonitorSample` is sent to an `OutputBundle`, whic
 
 1. **Terminal** (`OutputWriter` in `Terminal` mode): formats the reading with ANSI colour codes and writes it to stdout, overwriting the previous line using carriage return and ANSI erase-line sequences. In numeric mode (`-i`), a bare float is printed instead.
 
-2. **CSV file** (`OutputWriter` in `CsvFile` mode): appends one row to the CSV file. In overwrite mode (`-o`), the file is truncated to zero before each write so only the latest row is kept.
+2. **CSV file** (`OutputWriter` in `CsvFile` mode): appends one row to the CSV file. In overwrite mode (`-o`), the file is truncated to zero before each write so only the latest row is kept, without a header.
 
-3. **Ring buffer** (`RingBufferWriter`): writes 5 `f64` values to a shared-memory region. On Linux and macOS this is a memory-mapped file (`memmap2`); on Windows it uses Win32 file mapping (`CreateFileMapping` / `MapViewOfFile`).
+3. **Ring buffer** (`RingBufferWriter`): writes an 8-byte `u64` head counter followed by 5 `RingBufferStruct` slots. Each slot contains a timestamp plus CPU power, GPU power, total power, CPU usage, and PID/app power. On Linux and macOS this is a memory-mapped file (`memmap2`); on Windows it uses Win32 file mapping (`CreateFileMapping` / `MapViewOfFile`).
 
 4. **API** (when the `api` feature is enabled): broadcasts an `ApiData` struct to all connected HTTP and WebSocket clients via a Tokio broadcast channel. The HTTP handler (`GET /data`) reads the latest broadcast value; the WebSocket handler (`/ws`) streams each new broadcast as a JSON message.
 
 ## API Server
 
-The API server (`src/api.rs`) is built with the Axum web framework running on a Tokio async runtime. It runs in a separate async task alongside the synchronous monitoring loop. Communication between the two is done via a `tokio::sync::broadcast::Sender<ApiData>`.
+The API server (`src/api.rs`) is built with the Axum web framework running on a Tokio async runtime. Joular Core starts it on a background thread with its own runtime after successfully binding `127.0.0.1:<PORT>`. Communication from the synchronous monitoring loop to the API server is done via a `tokio::sync::broadcast::Sender<ApiData>`.
 
-- **`GET /data`**: the handler subscribes to the broadcast channel and immediately returns the last received value as JSON.
+- **`GET /data`**: returns the last received value as JSON.
 - **`/ws`**: the WebSocket handler subscribes to the broadcast channel and pushes each new value as a JSON message to the connected client.
-- CORS is enabled via `tower-http`'s `CorsLayer`, so the API can be consumed directly from browser-based dashboards.
+- CORS is enabled via `tower-http`'s `CorsLayer`. By default only `http://127.0.0.1:<PORT>` and `http://localhost:<PORT>` are allowed. Extra origins come from repeatable `--api-allowed-origin`, and `*` allows any origin.
 
 ## Graceful Shutdown
 

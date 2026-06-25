@@ -15,8 +15,8 @@
         <link rel="icon" href="../favicon-de23e50b.svg">
         <link rel="shortcut icon" href="../favicon-8114d1fc.png">
         <link rel="stylesheet" href="../css/variables-8adf115d.css">
-        <link rel="stylesheet" href="../css/general-2459343d.css">
-        <link rel="stylesheet" href="../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../css/general-0392ca55.css">
+        <link rel="stylesheet" href="../css/chrome-fc474251.css">
         <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-100edc81.js";
+            window.path_to_searchindex_js = "../searchindex-ee74c12a.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-cced847a.js"></script>
+        <script src="../toc-59639058.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -200,12 +200,13 @@
 <tr><th>Option</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code>-f</code>, <code>--file &lt;FILE&gt;</code></td><td>Write power measurements to a CSV file. A header line is written once, then one row per second is appended.</td></tr>
-<tr><td><code>-o</code>, <code>--overwrite</code></td><td>When used with <code>-f</code>, overwrite the file on each write instead of appending. Only the latest measurement is kept in the file. Useful when another program is polling the file.</td></tr>
-<tr><td><code>-i</code>, <code>--numeric</code></td><td>Print only a bare numeric value (watts, two decimal places) with no labels or ANSI formatting. Useful for piping or scripting. The value printed is total power by default, or the selected component if <code>-c</code> is set.</td></tr>
-<tr><td><code>-s</code>, <code>--silent</code></td><td>Suppress all terminal output. CSV export, ring buffer, and API remain active. Useful when running in the background.</td></tr>
+<tr><td><code>-f</code>, <code>--file &lt;FILE&gt;</code></td><td>Write power measurements to a file. CSV is used by default; with <code>-i</code>, the file receives numeric-only values. Append-mode CSV writes a header once at startup.</td></tr>
+<tr><td><code>-o</code>, <code>--overwrite</code></td><td>When used with <code>-f</code>, truncate the file before each write instead of appending. Only the latest data row/value is kept; overwrite-mode CSV does not keep a header. Useful when another program is polling the file.</td></tr>
+<tr><td><code>-i</code>, <code>--numeric</code></td><td>Output only a bare numeric value (watts, two decimal places) with no labels or ANSI formatting. Useful for piping or scripting. The value is total power by default, or the selected component if <code>-c</code> is set.</td></tr>
+<tr><td><code>-s</code>, <code>--silent</code></td><td>Suppress terminal output. File export, ring buffer, and API remain active. Useful when running in the background.</td></tr>
 <tr><td><code>-r</code>, <code>--ringbuffer</code></td><td>Write power data to a shared-memory ring buffer every second. See <a href="./exports.html">Exporting Power Data</a> for paths and data layout.</td></tr>
 <tr><td><code>--api-port &lt;PORT&gt;</code></td><td>Start an HTTP and WebSocket API server on the given port. Requires the <code>api</code> feature. See <a href="./exports.html">Exporting Power Data</a> for endpoint details.</td></tr>
+<tr><td><code>--api-allowed-origin &lt;ORIGIN&gt;</code></td><td>Allow an additional CORS origin for the API. Requires <code>--api-port</code>, is repeatable, and accepts <code>*</code> as a wildcard.</td></tr>
 </tbody>
 </table>
 </div>
@@ -252,7 +253,7 @@
 <tr><th>Option</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code>-g</code>, <code>--gui</code></td><td>Launch the graphical user interface instead of (or alongside) the terminal output.</td></tr>
+<tr><td><code>-g</code>, <code>--gui</code></td><td>Launch the graphical user interface. Monitoring target and CSV output are configured inside the GUI.</td></tr>
 <tr><td><code>-h</code>, <code>--help</code></td><td>Print help and exit.</td></tr>
 <tr><td><code>-V</code>, <code>--version</code></td><td>Print the version number and exit.</td></tr>
 </tbody>
@@ -291,8 +292,11 @@
 <li><code>-p</code> and <code>-a</code> are mutually exclusive.</li>
 <li><code>-o</code> only has effect when <code>-f</code> is also set.</li>
 <li><code>--cpu-idle-baseline</code> and <code>--calibrate-cpu-idle-baseline</code> are mutually exclusive.</li>
+<li><code>--api-allowed-origin</code> requires <code>--api-port</code>.</li>
 <li><code>--api-port</code> requires that Joular Core was compiled with the <code>api</code> feature (enabled by default).</li>
 <li><code>-g</code> / <code>--gui</code> requires the <code>gui</code> feature (enabled by default); alternatively, use the <code>joularcoregui</code> binary.</li>
+<li>In the CLI, <code>-g</code> / <code>--gui</code> conflicts with <code>--pid</code>, <code>--app</code>, <code>--file</code>, <code>--overwrite</code>, <code>--silent</code>, and <code>--numeric</code>. Startup options such as <code>--ringbuffer</code>, <code>--api-port</code>, <code>--api-allowed-origin</code>, <code>--app-refresh-interval</code>, and the CPU idle baseline flags can still preconfigure the GUI session.</li>
+<li>When <code>-f</code> is used, the live terminal display is replaced by file output.</li>
 </ul>
 <h2 id="examples"><a class="header" href="#examples">Examples</a></h2>
 <pre><code class="language-bash"># Monitor whole system
@@ -309,6 +313,9 @@ joularcore -s -f /tmp/power.csv -o
 
 # Expose API, suppress terminal output
 joularcore -s --api-port 8080
+
+# Expose API to an additional browser origin
+joularcore --api-port 8080 --api-allowed-origin https://dashboard.example.com
 
 # Write ring buffer + CSV simultaneously
 joularcore -r -f power.csv
@@ -370,11 +377,11 @@ joularcore -g --api-port 9000
 
         <script src="../elasticlunr-ef4e11c1.min.js"></script>
         <script src="../mark-09e88c2c.min.js"></script>
-        <script src="../searcher-c2a407aa.js"></script>
+        <script src="../searcher-09f2665d.js"></script>
 
         <script src="../clipboard-1626706a.min.js"></script>
         <script src="../highlight-abc7f01d.js"></script>
-        <script src="../book-a0b12cfe.js"></script>
+        <script src="../book-c22b7243.js"></script>
 
         <!-- Custom JS scripts -->
 

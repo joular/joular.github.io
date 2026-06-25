@@ -53,7 +53,7 @@ Joular Core can run as a background service alongside an IDE or profiler. The ri
 
 1. Start Joular Core with `joularcore -r -s`
 2. In your IDE plugin or profiler, memory-map the ring buffer path (`/dev/shm/joularcorering` on Linux, `/tmp/joularcorering` on macOS, `Local\\JoularCoreRing` on Windows)
-3. Read the 5 `f64` values: CPU power, GPU power, total power, CPU usage, PID/app power
+3. Read the 8-byte `u64` head counter, then the latest of 5 `RingBufferStruct` slots. Each slot contains a timestamp plus CPU power, GPU power, total power, CPU usage, and PID/app power.
 
 The ring buffer is updated every second and is safe to read from multiple processes simultaneously.
 

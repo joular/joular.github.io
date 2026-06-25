@@ -50,8 +50,8 @@ GPU monitoring (Nvidia/AMD) requires `nvidia-smi` or `amd-smi` to be installed s
 
 ### macOS
 
-No additional software is required. Power data is read via `powermetrics`, which ships with macOS. Because `powermetrics` requires elevated access to read hardware counters, Joular Core will ask for elevated access on start (it can also be run with `sudo`).
+No additional software is required. Power data is read via `powermetrics`, which ships with macOS. Because `powermetrics` requires elevated access to read hardware counters, run the CLI with `sudo` or use a GUI/default build that can ask for elevation.
 
 ### Raspberry Pi and SBC
 
-No dependencies and no `sudo` required. Just download the binary for your architecture (arm, armv7, or aarch64) and run it.
+No dependencies and no `sudo` required. Use a binary built with the `sbc` feature for your architecture (arm, armv7, or aarch64). Unsupported boards run but report 0 W for CPU power.

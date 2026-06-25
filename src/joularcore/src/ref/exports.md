@@ -1,6 +1,6 @@
 # Exporting Power Data
 
-Joular Core can send power measurements to multiple destinations. All export mechanisms work on all supported platforms and operating systems.
+Joular Core can send power measurements to multiple destinations. File output, the shared-memory ring buffer, and the HTTP/WebSocket API can be combined. In the current CLI, `-f` switches the main writer from the live terminal display to the selected file.
 
 ## Terminal Output (default)
 
@@ -22,7 +22,7 @@ CPU 15.20 W
 GPU 3.25 W
 ```
 
-Use `-s` / `--silent` to suppress terminal output while keeping other export channels active.
+Use `-s` / `--silent` to suppress terminal output while keeping file, ring buffer, and API output active.
 
 ### Numeric-only mode (`-i`)
 
@@ -33,11 +33,11 @@ joularcore -i        # prints total power
 joularcore -c cpu -i # prints CPU power only
 ```
 
-This mode is useful for stdout redirection or piping into other tools.
+This mode is useful for stdout redirection or piping into other tools. When combined with `-f`, the file receives the same numeric-only values instead of CSV rows.
 
 ## CSV Files (`-f`)
 
-Use `-f <FILE>` to write measurements to a CSV file. A header line is written once at the start, then one data row is appended every second.
+Use `-f <FILE>` to write measurements to a file. Without `-i`, this is CSV output. In append mode, a header line is written once at startup, then one data row is appended every second.
 
 ### CSV Formats
 
@@ -77,7 +77,7 @@ The `Timestamp` column contains a Unix epoch timestamp in seconds.
 
 ### Overwrite Mode (`-o`)
 
-By default, rows are appended to the file. With `-o`, the file is truncated before each write so it always contains exactly one data row (plus the header). This is useful when another program is polling the file for the latest value.
+By default, rows are appended to the file. With `-o`, the file is truncated before each write so it contains only the latest data row. No CSV header is rewritten in overwrite mode. This is useful when another program is polling the file for the latest value.
 
 ## Shared-Memory Ring Buffer (`-r`)
 
@@ -93,21 +93,22 @@ Use `-r` or `--ringbuffer` to write power data to a shared-memory region. Any pr
 
 ### Ring Buffer Layout
 
-The ring buffer holds 5 consecutive `f64` (double-precision float) values:
+The shared memory region starts with an 8-byte native-endian `u64` head counter, followed by 5 slots. Each slot contains one C-compatible `RingBufferStruct`:
 
-| Index | Field | Description |
-|:-----:|-------|-------------|
-| 0 | `cpu_power` | CPU power in watts |
-| 1 | `gpu_power` | GPU power in watts |
-| 2 | `total_power` | Total (CPU + GPU) power in watts |
-| 3 | `cpu_usage` | System CPU usage as a percentage (0–100) |
-| 4 | `pid_or_app_power` | Power attributed to the monitored PID or application in watts; `0.0` if no process/app is selected |
+| Field | Type | Description |
+|-------|------|-------------|
+| `timestamp` | `u64` | Unix timestamp in seconds |
+| `cpu_power` | `f64` | CPU power in watts |
+| `gpu_power` | `f64` | GPU power in watts |
+| `total_power` | `f64` | Total (CPU + GPU) power in watts |
+| `cpu_usage` | `f64` | System CPU usage as a percentage (0–100) |
+| `pid_app_power` | `f64` | Power attributed to the monitored PID or application in watts; `0.0` if no process/app is selected |
 
-The structure is C-compatible (repr C, packed), so it can be read directly from any language that supports memory-mapped files or shared memory.
+The structure uses Rust's `repr(C)` layout, so consumers should read it using the platform's native C layout and native endianness.
 
 ### Multiple Ring Buffer Entries
 
-The buffer holds 5 slots. The writer advances a head index on each update. Readers should track the head index to detect new data.
+The writer stores the next sample in `head % 5`, then increments the head counter. Readers should track the head index to detect new data and use the entry `timestamp` to detect stale samples.
 
 ## HTTP and WebSocket API (`--api-port`)
 
@@ -117,7 +118,9 @@ When built with the `api` feature (on by default), Joular Core can expose power 
 joularcore --api-port 8080
 ```
 
-The server binds to `0.0.0.0:<PORT>` and has CORS enabled, so it can be reached from browser-based dashboards.
+The server binds to `127.0.0.1:<PORT>`. By default, browser CORS access is allowed only from `http://127.0.0.1:<PORT>` and `http://localhost:<PORT>`.
+
+To allow another browser origin, pass `--api-allowed-origin <ORIGIN>` along with `--api-port`. The flag is repeatable, and `--api-allowed-origin "*"` allows any origin.
 
 ### Endpoints
 
@@ -164,10 +167,10 @@ websocat ws://localhost:8080/ws
 
 ## Combining Export Channels
 
-All export channels can be active at the same time. For example:
+File output, the ring buffer, and the API can be active at the same time. For example:
 
 ```bash
-# CSV file + ring buffer + API, no terminal output
+# File output + ring buffer + API, no terminal output
 joularcore -s -f power.csv -r --api-port 8080
 ```
 

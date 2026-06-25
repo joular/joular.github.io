@@ -7,7 +7,7 @@ JoularJX requires, at minimum, Java 11+.
 
 JoularJX gets CPU power reading from various sources, depending on the platform or operating system.
 In particuliar, it can get the data from two main approaches:
-- Get the power data from [Joular Core](https://github.com/joular/joularcore), either through its standard output or through a shared memory buffer ring (IPC). Joular Core works on all platforms and operating systems.
+- Get the power data from [Joular Core](https://github.com/joular/joularcore), either through numeric standard output (`-c cpu -i`) or through its documented shared-memory ring buffer layout. Joular Core works on all platforms and operating systems.
 - Get the data through its internal calculation from RAPL (Linux, Windows), powermetrics (macOS) or our own regression models (Raspberry Pi).
 - In addition, in virtual machines, JoularJX reads the power consumption of the virtual machine (measured in the host) from a file shared between the host and the guest.
 

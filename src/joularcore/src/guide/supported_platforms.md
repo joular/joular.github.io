@@ -54,13 +54,13 @@ The SBC build includes built-in power models for the following devices:
 ## CPU Power Monitoring Details
 
 **Linux and Windows (x86 / x86_64)**  
-CPU power is read from Intel's Running Average Power Limit (RAPL) interface. RAPL is supported on Intel processors since Sandy Bridge (2011) and on AMD processors since Ryzen. On Linux, RAPL is exposed via the powercap sysfs interface (`/sys/class/powercap/intel-rapl/`). On Windows, a kernel driver is required (see [Installation](./installation.md)).
+CPU power is read from RAPL energy counters. On Linux, Joular Core reads the package counter exposed through the powercap sysfs interface (`/sys/class/powercap/intel-rapl/`). If that interface is absent or unreadable, it warns and continues with CPU power reported as 0 W. On Windows, Joular Core uses Hubblo's/Scaphandre's RAPL kernel driver and supports the Intel and AMD counters exposed by that driver (see [Installation](./installation.md)).
 
 **macOS**  
 CPU (and GPU on Apple Silicon) power is read from Apple's `powermetrics` command. This tool ships with macOS and covers both Intel and Apple Silicon hardware. It requires elevated access to read power data.
 
 **Raspberry Pi and SBC**  
-Power is calculated from CPU utilization using polynomial regression models that were measured against each supported board at various load levels. No hardware interface or special permissions are needed.
+Power is calculated from CPU utilization using polynomial regression models that were measured against each supported board at various load levels. This requires a binary built with the `sbc` feature. No hardware interface or special permissions are needed; unsupported boards report 0 W.
 
 **Virtual Machines**  
 Power is read from a shared file written by a monitoring tool running on the host OS. See [Virtual Machines](../ref/vm.md) for the setup details.

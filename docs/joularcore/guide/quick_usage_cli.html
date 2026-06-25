@@ -15,8 +15,8 @@
         <link rel="icon" href="../favicon-de23e50b.svg">
         <link rel="shortcut icon" href="../favicon-8114d1fc.png">
         <link rel="stylesheet" href="../css/variables-8adf115d.css">
-        <link rel="stylesheet" href="../css/general-2459343d.css">
-        <link rel="stylesheet" href="../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../css/general-0392ca55.css">
+        <link rel="stylesheet" href="../css/chrome-fc474251.css">
         <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-100edc81.js";
+            window.path_to_searchindex_js = "../searchindex-ee74c12a.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-cced847a.js"></script>
+        <script src="../toc-59639058.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -180,8 +180,8 @@
 <p><strong>Linux (PC/server)</strong> — requires elevated access to read RAPL power files:</p>
 <pre><code class="language-bash">sudo joularcore
 </code></pre>
-<p><strong>macOS</strong> — requires elevated access for <code>powermetrics</code> or run with <code>sudo</code>:</p>
-<pre><code class="language-bash">joularcore
+<p><strong>macOS</strong> — requires elevated access for <code>powermetrics</code>; run with <code>sudo</code> for CLI use:</p>
+<pre><code class="language-bash">sudo joularcore
 </code></pre>
 <p><strong>Windows</strong>:</p>
 <pre><code>joularcore.exe
@@ -229,6 +229,7 @@ joularcore -c gpu
 <pre><code class="language-bash">joularcore --api-port 8080
 </code></pre>
 <p>Starts an HTTP server. <code>GET http://localhost:8080/data</code> returns the latest reading as JSON, and <code>ws://localhost:8080/ws</code> streams a new JSON reading every second.</p>
+<p>The server binds to <code>127.0.0.1</code>. Browser access is limited to localhost origins by default; use <code>--api-allowed-origin &lt;ORIGIN&gt;</code> to add another CORS origin.</p>
 <h3 id="expose-power-data-over-a-shared-memory-buffer-ring"><a class="header" href="#expose-power-data-over-a-shared-memory-buffer-ring">Expose power data over a shared memory buffer ring</a></h3>
 <pre><code class="language-bash">joularcore -r
 </code></pre>
@@ -286,11 +287,11 @@ joularcore -p 1234 --cpu-idle-baseline 4.5
 
         <script src="../elasticlunr-ef4e11c1.min.js"></script>
         <script src="../mark-09e88c2c.min.js"></script>
-        <script src="../searcher-c2a407aa.js"></script>
+        <script src="../searcher-09f2665d.js"></script>
 
         <script src="../clipboard-1626706a.min.js"></script>
         <script src="../highlight-abc7f01d.js"></script>
-        <script src="../book-a0b12cfe.js"></script>
+        <script src="../book-c22b7243.js"></script>
 
         <!-- Custom JS scripts -->
 

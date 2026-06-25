@@ -20,7 +20,7 @@ ExecStart=/usr/bin/joularcore -o -f /tmp/joularcore-service.csv
 WantedBy=multi-user.target
 ```
 
-By default it runs Joular Core as root (required for RAPL access on Linux), writes the latest power reading to `/tmp/joularcore-service.csv` in overwrite mode (`-o`), and restarts automatically on failure.
+By default it runs Joular Core as root (required for RAPL access on Linux), writes the latest power reading to `/tmp/joularcore-service.csv` in overwrite mode (`-o`), and restarts automatically on failure. Overwrite mode truncates before every write, so the default file contains the latest data row only, without a CSV header.
 
 ## Installation
 
@@ -67,7 +67,7 @@ sudo systemctl restart joularcore
 
 ## Reading the Output File
 
-When using the default `-o -f /tmp/joularcore-service.csv` configuration, the file always contains exactly one data row — the most recent measurement. Any script or tool can poll this file at its own pace:
+When using the default `-o -f /tmp/joularcore-service.csv` configuration, the file always contains exactly one data row — the most recent measurement — without a header. Any script or tool can poll this file at its own pace:
 
 ```bash
 cat /tmp/joularcore-service.csv
@@ -75,7 +75,6 @@ cat /tmp/joularcore-service.csv
 
 Example output:
 ```
-Timestamp,Total Power (W),CPU Power (W),GPU Power (W),CPU Usage (%)
 1712345678,18.45,15.20,3.25,24.60
 ```
 

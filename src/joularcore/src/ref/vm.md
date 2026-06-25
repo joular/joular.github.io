@@ -41,14 +41,16 @@ A CSV file with at least three columns. The third column (index 2) contains the 
 ```
 
 ### `joularcore`
-A CSV file in Joular Core's standard output format, with a header row. The file should be written in overwrite mode (`-o`) so it always contains exactly one data row.
+A CSV file in Joular Core's standard append-mode output format, with a header row and one or more data rows. Joular Core reads the last non-empty data row.
 
 ```
 Timestamp,Total Power (W),CPU Power (W),GPU Power (W),CPU Usage (%)
 1712345678,18.45,15.20,3.25,24.60
 ```
 
-When using this format, Joular Core reads the `CPU Power (W)` column for CPU power and `GPU Power (W)` for GPU power.
+When using this format for CPU power, Joular Core reads the first available value from `App Power (W)`, `Process Power (W)`, then `CPU Power (W)`. For GPU power, it reads `GPU Power (W)`.
+
+Do not use Joular Core overwrite mode (`-o`) as the producer for `VM_CPU_POWER_FORMAT=joularcore` or `VM_GPU_POWER_FORMAT=joularcore`: the current overwrite mode keeps only the latest data row and does not preserve the header needed by this parser. For a single-value producer file, use the `watts` format instead.
 
 ## Step-by-Step Example: Joular Core on Both Host and Guest
 
@@ -58,10 +60,10 @@ This example uses Joular Core itself on the host to monitor the VM process, and 
 
 Find the PID of the virtual machine process (for QEMU/KVM this is `qemu-system-x86_64`, for VirtualBox it is `VirtualBoxVM`, etc.).
 
-Run Joular Core on the host, monitoring that process and writing to a shared file in overwrite mode:
+Run Joular Core on the host, monitoring that process and appending to a shared CSV file:
 
 ```bash
-joularcore -p <VM_PID> -o -f /shared/vm_power.csv -s
+joularcore -p <VM_PID> -f /shared/vm_power.csv -s
 ```
 
 The file `/shared/vm_power.csv` must be accessible from inside the guest — mount the directory using VirtFS, a shared folder, or any other mechanism supported by your hypervisor.
@@ -81,11 +83,11 @@ Then run Joular Core as usual. You can monitor any process or application inside
 joularcore -a myapp
 ```
 
-Joular Core reads the total VM power from the shared file and distributes it proportionally to processes based on their CPU utilisation within the guest.
+Joular Core reads the VM process power from the shared file and distributes it proportionally to processes based on their CPU utilisation within the guest.
 
 ## Notes
 
 - The shared file must be on a file system visible to both host and guest. tmpfs (`/dev/shm`) on Linux is a good choice for low-latency sharing.
-- Write the file in overwrite mode (`-o`) on the host so Joular Core in the guest always sees the latest value rather than stale data from earlier rows.
+- For `joularcore` format, keep the producer in append mode so the header remains available. For overwrite-style sharing, write a single numeric watts value and set the format to `watts`.
 - If the file is temporarily unavailable or empty, Joular Core in the guest treats power as 0 for that sample and continues.
 - The `VM_CPU_POWER_FILE` and `VM_GPU_POWER_FILE` paths are interpreted inside the guest. They do not need to match the host path.

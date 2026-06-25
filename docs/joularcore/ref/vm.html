@@ -15,8 +15,8 @@
         <link rel="icon" href="../favicon-de23e50b.svg">
         <link rel="shortcut icon" href="../favicon-8114d1fc.png">
         <link rel="stylesheet" href="../css/variables-8adf115d.css">
-        <link rel="stylesheet" href="../css/general-2459343d.css">
-        <link rel="stylesheet" href="../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../css/general-0392ca55.css">
+        <link rel="stylesheet" href="../css/chrome-fc474251.css">
         <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-100edc81.js";
+            window.path_to_searchindex_js = "../searchindex-ee74c12a.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-cced847a.js"></script>
+        <script src="../toc-59639058.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -210,17 +210,18 @@
 <pre><code>...,18.45,...
 </code></pre>
 <h3 id="joularcore"><a class="header" href="#joularcore"><code>joularcore</code></a></h3>
-<p>A CSV file in Joular Core’s standard output format, with a header row. The file should be written in overwrite mode (<code>-o</code>) so it always contains exactly one data row.</p>
+<p>A CSV file in Joular Core’s standard append-mode output format, with a header row and one or more data rows. Joular Core reads the last non-empty data row.</p>
 <pre><code>Timestamp,Total Power (W),CPU Power (W),GPU Power (W),CPU Usage (%)
 1712345678,18.45,15.20,3.25,24.60
 </code></pre>
-<p>When using this format, Joular Core reads the <code>CPU Power (W)</code> column for CPU power and <code>GPU Power (W)</code> for GPU power.</p>
+<p>When using this format for CPU power, Joular Core reads the first available value from <code>App Power (W)</code>, <code>Process Power (W)</code>, then <code>CPU Power (W)</code>. For GPU power, it reads <code>GPU Power (W)</code>.</p>
+<p>Do not use Joular Core overwrite mode (<code>-o</code>) as the producer for <code>VM_CPU_POWER_FORMAT=joularcore</code> or <code>VM_GPU_POWER_FORMAT=joularcore</code>: the current overwrite mode keeps only the latest data row and does not preserve the header needed by this parser. For a single-value producer file, use the <code>watts</code> format instead.</p>
 <h2 id="step-by-step-example-joular-core-on-both-host-and-guest"><a class="header" href="#step-by-step-example-joular-core-on-both-host-and-guest">Step-by-Step Example: Joular Core on Both Host and Guest</a></h2>
 <p>This example uses Joular Core itself on the host to monitor the VM process, and Joular Core inside the guest to attribute that power to individual processes.</p>
 <h3 id="host-setup"><a class="header" href="#host-setup">Host Setup</a></h3>
 <p>Find the PID of the virtual machine process (for QEMU/KVM this is <code>qemu-system-x86_64</code>, for VirtualBox it is <code>VirtualBoxVM</code>, etc.).</p>
-<p>Run Joular Core on the host, monitoring that process and writing to a shared file in overwrite mode:</p>
-<pre><code class="language-bash">joularcore -p &lt;VM_PID&gt; -o -f /shared/vm_power.csv -s
+<p>Run Joular Core on the host, monitoring that process and appending to a shared CSV file:</p>
+<pre><code class="language-bash">joularcore -p &lt;VM_PID&gt; -f /shared/vm_power.csv -s
 </code></pre>
 <p>The file <code>/shared/vm_power.csv</code> must be accessible from inside the guest — mount the directory using VirtFS, a shared folder, or any other mechanism supported by your hypervisor.</p>
 <h3 id="guest-setup"><a class="header" href="#guest-setup">Guest Setup</a></h3>
@@ -231,11 +232,11 @@ export VM_CPU_POWER_FORMAT=joularcore
 <p>Then run Joular Core as usual. You can monitor any process or application inside the guest:</p>
 <pre><code class="language-bash">joularcore -a myapp
 </code></pre>
-<p>Joular Core reads the total VM power from the shared file and distributes it proportionally to processes based on their CPU utilisation within the guest.</p>
+<p>Joular Core reads the VM process power from the shared file and distributes it proportionally to processes based on their CPU utilisation within the guest.</p>
 <h2 id="notes"><a class="header" href="#notes">Notes</a></h2>
 <ul>
 <li>The shared file must be on a file system visible to both host and guest. tmpfs (<code>/dev/shm</code>) on Linux is a good choice for low-latency sharing.</li>
-<li>Write the file in overwrite mode (<code>-o</code>) on the host so Joular Core in the guest always sees the latest value rather than stale data from earlier rows.</li>
+<li>For <code>joularcore</code> format, keep the producer in append mode so the header remains available. For overwrite-style sharing, write a single numeric watts value and set the format to <code>watts</code>.</li>
 <li>If the file is temporarily unavailable or empty, Joular Core in the guest treats power as 0 for that sample and continues.</li>
 <li>The <code>VM_CPU_POWER_FILE</code> and <code>VM_GPU_POWER_FILE</code> paths are interpreted inside the guest. They do not need to match the host path.</li>
 </ul>
@@ -284,11 +285,11 @@ export VM_CPU_POWER_FORMAT=joularcore
 
         <script src="../elasticlunr-ef4e11c1.min.js"></script>
         <script src="../mark-09e88c2c.min.js"></script>
-        <script src="../searcher-c2a407aa.js"></script>
+        <script src="../searcher-09f2665d.js"></script>
 
         <script src="../clipboard-1626706a.min.js"></script>
         <script src="../highlight-abc7f01d.js"></script>
-        <script src="../book-a0b12cfe.js"></script>
+        <script src="../book-c22b7243.js"></script>
 
         <!-- Custom JS scripts -->
 

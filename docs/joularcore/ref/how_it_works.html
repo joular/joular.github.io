@@ -15,8 +15,8 @@
         <link rel="icon" href="../favicon-de23e50b.svg">
         <link rel="shortcut icon" href="../favicon-8114d1fc.png">
         <link rel="stylesheet" href="../css/variables-8adf115d.css">
-        <link rel="stylesheet" href="../css/general-2459343d.css">
-        <link rel="stylesheet" href="../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../css/general-0392ca55.css">
+        <link rel="stylesheet" href="../css/chrome-fc474251.css">
         <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-100edc81.js";
+            window.path_to_searchindex_js = "../searchindex-ee74c12a.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-cced847a.js"></script>
+        <script src="../toc-59639058.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -225,7 +225,7 @@
 </ul>
 <p>Each supported OS has a concrete implementation of these traits. The monitoring loop talks only to these trait objects, so it is identical on every platform.</p>
 <h3 id="linux"><a class="header" href="#linux">Linux</a></h3>
-<p>CPU power is read from the Intel RAPL (Running Average Power Limit) sysfs interface at <code>/sys/class/powercap/intel-rapl/</code>. RAPL is supported on Intel processors since Sandy Bridge (2011) and on AMD processors since Ryzen. The interface exposes cumulative energy counters in microjoules; Joular Core reads two consecutive values a fixed time apart and converts the delta to watts.</p>
+<p>CPU power is read from the RAPL (Running Average Power Limit) package counter exposed through the powercap sysfs interface at <code>/sys/class/powercap/intel-rapl/</code>. The interface exposes cumulative energy counters in microjoules; Joular Core reads two consecutive values and converts the energy delta over elapsed time to watts. If the package counter is absent or unreadable, Joular Core warns once and reports 0 W for CPU power until the interface becomes usable.</p>
 <p>CPU utilisation is computed from <code>/proc/stat</code>. Joular Core reads the <code>user</code>, <code>nice</code>, <code>system</code>, <code>idle</code>, <code>iowait</code>, <code>irq</code>, <code>softirq</code>, and <code>steal</code> tick counters on each sample, computes the delta from the previous sample, and calculates utilisation as:</p>
 <pre><code>utilisation = 1 − (Δidle / Δtotal)
 </code></pre>
@@ -236,12 +236,12 @@
 <li><strong>AMD</strong>: calling <code>amd-smi</code> or <code>rocm-smi</code> with JSON output and extracting the power fields.</li>
 </ul>
 <h3 id="windows"><a class="header" href="#windows">Windows</a></h3>
-<p>CPU power is read from Hubblo’s RAPL Windows kernel driver via <code>DeviceIoControl</code>. The driver exposes RAPL data through a Windows device interface, returning power in watts directly.</p>
+<p>CPU power is read from Hubblo’s/Scaphandre’s RAPL Windows kernel driver via <code>DeviceIoControl</code>. The driver exposes Intel or AMD RAPL MSR energy counters through a Windows device interface; Joular Core reads those counters and converts energy deltas over elapsed time to watts.</p>
 <p>CPU utilisation is read from the Win32 API via <code>GetSystemTimes()</code>, which returns <code>idle</code>, <code>kernel</code>, and <code>user</code> times as <code>FILETIME</code> structures. Utilisation is computed from the deltas between two successive calls.</p>
 <p>Per-process CPU time is read via <code>GetProcessTimes()</code>. Application monitoring enumerates processes using the Windows Toolhelp32 API (<code>CreateToolhelp32Snapshot</code>, <code>Process32First</code>, <code>Process32Next</code>).</p>
 <p>GPU power on Windows follows the same approach as Linux: <code>nvidia-smi</code> for Nvidia, <code>amd-smi</code> for AMD.</p>
 <h3 id="macos"><a class="header" href="#macos">macOS</a></h3>
-<p>CPU, GPU, and overall system power are all read from Apple’s <code>powermetrics</code> tool, which ships with macOS. Joular Core spawns <code>powermetrics</code> as a subprocess with JSON output format and parses the result. On Apple Silicon, <code>powermetrics</code> reports CPU and GPU power separately; on Intel Macs it reports CPU power only.</p>
+<p>CPU power, and GPU power on Apple Silicon, are read from Apple’s <code>powermetrics</code> tool, which ships with macOS. Joular Core spawns <code>powermetrics</code> as a subprocess, forces the C locale, and parses the text sample blocks. On Apple Silicon, <code>powermetrics</code> reports CPU and GPU power separately; on Intel Macs it reports CPU package power only.</p>
 <p>Because <code>powermetrics</code> requires elevated privileges to access hardware counters, Joular Core must be run with elevated access on macOS.</p>
 <p>CPU utilisation on macOS is read via the Mach kernel API (<code>host_statistics64</code> with <code>HOST_CPU_LOAD_INFO</code>), which returns per-CPU user, system, and idle tick counters.</p>
 <p>Process and application monitoring on macOS uses Mach task info APIs to read per-process CPU times.</p>
@@ -249,8 +249,8 @@
 <p>SBC platforms (Raspberry Pi, Asus Tinker Board) do not have a hardware power interface accessible to software. Instead, Joular Core calculates CPU power from CPU utilisation using polynomial regression models:</p>
 <pre><code>power = c₀ + c₁·u + c₂·u² + … + cₙ·uⁿ
 </code></pre>
-<p>where <code>u</code> is the current CPU utilisation (0–100) and <code>c₀…cₙ</code> are model coefficients measured empirically for each specific board model and revision.</p>
-<p>The built-in models cover all supported Raspberry Pi models. A custom model can be supplied via the <code>SBC_POWER_MODEL_JSON</code> environment variable; the file format must match the <a href="https://github.com/joular/powermodels">Joular Power Models Database</a> schema.</p>
+<p>where <code>u</code> is the current CPU utilisation as a fraction from 0.0 to 1.0 and <code>c₀…cₙ</code> are model coefficients measured empirically for each specific board model and revision.</p>
+<p>The built-in models cover the supported Raspberry Pi and Asus Tinker Board models when the binary is built with the <code>sbc</code> feature. A custom model can be supplied via the <code>SBC_POWER_MODEL_JSON</code> environment variable; the file format must match the <a href="https://github.com/joular/powermodels">Joular Power Models Database</a> schema. Unsupported boards return 0 W.</p>
 <p>GPU power is always 0 on SBC platforms.</p>
 <h3 id="virtual-machines"><a class="header" href="#virtual-machines">Virtual Machines</a></h3>
 <p>In a VM, there is no direct hardware interface. Joular Core reads power from a shared file written by the host. The file is read on every sampling cycle. If the file is absent or empty, the power value for that sample is 0. The supported file formats are described in <a href="./vm.html">Virtual Machines</a>.</p>
@@ -287,7 +287,7 @@
 <li><strong><code>attributed_cpu_power</code></strong> is <code>max(0, cpu_power − idle_baseline)</code> — the raw CPU power minus the idle baseline (zero if no baseline is configured)</li>
 <li><strong><code>system_cpu_utilisation</code></strong> is the overall CPU utilisation percentage</li>
 </ul>
-<p>If <code>system_cpu_utilisation</code> is zero (the CPU is completely idle), the attributed power is zero to avoid a division by zero.</p>
+<p>If <code>system_cpu_utilisation</code> is below a tiny threshold, the attributed power is zero to avoid dividing by idle noise.</p>
 <p>This model assumes that a process’s share of CPU power is proportional to its share of CPU time. This is an approximation — it does not account for frequency scaling within a core, NUMA topology, or work done in kernel threads on behalf of the process — but it is a practical and widely used approach for software-level power attribution.</p>
 <h3 id="cpu-idle-baseline"><a class="header" href="#cpu-idle-baseline">CPU Idle Baseline</a></h3>
 <p>When the <code>--cpu-idle-baseline</code> or <code>--calibrate-cpu-idle-baseline</code> option is set, the baseline is subtracted from the raw CPU power before attribution:</p>
@@ -304,21 +304,21 @@
 <p><strong>Terminal</strong> (<code>OutputWriter</code> in <code>Terminal</code> mode): formats the reading with ANSI colour codes and writes it to stdout, overwriting the previous line using carriage return and ANSI erase-line sequences. In numeric mode (<code>-i</code>), a bare float is printed instead.</p>
 </li>
 <li>
-<p><strong>CSV file</strong> (<code>OutputWriter</code> in <code>CsvFile</code> mode): appends one row to the CSV file. In overwrite mode (<code>-o</code>), the file is truncated to zero before each write so only the latest row is kept.</p>
+<p><strong>CSV file</strong> (<code>OutputWriter</code> in <code>CsvFile</code> mode): appends one row to the CSV file. In overwrite mode (<code>-o</code>), the file is truncated to zero before each write so only the latest row is kept, without a header.</p>
 </li>
 <li>
-<p><strong>Ring buffer</strong> (<code>RingBufferWriter</code>): writes 5 <code>f64</code> values to a shared-memory region. On Linux and macOS this is a memory-mapped file (<code>memmap2</code>); on Windows it uses Win32 file mapping (<code>CreateFileMapping</code> / <code>MapViewOfFile</code>).</p>
+<p><strong>Ring buffer</strong> (<code>RingBufferWriter</code>): writes an 8-byte <code>u64</code> head counter followed by 5 <code>RingBufferStruct</code> slots. Each slot contains a timestamp plus CPU power, GPU power, total power, CPU usage, and PID/app power. On Linux and macOS this is a memory-mapped file (<code>memmap2</code>); on Windows it uses Win32 file mapping (<code>CreateFileMapping</code> / <code>MapViewOfFile</code>).</p>
 </li>
 <li>
 <p><strong>API</strong> (when the <code>api</code> feature is enabled): broadcasts an <code>ApiData</code> struct to all connected HTTP and WebSocket clients via a Tokio broadcast channel. The HTTP handler (<code>GET /data</code>) reads the latest broadcast value; the WebSocket handler (<code>/ws</code>) streams each new broadcast as a JSON message.</p>
 </li>
 </ol>
 <h2 id="api-server"><a class="header" href="#api-server">API Server</a></h2>
-<p>The API server (<code>src/api.rs</code>) is built with the Axum web framework running on a Tokio async runtime. It runs in a separate async task alongside the synchronous monitoring loop. Communication between the two is done via a <code>tokio::sync::broadcast::Sender&lt;ApiData&gt;</code>.</p>
+<p>The API server (<code>src/api.rs</code>) is built with the Axum web framework running on a Tokio async runtime. Joular Core starts it on a background thread with its own runtime after successfully binding <code>127.0.0.1:&lt;PORT&gt;</code>. Communication from the synchronous monitoring loop to the API server is done via a <code>tokio::sync::broadcast::Sender&lt;ApiData&gt;</code>.</p>
 <ul>
-<li><strong><code>GET /data</code></strong>: the handler subscribes to the broadcast channel and immediately returns the last received value as JSON.</li>
+<li><strong><code>GET /data</code></strong>: returns the last received value as JSON.</li>
 <li><strong><code>/ws</code></strong>: the WebSocket handler subscribes to the broadcast channel and pushes each new value as a JSON message to the connected client.</li>
-<li>CORS is enabled via <code>tower-http</code>’s <code>CorsLayer</code>, so the API can be consumed directly from browser-based dashboards.</li>
+<li>CORS is enabled via <code>tower-http</code>’s <code>CorsLayer</code>. By default only <code>http://127.0.0.1:&lt;PORT&gt;</code> and <code>http://localhost:&lt;PORT&gt;</code> are allowed. Extra origins come from repeatable <code>--api-allowed-origin</code>, and <code>*</code> allows any origin.</li>
 </ul>
 <h2 id="graceful-shutdown"><a class="header" href="#graceful-shutdown">Graceful Shutdown</a></h2>
 <p>Joular Core installs a Ctrl+C handler via the <code>ctrlc</code> crate. When the signal is received:</p>
@@ -420,11 +420,11 @@
 
         <script src="../elasticlunr-ef4e11c1.min.js"></script>
         <script src="../mark-09e88c2c.min.js"></script>
-        <script src="../searcher-c2a407aa.js"></script>
+        <script src="../searcher-09f2665d.js"></script>
 
         <script src="../clipboard-1626706a.min.js"></script>
         <script src="../highlight-abc7f01d.js"></script>
-        <script src="../book-a0b12cfe.js"></script>
+        <script src="../book-c22b7243.js"></script>
 
         <!-- Custom JS scripts -->
 

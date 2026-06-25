@@ -23,12 +23,13 @@ joularcore [OPTIONS]
 
 | Option | Description |
 |--------|-------------|
-| `-f`, `--file <FILE>` | Write power measurements to a CSV file. A header line is written once, then one row per second is appended. |
-| `-o`, `--overwrite` | When used with `-f`, overwrite the file on each write instead of appending. Only the latest measurement is kept in the file. Useful when another program is polling the file. |
-| `-i`, `--numeric` | Print only a bare numeric value (watts, two decimal places) with no labels or ANSI formatting. Useful for piping or scripting. The value printed is total power by default, or the selected component if `-c` is set. |
-| `-s`, `--silent` | Suppress all terminal output. CSV export, ring buffer, and API remain active. Useful when running in the background. |
+| `-f`, `--file <FILE>` | Write power measurements to a file. CSV is used by default; with `-i`, the file receives numeric-only values. Append-mode CSV writes a header once at startup. |
+| `-o`, `--overwrite` | When used with `-f`, truncate the file before each write instead of appending. Only the latest data row/value is kept; overwrite-mode CSV does not keep a header. Useful when another program is polling the file. |
+| `-i`, `--numeric` | Output only a bare numeric value (watts, two decimal places) with no labels or ANSI formatting. Useful for piping or scripting. The value is total power by default, or the selected component if `-c` is set. |
+| `-s`, `--silent` | Suppress terminal output. File export, ring buffer, and API remain active. Useful when running in the background. |
 | `-r`, `--ringbuffer` | Write power data to a shared-memory ring buffer every second. See [Exporting Power Data](./exports.md) for paths and data layout. |
 | `--api-port <PORT>` | Start an HTTP and WebSocket API server on the given port. Requires the `api` feature. See [Exporting Power Data](./exports.md) for endpoint details. |
+| `--api-allowed-origin <ORIGIN>` | Allow an additional CORS origin for the API. Requires `--api-port`, is repeatable, and accepts `*` as a wildcard. |
 
 ### Component Filter
 
@@ -57,7 +58,7 @@ These options subtract idle CPU power before attributing energy to a process or 
 
 | Option | Description |
 |--------|-------------|
-| `-g`, `--gui` | Launch the graphical user interface instead of (or alongside) the terminal output. |
+| `-g`, `--gui` | Launch the graphical user interface. Monitoring target and CSV output are configured inside the GUI. |
 | `-h`, `--help` | Print help and exit. |
 | `-V`, `--version` | Print the version number and exit. |
 
@@ -87,8 +88,11 @@ See [Virtual Machines](./vm.md) for details.
 - `-p` and `-a` are mutually exclusive.
 - `-o` only has effect when `-f` is also set.
 - `--cpu-idle-baseline` and `--calibrate-cpu-idle-baseline` are mutually exclusive.
+- `--api-allowed-origin` requires `--api-port`.
 - `--api-port` requires that Joular Core was compiled with the `api` feature (enabled by default).
 - `-g` / `--gui` requires the `gui` feature (enabled by default); alternatively, use the `joularcoregui` binary.
+- In the CLI, `-g` / `--gui` conflicts with `--pid`, `--app`, `--file`, `--overwrite`, `--silent`, and `--numeric`. Startup options such as `--ringbuffer`, `--api-port`, `--api-allowed-origin`, `--app-refresh-interval`, and the CPU idle baseline flags can still preconfigure the GUI session.
+- When `-f` is used, the live terminal display is replaced by file output.
 
 ## Examples
 
@@ -107,6 +111,9 @@ joularcore -s -f /tmp/power.csv -o
 
 # Expose API, suppress terminal output
 joularcore -s --api-port 8080
+
+# Expose API to an additional browser origin
+joularcore --api-port 8080 --api-allowed-origin https://dashboard.example.com
 
 # Write ring buffer + CSV simultaneously
 joularcore -r -f power.csv

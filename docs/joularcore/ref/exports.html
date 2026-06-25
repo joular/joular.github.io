@@ -15,8 +15,8 @@
         <link rel="icon" href="../favicon-de23e50b.svg">
         <link rel="shortcut icon" href="../favicon-8114d1fc.png">
         <link rel="stylesheet" href="../css/variables-8adf115d.css">
-        <link rel="stylesheet" href="../css/general-2459343d.css">
-        <link rel="stylesheet" href="../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../css/general-0392ca55.css">
+        <link rel="stylesheet" href="../css/chrome-fc474251.css">
         <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-100edc81.js";
+            window.path_to_searchindex_js = "../searchindex-ee74c12a.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-cced847a.js"></script>
+        <script src="../toc-59639058.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -175,7 +175,7 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="exporting-power-data"><a class="header" href="#exporting-power-data">Exporting Power Data</a></h1>
-<p>Joular Core can send power measurements to multiple destinations. All export mechanisms work on all supported platforms and operating systems.</p>
+<p>Joular Core can send power measurements to multiple destinations. File output, the shared-memory ring buffer, and the HTTP/WebSocket API can be combined. In the current CLI, <code>-f</code> switches the main writer from the live terminal display to the selected file.</p>
 <h2 id="terminal-output-default"><a class="header" href="#terminal-output-default">Terminal Output (default)</a></h2>
 <p>By default, Joular Core writes a live display to the terminal. The line is updated in place every second using ANSI escape codes:</p>
 <pre><code>⚡ Total 18.45 W | CPU 15.20 W | GPU 3.25 W | CPU Usage 24.60%
@@ -188,15 +188,15 @@
 <pre><code>CPU 15.20 W
 GPU 3.25 W
 </code></pre>
-<p>Use <code>-s</code> / <code>--silent</code> to suppress terminal output while keeping other export channels active.</p>
+<p>Use <code>-s</code> / <code>--silent</code> to suppress terminal output while keeping file, ring buffer, and API output active.</p>
 <h3 id="numeric-only-mode--i"><a class="header" href="#numeric-only-mode--i">Numeric-only mode (<code>-i</code>)</a></h3>
 <p>Adding <code>-i</code> prints a bare float with no labels or formatting, one value per line:</p>
 <pre><code class="language-bash">joularcore -i        # prints total power
 joularcore -c cpu -i # prints CPU power only
 </code></pre>
-<p>This mode is useful for stdout redirection or piping into other tools.</p>
+<p>This mode is useful for stdout redirection or piping into other tools. When combined with <code>-f</code>, the file receives the same numeric-only values instead of CSV rows.</p>
 <h2 id="csv-files--f"><a class="header" href="#csv-files--f">CSV Files (<code>-f</code>)</a></h2>
-<p>Use <code>-f &lt;FILE&gt;</code> to write measurements to a CSV file. A header line is written once at the start, then one data row is appended every second.</p>
+<p>Use <code>-f &lt;FILE&gt;</code> to write measurements to a file. Without <code>-i</code>, this is CSV output. In append mode, a header line is written once at startup, then one data row is appended every second.</p>
 <h3 id="csv-formats"><a class="header" href="#csv-formats">CSV Formats</a></h3>
 <p>The columns depend on which options are active:</p>
 <p><strong>Default (no process/app/component filter)</strong></p>
@@ -221,7 +221,7 @@ joularcore -c cpu -i # prints CPU power only
 </code></pre>
 <p>The <code>Timestamp</code> column contains a Unix epoch timestamp in seconds.</p>
 <h3 id="overwrite-mode--o"><a class="header" href="#overwrite-mode--o">Overwrite Mode (<code>-o</code>)</a></h3>
-<p>By default, rows are appended to the file. With <code>-o</code>, the file is truncated before each write so it always contains exactly one data row (plus the header). This is useful when another program is polling the file for the latest value.</p>
+<p>By default, rows are appended to the file. With <code>-o</code>, the file is truncated before each write so it contains only the latest data row. No CSV header is rewritten in overwrite mode. This is useful when another program is polling the file for the latest value.</p>
 <h2 id="shared-memory-ring-buffer--r"><a class="header" href="#shared-memory-ring-buffer--r">Shared-Memory Ring Buffer (<code>-r</code>)</a></h2>
 <p>Use <code>-r</code> or <code>--ringbuffer</code> to write power data to a shared-memory region. Any process on the same machine can read from this region without file I/O or network overhead.</p>
 <h3 id="ring-buffer-paths"><a class="header" href="#ring-buffer-paths">Ring Buffer Paths</a></h3>
@@ -238,29 +238,31 @@ joularcore -c cpu -i # prints CPU power only
 </table>
 </div>
 <h3 id="ring-buffer-layout"><a class="header" href="#ring-buffer-layout">Ring Buffer Layout</a></h3>
-<p>The ring buffer holds 5 consecutive <code>f64</code> (double-precision float) values:</p>
+<p>The shared memory region starts with an 8-byte native-endian <code>u64</code> head counter, followed by 5 slots. Each slot contains one C-compatible <code>RingBufferStruct</code>:</p>
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th style="text-align: center">Index</th><th>Field</th><th>Description</th></tr>
+<tr><th>Field</th><th>Type</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td style="text-align: center">0</td><td><code>cpu_power</code></td><td>CPU power in watts</td></tr>
-<tr><td style="text-align: center">1</td><td><code>gpu_power</code></td><td>GPU power in watts</td></tr>
-<tr><td style="text-align: center">2</td><td><code>total_power</code></td><td>Total (CPU + GPU) power in watts</td></tr>
-<tr><td style="text-align: center">3</td><td><code>cpu_usage</code></td><td>System CPU usage as a percentage (0–100)</td></tr>
-<tr><td style="text-align: center">4</td><td><code>pid_or_app_power</code></td><td>Power attributed to the monitored PID or application in watts; <code>0.0</code> if no process/app is selected</td></tr>
+<tr><td><code>timestamp</code></td><td><code>u64</code></td><td>Unix timestamp in seconds</td></tr>
+<tr><td><code>cpu_power</code></td><td><code>f64</code></td><td>CPU power in watts</td></tr>
+<tr><td><code>gpu_power</code></td><td><code>f64</code></td><td>GPU power in watts</td></tr>
+<tr><td><code>total_power</code></td><td><code>f64</code></td><td>Total (CPU + GPU) power in watts</td></tr>
+<tr><td><code>cpu_usage</code></td><td><code>f64</code></td><td>System CPU usage as a percentage (0–100)</td></tr>
+<tr><td><code>pid_app_power</code></td><td><code>f64</code></td><td>Power attributed to the monitored PID or application in watts; <code>0.0</code> if no process/app is selected</td></tr>
 </tbody>
 </table>
 </div>
-<p>The structure is C-compatible (repr C, packed), so it can be read directly from any language that supports memory-mapped files or shared memory.</p>
+<p>The structure uses Rust’s <code>repr(C)</code> layout, so consumers should read it using the platform’s native C layout and native endianness.</p>
 <h3 id="multiple-ring-buffer-entries"><a class="header" href="#multiple-ring-buffer-entries">Multiple Ring Buffer Entries</a></h3>
-<p>The buffer holds 5 slots. The writer advances a head index on each update. Readers should track the head index to detect new data.</p>
+<p>The writer stores the next sample in <code>head % 5</code>, then increments the head counter. Readers should track the head index to detect new data and use the entry <code>timestamp</code> to detect stale samples.</p>
 <h2 id="http-and-websocket-api---api-port"><a class="header" href="#http-and-websocket-api---api-port">HTTP and WebSocket API (<code>--api-port</code>)</a></h2>
 <p>When built with the <code>api</code> feature (on by default), Joular Core can expose power data over a local HTTP and WebSocket server. Start it with:</p>
 <pre><code class="language-bash">joularcore --api-port 8080
 </code></pre>
-<p>The server binds to <code>0.0.0.0:&lt;PORT&gt;</code> and has CORS enabled, so it can be reached from browser-based dashboards.</p>
+<p>The server binds to <code>127.0.0.1:&lt;PORT&gt;</code>. By default, browser CORS access is allowed only from <code>http://127.0.0.1:&lt;PORT&gt;</code> and <code>http://localhost:&lt;PORT&gt;</code>.</p>
+<p>To allow another browser origin, pass <code>--api-allowed-origin &lt;ORIGIN&gt;</code> along with <code>--api-port</code>. The flag is repeatable, and <code>--api-allowed-origin "*"</code> allows any origin.</p>
 <h3 id="endpoints"><a class="header" href="#endpoints">Endpoints</a></h3>
 <div class="table-wrapper">
 <table>
@@ -306,8 +308,8 @@ joularcore -c cpu -i # prints CPU power only
 <pre><code class="language-bash">websocat ws://localhost:8080/ws
 </code></pre>
 <h2 id="combining-export-channels"><a class="header" href="#combining-export-channels">Combining Export Channels</a></h2>
-<p>All export channels can be active at the same time. For example:</p>
-<pre><code class="language-bash"># CSV file + ring buffer + API, no terminal output
+<p>File output, the ring buffer, and the API can be active at the same time. For example:</p>
+<pre><code class="language-bash"># File output + ring buffer + API, no terminal output
 joularcore -s -f power.csv -r --api-port 8080
 </code></pre>
 <pre><code class="language-bash"># Process monitoring, CSV, and API
@@ -358,11 +360,11 @@ joularcore -p 1234 -f power.csv --api-port 8080
 
         <script src="../elasticlunr-ef4e11c1.min.js"></script>
         <script src="../mark-09e88c2c.min.js"></script>
-        <script src="../searcher-c2a407aa.js"></script>
+        <script src="../searcher-09f2665d.js"></script>
 
         <script src="../clipboard-1626706a.min.js"></script>
         <script src="../highlight-abc7f01d.js"></script>
-        <script src="../book-a0b12cfe.js"></script>
+        <script src="../book-c22b7243.js"></script>
 
         <!-- Custom JS scripts -->
 

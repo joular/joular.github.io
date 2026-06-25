@@ -15,8 +15,8 @@
         <link rel="icon" href="../favicon-de23e50b.svg">
         <link rel="shortcut icon" href="../favicon-8114d1fc.png">
         <link rel="stylesheet" href="../css/variables-8adf115d.css">
-        <link rel="stylesheet" href="../css/general-2459343d.css">
-        <link rel="stylesheet" href="../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../css/general-0392ca55.css">
+        <link rel="stylesheet" href="../css/chrome-fc474251.css">
         <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-100edc81.js";
+            window.path_to_searchindex_js = "../searchindex-ee74c12a.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-cced847a.js"></script>
+        <script src="../toc-59639058.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -190,7 +190,7 @@ ExecStart=/usr/bin/joularcore -o -f /tmp/joularcore-service.csv
 [Install]
 WantedBy=multi-user.target
 </code></pre>
-<p>By default it runs Joular Core as root (required for RAPL access on Linux), writes the latest power reading to <code>/tmp/joularcore-service.csv</code> in overwrite mode (<code>-o</code>), and restarts automatically on failure.</p>
+<p>By default it runs Joular Core as root (required for RAPL access on Linux), writes the latest power reading to <code>/tmp/joularcore-service.csv</code> in overwrite mode (<code>-o</code>), and restarts automatically on failure. Overwrite mode truncates before every write, so the default file contains the latest data row only, without a CSV header.</p>
 <h2 id="installation"><a class="header" href="#installation">Installation</a></h2>
 <p>Copy the unit file to the systemd directory and reload the daemon:</p>
 <pre><code class="language-bash">sudo cp systemd/joularcore.service /etc/systemd/system/
@@ -215,12 +215,11 @@ sudo systemctl start joularcore
 sudo systemctl restart joularcore
 </code></pre>
 <h2 id="reading-the-output-file"><a class="header" href="#reading-the-output-file">Reading the Output File</a></h2>
-<p>When using the default <code>-o -f /tmp/joularcore-service.csv</code> configuration, the file always contains exactly one data row — the most recent measurement. Any script or tool can poll this file at its own pace:</p>
+<p>When using the default <code>-o -f /tmp/joularcore-service.csv</code> configuration, the file always contains exactly one data row — the most recent measurement — without a header. Any script or tool can poll this file at its own pace:</p>
 <pre><code class="language-bash">cat /tmp/joularcore-service.csv
 </code></pre>
 <p>Example output:</p>
-<pre><code>Timestamp,Total Power (W),CPU Power (W),GPU Power (W),CPU Usage (%)
-1712345678,18.45,15.20,3.25,24.60
+<pre><code>1712345678,18.45,15.20,3.25,24.60
 </code></pre>
 <h2 id="stopping-and-disabling"><a class="header" href="#stopping-and-disabling">Stopping and Disabling</a></h2>
 <pre><code class="language-bash">sudo systemctl stop joularcore
@@ -271,11 +270,11 @@ sudo systemctl disable joularcore
 
         <script src="../elasticlunr-ef4e11c1.min.js"></script>
         <script src="../mark-09e88c2c.min.js"></script>
-        <script src="../searcher-c2a407aa.js"></script>
+        <script src="../searcher-09f2665d.js"></script>
 
         <script src="../clipboard-1626706a.min.js"></script>
         <script src="../highlight-abc7f01d.js"></script>
-        <script src="../book-a0b12cfe.js"></script>
+        <script src="../book-c22b7243.js"></script>
 
         <!-- Custom JS scripts -->
 

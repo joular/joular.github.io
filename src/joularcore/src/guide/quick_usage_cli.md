@@ -9,9 +9,9 @@ Run `joularcore` (Linux / macOS) or `joularcore.exe` (Windows). The program star
 sudo joularcore
 ```
 
-**macOS** — requires elevated access for `powermetrics` or run with `sudo`:
+**macOS** — requires elevated access for `powermetrics`; run with `sudo` for CLI use:
 ```bash
-joularcore
+sudo joularcore
 ```
 
 **Windows**:
@@ -100,6 +100,8 @@ joularcore --api-port 8080
 ```
 
 Starts an HTTP server. `GET http://localhost:8080/data` returns the latest reading as JSON, and `ws://localhost:8080/ws` streams a new JSON reading every second.
+
+The server binds to `127.0.0.1`. Browser access is limited to localhost origins by default; use `--api-allowed-origin <ORIGIN>` to add another CORS origin.
 
 ### Expose power data over a shared memory buffer ring
 

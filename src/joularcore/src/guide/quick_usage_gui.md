@@ -30,6 +30,9 @@ Before starting a monitoring session, the Options screen lets you configure:
 - **Monitor mode**: choose between monitoring the whole system, a specific PID, or a named application
 - **Application / PID**: type a process name or PID number directly; a dropdown lists running processes or applications
 - **CSV export**: toggle CSV file output on or off, and choose the file path using the native file picker
+- **Advanced options**: choose CPU/GPU filtering, set or keep the CPU idle baseline, enable the ring buffer, and configure the local HTTP/WebSocket API
+
+When launched as `joularcore --gui`, the flag conflicts with terminal/file-oriented options such as `--pid`, `--app`, `--file`, `--overwrite`, `--silent`, and `--numeric`. Startup options such as `--ringbuffer`, `--api-port`, `--api-allowed-origin`, `--app-refresh-interval`, and the CPU idle baseline flags can still preconfigure the GUI session.
 
 Once configured, click **Start Monitoring** to begin.
 

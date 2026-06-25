@@ -18,7 +18,7 @@ A use case example is using JoularJX on the guest OS and PowerJoular on the host
 ### In the host OS
 
 - Install [Joular Core](https://github.com/joular/joularcore) or [PowerJoular](https://github.com/joular/powerjoular)
-- Run Joular Core or PowerJoular while specifying the PID of the virtual machine of the guest OS, and writing the power data in a CSV file in overwrite mode.
+- Run Joular Core or PowerJoular while specifying the PID of the virtual machine of the guest OS, and writing the power data to a file shared with the guest. If you use Joular Core's `joularcore` CSV format, keep append mode so the CSV header remains available; use a single-value watts file for overwrite-style sharing.
 - For instance, you can run PowerJoular with the following command: ```powerjoular -p $VM_PID -o /home/vm/vm.csv```
 - Share the ```/home/vm/vm.csv``` between the host OS and the guest OS
 
