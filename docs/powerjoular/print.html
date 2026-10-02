@@ -16,8 +16,8 @@
         <link rel="icon" href="favicon-de23e50b.svg">
         <link rel="shortcut icon" href="favicon-8114d1fc.png">
         <link rel="stylesheet" href="css/variables-8adf115d.css">
-        <link rel="stylesheet" href="css/general-0392ca55.css">
-        <link rel="stylesheet" href="css/chrome-fc474251.css">
+        <link rel="stylesheet" href="css/general-e96d0476.css">
+        <link rel="stylesheet" href="css/chrome-d279d366.css">
         <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-483c5156.js";
+            window.path_to_searchindex_js = "searchindex-a723df21.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-a9651cd3.js"></script>
+        <script src="toc-b01ac823.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -178,20 +178,40 @@
                         <h1 id="overview"><a class="header" href="#overview">Overview</a></h1>
 <p><a href="https://www.gnu.org/licenses/gpl-3.0"><img src="https://img.shields.io/badge/License-GPLv3-blue" alt="License: GPL v3"></a>
 <a href="https://www.adaic.org"><img src="https://img.shields.io/badge/Made%20with-Ada-blue" alt="Ada"></a></p>
-<p><img src="powerjoular.png" alt="PowerJoular Logo"></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="powerjoular.png" alt="PowerJoular Logo"><span class="img-wrapper"><img src="powerjoular.png" alt="PowerJoular Logo"></span></label></p>
 <p>PowerJoular is a command line software to monitor, in real time, the power consumption of software and hardware components, across multiple platforms and virtual machines.</p>
 <p>PowerJoular is part of the <a href="https://www.noureddine.org/research/joular/"><img src="https://raw.githubusercontent.com/joular/.github/main/profile/joular.png" alt="Joular Project" width="64" /></a> project.</p>
 <p>PowerJoular can monitor the power consumption, in real time, of the CPU and the GPU in general, and also for a specific application (through its name or PID).
-It works on a Linux system and on multiple platforms (x86_64, ARM) and devices (computers, servers, Raspberry Pi, etc.).</p>
+It works on Linux, Windows and macOS, on multiple architectures (x86_64, ARM) and devices (computers, servers, Macs, Raspberry Pi, etc.).</p>
 <p>The official website of PowerJoular is: <a href="https://www.noureddine.org/research/joular/powerjoular">https://www.noureddine.org/research/joular/powerjoular</a>.</p>
 <h2 id="features"><a class="header" href="#features">Features</a></h2>
 <ul>
 <li>Monitor power consumption of CPU and GPU of PC/servers</li>
+<li>Monitor power consumption of Macs, Apple Silicon and Intel</li>
+<li>Monitor power consumption of Raspberry Pi and Asus Tinker Board devices</li>
 <li>Monitor power consumption inside virtual machines</li>
-<li>Monitor power consumption of individual applications or processes in GNU/Linux</li>
-<li>Expose power consumption to the terminal and CSV files</li>
-<li>Provides a systemd service (daemon) to continuously monitor power of devices</li>
-<li>Low overhead (written in Ada and compiled to native code)</li>
+<li>Monitor power consumption of individual applications or processes</li>
+<li>Expose power consumption to the terminal, CSV files, and a shared memory ring buffer</li>
+<li>Provides a systemd service (daemon) to continuously monitor power of devices on Linux</li>
+<li>Low overhead (written in Ada and compiled to native code, one binary with nothing to install alongside it)</li>
+</ul>
+<h2 id="what-changed-in-version-2"><a class="header" href="#what-changed-in-version-2">What changed in version 2</a></h2>
+<p>Version 2 does the measuring using two Ada libraries we developed, <a href="https://github.com/joular/joularcore">Joular Core</a> and <a href="https://github.com/joular/cpuload">CPU Load</a>, instead of its own code.
+This also brings Windows and macOS support, and AMD graphic cards (Nvidia cards are now read through NVML instead of <code>nvidia-smi</code>).</p>
+<ul>
+<li><strong>New</strong>: <code>-r</code> writes the power data to a shared memory ring buffer.</li>
+<li><strong>Removed</strong>: <code>-k</code>, which measured a process from its threads. It was experimental, and the process readings no longer need it.</li>
+<li><strong>Removed</strong>: <code>-l</code>, which picked the linear power models of the single-board computers. The polynomial models are now the only ones used, as they are much more accurate and their overhead is minimal.</li>
+<li><strong>Removed</strong>: <code>-c</code>, which wrote the timestamps in milliseconds.</li>
+</ul>
+<p>Other main differences:</p>
+<ul>
+<li>The CSV files start with a Unix timestamp in seconds instead of a date and time, and hold four digits after the dot instead of fourteen. The columns and the header have been renamed, with Timestamp and CPU Usage.</li>
+<li>The terminal no longer shows the difference of power consumption from the last metric, and Ctrl+C no longer prints the total energy consumed.</li>
+<li>On Linux, the CPU power is the RAPL package domain only. Version 1 used the Psys domain when there was one, or added the DRAM domain to the package, so the values can be lower than with version 1.</li>
+<li>The energy a RAPL processor reports is divided by how long the cycle actually took, rather than assumed to be exactly one second. On a busy machine where a cycle takes longer than one second, the watts reported are now the watts drawn.</li>
+<li>A file that cannot be written to, or a ring buffer that cannot be opened, is reported once and the monitoring continues. A power source that stops answering reads 0 until it answers again.</li>
+<li>The systemd service writes to <code>/run/powerjoular/powerjoular-service.csv</code> instead of <code>/tmp</code>, and runs with reduced privileges.</li>
 </ul>
 <h2 id="cite-this-work"><a class="header" href="#cite-this-work">Cite this work</a></h2>
 <p>To cite our work in a research paper, please cite our paper in the 18th International Conference on Intelligent Environments (IE2022).</p>
@@ -210,20 +230,44 @@ It works on a Linux system and on multiple platforms (x86_64, ARM) and devices (
 </code></pre>
 <h2 id="license"><a class="header" href="#license">License</a></h2>
 <p>PowerJoular is licensed under the GNU GPL 3 license only (GPL-3.0-only).</p>
-<p>Copyright (c) 2020-2025, Adel Noureddine, Université de Pau et des Pays de l’Adour.
+<p>Copyright (c) 2020-2026, Adel Noureddine.
 All rights reserved. This program and the accompanying materials are made available under the terms of the GNU General Public License v3.0 only (GPL-3.0-only) which accompanies this distribution, and is available at: https://www.gnu.org/licenses/gpl-3.0.en.html</p>
 <p>Author : <a href="https://www.noureddine.org/">Adel Noureddine</a></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="supported-platforms"><a class="header" href="#supported-platforms">Supported Platforms</a></h1>
 <p>PowerJoular monitors the following platforms:</p>
 <ul>
-<li>PC/Servers using a RAPL supported Intel processor (since Sandy Bridge) or a RAPL supported AMD processor (since Ryzen), and optionally an Nvidia graphic card.</li>
+<li>PC/Servers using a RAPL supported Intel processor (since Sandy Bridge) or a RAPL supported AMD processor (since Ryzen, including EPYC), and optionally an Nvidia or an AMD graphic card.</li>
+<li>Macs, with Apple Silicon (M series) or Intel processors.</li>
 <li>Raspberry Pi devices (multiple models) and Asus Tinker Board.</li>
 <li>Inside virtual machines in all supported host platforms.</li>
 </ul>
-<p>In all platforms, PowerJoular works currently only on GNU/Linux.</p>
-<p>On PC/Servers, PowerJoular uses powercap Linux interface to read Intel RAPL (Running Average Power Limit) energy consumption.</p>
-<p>PowerJoular supports RAPL package domain (core, including integrated graphics, and dram), and for more recent processors, we support Psys package (which covers the energy consumption of the entire SoC).</p>
+<p>PowerJoular works on GNU/Linux, Windows and macOS.</p>
+<p>PowerJoular does the energy and CPU usage measuring through two Ada libraries we developed:</p>
+<ul>
+<li><a href="https://github.com/joular/joularcore">Joular Core</a>: for CPU and GPU energy and power consumption.</li>
+<li><a href="https://github.com/joular/cpuload">CPU Load</a>: for CPU usage of the whole system, of a specific PID, and of a specific application (all its PIDs).</li>
+</ul>
+<p>On Linux PC/Servers, PowerJoular uses powercap Linux interface to read RAPL (Running Average Power Limit) energy consumption, for Intel and AMD processors.</p>
+<p>PowerJoular reads the RAPL package domain (cores, integrated graphics, memory controller and last level caches).
+On a server with several sockets, only the first one is measured.</p>
+<p>On Windows PC/Servers, PowerJoular reads the same RAPL package counter in one of three ways, and keeps the first one that answers:</p>
+<ul>
+<li>The <a href="https://learn.microsoft.com/en-us/windows-hardware/drivers/powermeter/energy-meter-interface">Energy Meter Interface</a> (EMI), built into Windows 11. Nothing to install.</li>
+<li>The RAPL registers through the <a href="https://pawnio.eu">PawnIO</a> driver.</li>
+<li>The RAPL registers through <a href="https://github.com/hubblo-org/windows-rapl-driver">Hubblo’s RAPL driver</a>.</li>
+</ul>
+<p>Setting the <code>JOULARCORE_WINDOWS_RAPL</code> environment variable to <code>emi</code>, <code>pawnio</code> or <code>hubblo</code> picks one instead of trying them in turn. Nothing has to be configured otherwise.</p>
+<p>On macOS, PowerJoular uses <code>powermetrics</code>, which is installed with macOS and reports the power drawn over each cycle.
+Apple Silicon Macs give their CPU and the GPU built into the same chip.
+Intel Macs give the CPU only (the whole chip: cores, integrated graphics and system agent).</p>
+<p>For the GPU, PowerJoular supports:</p>
+<ul>
+<li>Nvidia graphic cards on Linux and Windows, through NVML, which is installed with the Nvidia driver.</li>
+<li>AMD graphic cards on Linux, through the hwmon sysfs of the amdgpu driver.</li>
+<li>AMD graphic cards on Windows, through ADLX, which is installed with the AMD driver.</li>
+<li>The GPU of Apple Silicon Macs, through <code>powermetrics</code>.</li>
+</ul>
 <p>On virtual machines, PowerJoular requires two steps:</p>
 <ul>
 <li>Installing PowerJoular itself or another power monitoring tool in the host machine.
@@ -247,6 +291,7 @@ However, the model is generated and trained on a specific revision (listed betwe
 <li>Model 5 B (rev 1.0), for 64 bits OS</li>
 <li>Asus Tinker Board (S)</li>
 </ul>
+<p>The models listed for 32 bits OS are also used on a 64 bits OS.</p>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -255,37 +300,85 @@ However, the model is generated and trained on a specific revision (listed betwe
 <tbody>
 <tr><td style="text-align: center">Raspberry Pi</td><td style="text-align: center">GNU/Linux</td><td style="text-align: center">Our regression models</td><td style="text-align: center">ARM</td></tr>
 <tr><td style="text-align: center">Asus Tinker Board</td><td style="text-align: center">GNU/Linux</td><td style="text-align: center">Our regression models</td><td style="text-align: center">ARM</td></tr>
-<tr><td style="text-align: center">Linux PC/Server</td><td style="text-align: center">GNU/Linux</td><td style="text-align: center">RAPL (using powercap), Nvidia-smi</td><td style="text-align: center">x86, x86_64</td></tr>
-<tr><td style="text-align: center">Linux Virtual Machine</td><td style="text-align: center">GNU/Linux guest, any host</td><td style="text-align: center">Host’s architecture (RAPL, regression models, others)</td><td style="text-align: center">x86, x86_64, ARM</td></tr>
+<tr><td style="text-align: center">Linux PC/Server</td><td style="text-align: center">GNU/Linux</td><td style="text-align: center">RAPL (using powercap), Nvidia NVML, AMD hwmon sysfs</td><td style="text-align: center">x86, x86_64</td></tr>
+<tr><td style="text-align: center">Windows PC/Server</td><td style="text-align: center">Windows</td><td style="text-align: center">RAPL (using EMI, PawnIO or Hubblo’s driver), Nvidia NVML, AMD ADLX</td><td style="text-align: center">x86_64</td></tr>
+<tr><td style="text-align: center">Mac</td><td style="text-align: center">macOS</td><td style="text-align: center">powermetrics</td><td style="text-align: center">Apple Silicon (ARM), Intel (x86_64)</td></tr>
+<tr><td style="text-align: center">Virtual Machine</td><td style="text-align: center">GNU/Linux, Windows or macOS guest, any host</td><td style="text-align: center">Host’s architecture (RAPL, regression models, others)</td><td style="text-align: center">x86, x86_64, ARM</td></tr>
 </tbody>
 </table>
 </div>
+<h2 id="required-privileges"><a class="header" href="#required-privileges">Required privileges</a></h2>
+<p>Without the privileges below, and with no graphic card to read, PowerJoular finds no power source and stops. With a graphic card, it carries on and the CPU power reads 0 (<code>-d</code> shows what can be measured).</p>
+<ul>
+<li><strong>Linux, PC or server</strong>: reading RAPL files needs elevated privileges on the recent kernels (5.10 and newer), so run <code>sudo powerjoular</code>, or give read rights to the files. See <a href="https://github.com/joular/powerjoular/issues/1">this issue</a>.</li>
+<li><strong>Windows</strong>: with the Energy Meter Interface (EMI), no special privileges or driver are needed. Otherwise, a RAPL driver is needed: <a href="https://pawnio.eu">PawnIO</a>, which needs PowerJoular to run from a terminal with administrative rights, or <a href="https://github.com/hubblo-org/windows-rapl-driver">Hubblo’s RAPL driver</a>, which does not. The easiest way to get a signed version of Hubblo’s driver is through the <a href="https://github.com/hubblo-org/scaphandre/releases">Scaphandre installer</a>. Reading the CPU time of a process belonging to another user also needs a terminal with administrative rights, so <code>-p</code> and <code>-a</code> on someone else’s process need it too.</li>
+<li><strong>macOS</strong>: <code>powermetrics</code> only runs as the superuser, so run <code>sudo powerjoular</code>. Without it, PowerJoular finds no power source and stops. Reading the CPU time of a process belonging to another user also needs root, so <code>-p</code> and <code>-a</code> on someone else’s process need <code>sudo</code> too.</li>
+<li><strong>Raspberry Pi, and GPU readings on Linux and Windows</strong>: no special privileges needed.</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="installation"><a class="header" href="#installation">Installation</a></h1>
-<p>PowerJoular is written in Ada and can be easily compiled, and its unique binary added to your system PATH.</p>
-<p>Easy-to-use installation scripts are available in the <code>installer</code> folder.
-Just open the installer folder and run the appropriate file to build and/or install or uninstall the program and systemd service.</p>
+<p>PowerJoular is written in Ada and can be easily compiled, and its unique binary added to your system PATH.
+The binary can be copied to any machine of the same architecture and run as it is.</p>
+<p>Ready-made binaries and packages are released in our <a href="https://github.com/joular/powerjoular">GitHub repository</a> release page and in the build workflow:</p>
 <ul>
-<li><code>build-install.sh</code>: will build (using <code>gprbuild</code>) and install the program binary to <code>/usr/bin</code> and systemd service. It requires having installed GNAT and gprbuild (see <a href="#compilation">Compilation</a>).</li>
-<li><code>uninstall.sh</code>: deletes the program binary and systemd service.</li>
+<li>Linux: binaries, Debian installation packages (.deb, for Debian, Ubuntu, Raspberry Pi OS, etc.) and RPM packages (.rpm, for Fedora, RHEL, etc.), for x86_64 and aarch64.</li>
+<li>Windows: <code>powerjoular.exe</code>, for x86_64.</li>
+<li>macOS: one binary per chip, <code>powerjoular-macos-arm64</code> for Apple Silicon and <code>powerjoular-macos-x86_64</code> for Intel Macs. Take the one of your Mac, copy it where you want it, and make it executable with <code>chmod +x</code>.</li>
 </ul>
-<p>We also provide Debian installation packages (.deb) for a number of CPU architectures (for Debian, Ubuntu, Raspberry Pi OS, etc.).</p>
+<h2 id="which-linux-build-to-use"><a class="header" href="#which-linux-build-to-use">Which Linux build to use</a></h2>
+<p>The PowerJoular binary runs on the glibc version it was built on or a newer one (but not an older one), so more than one build is published, and every file says which glibc version was used:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>File</th><th>Architectures</th><th>Runs on</th></tr>
+</thead>
+<tbody>
+<tr><td><code>powerjoular-glibc-2.35</code>, <code>powerjoular-glibc-2.35_*.deb</code>, <code>powerjoular-glibc-2.35-*.rpm</code></td><td>x86_64 and aarch64</td><td>Ubuntu 22.04 and newer, Debian 12 and newer, Raspberry Pi OS bookworm and newer, Fedora 36 and newer</td></tr>
+<tr><td><code>powerjoular-glibc-2.34</code>, <code>powerjoular-glibc-2.34_*.deb</code>, <code>powerjoular-glibc-2.34-*.rpm</code></td><td>x86_64 only</td><td>The same, and also RHEL 9, AlmaLinux 9, Rocky 9 and CentOS Stream 9</td></tr>
+</tbody>
+</table>
+</div>
+<p>Take the <code>2.34</code> build if you are unsure, or if the other one gives you a <code>version 'GLIBC_2.35' not found</code> error.
+Both are built from the same code, the difference being the C library (glibc) they were linked against.</p>
+<p>On a 32 bits ARM board or OS (such as the Raspberry Pi Zero W, 1 and 2, the Asus Tinker Board, or a 32 bits Raspberry Pi OS), no ready-made build is published, so compile PowerJoular (see <a href="#compilation">Compilation</a>).</p>
+<p>The Linux packages install the binary in <code>/usr/bin</code> along with the systemd service (see <a href="#systemd-service">Systemd Service</a>).</p>
+<h2 id="installation-scripts"><a class="header" href="#installation-scripts">Installation scripts</a></h2>
+<p>Easy-to-use installation scripts are available in the <code>installer/bash-installer</code> folder.
+Just open the folder and run the appropriate file to build and install, or uninstall, the program and systemd service.</p>
+<ul>
+<li><code>build-install.sh</code>: will build (using Alire if it is installed, otherwise <code>gprbuild</code>) and install the program binary to <code>/usr/bin</code> and the systemd service. It requires having installed Alire, or GNAT and gprbuild with the Joular Core and CPU Load repositories checked out next to the PowerJoular folder (see <a href="#compilation">Compilation</a>).</li>
+<li><code>uninstall.sh</code>: stops the systemd service, and deletes the program binary and the systemd service.</li>
+</ul>
+<p>These scripts and the packages are for Linux. A <code>PKGBUILD</code> for Arch Linux is also available in the <code>installer/aur</code> folder.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="quick-usage"><a class="header" href="#quick-usage">Quick Usage</a></h1>
-<p>To use PowerJoular, just run the command <code>powerjoular</code>.
-On PC/servers, PowerJoular uses Intel’s RAPL through the Linux powercap sysfs, and therefore requires root/sudo access on the latest Linux kernels (5.10 and newer): <code>sudo powerjoular</code>.</p>
-<p>By default, the software will show the power consumption of the CPU and its utilization.
-The difference (increase or decrease) of power consumption from last metric will also be shown.</p>
-<p>To monitor a specific application, just run PowerJoular with the <code>-a appName</code> parameter.
-PowerJoular is a powerful tool with many functionalities that can be accessed using specific parameters. Check the <a href="#command-line-options">Command Line Options page</a> for the detailed list.</p>
+<p>To use PowerJoular, just run the command <code>powerjoular</code> (or <code>powerjoular.exe</code> on Windows).
+On Linux PC/servers, PowerJoular uses Intel’s RAPL through the Linux powercap sysfs, and therefore requires root/sudo access on the latest Linux kernels (5.10 and newer): <code>sudo powerjoular</code>.
+On macOS, <code>powermetrics</code> also requires root/sudo access: <code>sudo powerjoular</code>.
+On Windows and Raspberry Pi, no special access is needed, except with the PawnIO driver on Windows, which needs a terminal with administrative rights (see <a href="#supported-platforms">Supported Platforms</a>).</p>
+<p>By default, the software will show the total power consumption, and the power of the CPU and of the GPU (when there is one), on the terminal, every second, until Ctrl+C:</p>
+<pre><code>Total Power: 18.45 Watts (CPU: 15.20 W, GPU: 3.25 W)
+</code></pre>
+<p>To monitor a specific application, just run PowerJoular with the <code>-a appName</code> parameter, or with <code>-p pid</code> for a specific process.
+The terminal then shows the CPU usage and the CPU power of the application or the process, with the ones of the whole system between brackets:</p>
+<pre><code>Application monitoring:	CPU: 3.10 % (24.60 %)	1.92 Watts (15.20 Watts)
+</code></pre>
+<p>To save the power data to a CSV file, add <code>-f filename</code>, or <code>-o filename</code> to keep only the latest values in the file.
+When a file (or the ring buffer, with <code>-r</code>) is given, PowerJoular no longer prints on the terminal: add <code>-t</code> to print there too.</p>
+<p>PowerJoular is a powerful tool with many functionalities that can be accessed using specific parameters. Check the <a href="#command-line-options">Command Line Options page</a> for the detailed list.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="compilation"><a class="header" href="#compilation">Compilation</a></h1>
-<p>PowerJoular is written with Ada, and requires a modern Ada compiler, such as GNAT.</p>
-<p>PowerJoular depends on the following commands and libraries for certain of its functions, but can function without them:</p>
+<p>PowerJoular is written with Ada, and requires a modern Ada compiler, such as GNAT, together with the <a href="https://github.com/joular/joularcore">Joular Core</a> and <a href="https://github.com/joular/cpuload">CPU Load</a> libraries.</p>
+<p>PowerJoular depends on the following libraries and tools for certain of its functions, but can function without them:</p>
 <ul>
-<li>nvidia-smi: for monitoring power consumption of Nvidia graphic cards</li>
-<li>Linux powercap with Intel RAPL support: for monitoring power consumption of Intel processors and SoC</li>
+<li>Linux powercap with RAPL support: for monitoring power consumption of Intel and AMD processors</li>
+<li>The Energy Meter Interface, PawnIO or Hubblo’s RAPL driver: for monitoring power consumption of Intel and AMD processors on Windows</li>
+<li><code>powermetrics</code> (installed with macOS): for monitoring power consumption of Macs</li>
+<li>NVML (installed with the Nvidia driver): for monitoring power consumption of Nvidia graphic cards</li>
+<li>The amdgpu driver (its hwmon sysfs files): for monitoring power consumption of AMD graphic cards on Linux</li>
+<li>ADLX (installed with the AMD driver): for monitoring power consumption of AMD graphic cards on Windows</li>
 </ul>
+<p>None of them is needed to compile PowerJoular: they are looked for when PowerJoular starts.</p>
 <p>On a modern GNU/Linux distribution, just install the GNAT compiler (and GPRBuild), usually available from the distribution’s repositories:</p>
 <pre><code>Fedora:
 sudo dnf install fedora-gnat-project-common gprbuild gcc-gnat
@@ -294,70 +387,186 @@ Debian, Ubuntu or Raspberry Pi OS:
 sudo apt install gnat gprbuild
 </code></pre>
 <p>For other distributions, use their package manager to download the compiler, or check <a href="https://www.noureddine.org/articles/ada-on-windows-and-linux-an-installation-guide">this article for easy instruction for various distributions</a>, including RHEL and its clones which does not ship with Ada support in GCC.</p>
+<p>On Windows and macOS, the easiest way is to install <a href="https://alire.ada.dev/">Alire</a>, which also downloads the GNAT compiler and GPRBuild.</p>
 <h3 id="compilation-with-the-gnat-compiler-and-gprbuild"><a class="header" href="#compilation-with-the-gnat-compiler-and-gprbuild">Compilation with the GNAT compiler and GPRBuild</a></h3>
-<p>To compile the project, just type <code>gprbuild</code> if using the latest GPRBuild versions.</p>
-<p>Or, on older versions, create the <code>/obj</code> folder first, then type <code>gprbuild powerjoular.gpr</code>.</p>
-<p>The PowerJoular binary will be created in the <code>obj/</code> folder.</p>
-<p>By default, the project will statically link the required libraries, and therefore the PowerJoular binary can be copied to any compatible system and used as-is.</p>
-<p>To build with dynamic linking, remove or comment the static switch in the <code>powerjoular.gpr</code> file, in particular these lines:</p>
-<pre><code>package Binder is
-    for Switches ("Ada") use ("-static");
-end Binder;
+<p>Check out the <a href="https://github.com/joular/joularcore">Joular Core</a> and <a href="https://github.com/joular/cpuload">CPU Load</a> repositories next to the PowerJoular folder, then point GPRBuild at them:</p>
+<pre><code>gprbuild -P powerjoular.gpr -aP../joularcore -aP../cpuload -p
 </code></pre>
-<h3 id="compilation-with-the-gnat-compiler-only"><a class="header" href="#compilation-with-the-gnat-compiler-only">Compilation with the GNAT compiler only</a></h3>
-<p>You can also compile PowerJoular with the GNAT compiler only (without the need for GPRBuild).</p>
-<p>Just compile using gnatmake. For example, to compile from <code>obj/</code> folder (so .o and .ali files are generated there), type the following:</p>
-<pre><code>mkdir -p obj
-cd obj
-gnatmake ../src/powerjoular.adb
+<p>The PowerJoular binary will be created in the <code>bin/</code> folder.</p>
+<p>Linux, macOS and Windows are each detected on their own, from the target GPRBuild identifies.
+To build for another OS than the one you are on, use a cross compiler for that OS (given to GPRBuild with <code>--target</code>), and set <code>PJ_OS</code> to <code>linux</code>, <code>macos</code> or <code>windows</code>:</p>
+<pre><code>gprbuild -P powerjoular.gpr -aP../joularcore -aP../cpuload -XPJ_OS=windows -p
 </code></pre>
 <h3 id="compilation-with-alire"><a class="header" href="#compilation-with-alire">Compilation with Alire</a></h3>
 <p>If you have <a href="https://alire.ada.dev/">Alire</a> installed, you can use it to build PowerJoular with:</p>
-<pre><code>alr build</code></pre>
+<pre><code>alr build
+</code></pre>
+<p>Alire fetches the two libraries on its own, so this is the shortest way.</p>
+<p>The PowerJoular binary will be created in the <code>bin/</code> folder.</p>
+<h3 id="static-and-dynamic-linking"><a class="header" href="#static-and-dynamic-linking">Static and dynamic linking</a></h3>
+<p>By default, the project will statically link the Ada runtime and libgcc inside the binary, and therefore the PowerJoular binary can be copied to any compatible system and used as-is.</p>
+<p>To build with dynamic linking of the Ada runtime, replace the static switch with the shared one in the <code>powerjoular.gpr</code> file (removing it is not enough, as GNAT links its runtime statically by default):</p>
+<pre><code>package Binder is
+    for Switches ("Ada") use ("-shared");
+end Binder;
+</code></pre>
+<p>To leave nothing at all outside the binary, including the C library, build with <code>POWERJOULAR_LINKING</code> set to <code>full</code>:</p>
+<pre><code>gprbuild -P powerjoular.gpr -aP../joularcore -aP../cpuload -XPOWERJOULAR_LINKING=full -p
+</code></pre>
+<p>On Linux, a fully static binary cannot reliably load a library while it runs, so the Nvidia graphic card readings, which load NVML while running, can’t be counted on with this option.
+The processor readings are not affected, and PowerJoular carries on without the GPU rather than failing.</p>
+<p>On macOS, Apple ships no static C library, so this option does nothing: the binary is built the same way it is by default.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="command-line-options"><a class="header" href="#command-line-options">Command Line Options</a></h1>
 <p>To use PowerJoular, just run the command <code>powerjoular</code>.
-On PC/servers, PowerJoular uses Intel’s RAPL through the Linux powercap sysfs, and therefore requires root/sudo access on the latest Linux kernels (5.10 and newer): <code>sudo powerjoular</code>.</p>
-<p>By default, the software will show the power consumption of the CPU and its utilization.
-The difference (increase or decrease) of power consumption from the last metric will also be shown.</p>
+On Linux PC/servers, PowerJoular uses Intel’s RAPL through the Linux powercap sysfs, and therefore requires root/sudo access on the latest Linux kernels (5.10 and newer): <code>sudo powerjoular</code>.
+On macOS, <code>powermetrics</code> also requires root/sudo access: <code>sudo powerjoular</code>.</p>
+<p>By default, the software will show the total power consumption, and the power of the CPU and of the GPU (when there is one), on the terminal, every second, until Ctrl+C.</p>
 <p>The following options are available:</p>
 <ul>
 <li><code>-h</code>: show the help message</li>
 <li><code>-v</code>: show version number</li>
-<li><code>-p pid</code>: specifiy a particular PID to monitor</li>
-<li><code>-a appName</code>: specifiy a particular application name to monitor (will monitor all PIDs of the application)</li>
-<li><code>-f filename</code>: save monitoring data to the given filename path</li>
+<li><code>-p pid</code>: specify a particular PID to monitor</li>
+<li><code>-a appName</code>: specify a particular application name to monitor (will monitor all PIDs of the application)</li>
+<li><code>-f filename</code>: save monitoring data to the given filename path, in CSV format</li>
 <li><code>-o filename</code>: save only last monitoring data to the given filename path (file overwritten with only latest power measures)</li>
-<li><code>-t</code>: print energy data to the terminal</li>
-<li><code>-d</code>: print debug info to the terminal</li>
-<li><code>-l</code>: use linear regression models (less accurate than the default polynomial models) for Raspberry Pi energy models</li>
-<li><code>-m</code>: specify a filename for the power consumption of the virtual machine</li>
-<li><code>-s</code>: specify the format of the VM power, either <code>powerjoular</code> format (generated with the <code>-o</code> option: 3 columns csv file with the 3rd containing the power consumption the VM), or <code>watts</code> format (1 column containing just the power consumption of the VM)</li>
+<li><code>-t</code>: print the power data to the terminal</li>
+<li><code>-d</code>: print the available hardware components on start up (the versions of PowerJoular and its libraries, whether the CPU and the GPU can be measured, and the path of the ring buffer with <code>-r</code>)</li>
+<li><code>-r</code>: write the power data to a shared memory ring buffer, for another program to read with low latency</li>
+<li><code>-m filename</code>: specify a filename for the power consumption of the virtual machine (written by the host)</li>
+<li><code>-s format</code>: specify the format of the VM power, either <code>powerjoular</code> format (generated with the <code>-o</code> option for a monitored process: 3 columns csv file with the 3rd containing the power consumption of the VM), or <code>watts</code> format (1 column containing just the power consumption of the VM)</li>
 </ul>
 <p>You can mix options, i.e., <code>powerjoular -tp 144</code> will monitor PID 144 and will print to the terminal.</p>
+<p>A few rules apply when mixing them:</p>
+<ul>
+<li><code>-p</code> and <code>-a</code> cannot be used together.</li>
+<li>With <code>-f</code>, <code>-o</code> or <code>-r</code>, the terminal is only used if <code>-t</code> is also given.</li>
+<li><code>-m</code> and <code>-s</code> go together, and the file given to <code>-m</code> must already hold a power value in that format when PowerJoular starts.</li>
+</ul>
+<p>When monitoring a process (<code>-p</code>) or an application (<code>-a</code>), <code>-f</code> and <code>-o</code> write <strong>two</strong> CSV files: the given filename for the whole system, and the same name with the PID or the application name added to it, for the process or the application.
+For example, <code>powerjoular -p 144 -f power.csv</code> writes <code>power.csv</code> and <code>power.csv-144.csv</code>.</p>
+<p>See <a href="#exporting-power-data">Exporting Power Data</a> for the content of the CSV files and of the ring buffer.</p>
+<p>On Windows, the <code>JOULARCORE_WINDOWS_RAPL</code> environment variable picks how the RAPL counter is read (<code>emi</code>, <code>pawnio</code> or <code>hubblo</code>), instead of trying the three in turn (see <a href="#supported-platforms">Supported Platforms</a>).</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="exporting-power-data"><a class="header" href="#exporting-power-data">Exporting Power Data</a></h1>
+<p>PowerJoular exports its power data to the terminal, to CSV files, and to a shared memory ring buffer.
+The CSV files and the ring buffer can be used at the same time, and with the terminal when <code>-t</code> is given.</p>
+<h2 id="terminal"><a class="header" href="#terminal">Terminal</a></h2>
+<p>With no option, PowerJoular prints the power of the machine on the terminal, once a second, on the same line:</p>
+<pre><code>Total Power: 18.45 Watts (CPU: 15.20 W, GPU: 3.25 W)
+</code></pre>
+<p>The GPU is only shown when one was found.</p>
+<p>When monitoring a process (<code>-p</code>) or an application (<code>-a</code>), the terminal shows its CPU usage and its CPU power, with the CPU usage and the CPU power of the whole system between brackets (the GPU is not shown):</p>
+<pre><code>PID monitoring:	CPU: 3.10 % (24.60 %)	1.92 Watts (15.20 Watts)
+Application monitoring:	CPU: 3.10 % (24.60 %)	1.92 Watts (15.20 Watts)
+</code></pre>
+<p><code>n/a</code> is shown when the process or the application could not be read.</p>
+<p>When the output is not a terminal (a file or a pipe), each measurement is printed on its own line.</p>
+<h2 id="csv-files"><a class="header" href="#csv-files">CSV files</a></h2>
+<p><code>-f</code> adds a row every second to the file, and starts a new or empty file with a header (an existing file is added to, not emptied):</p>
+<pre><code>Timestamp,CPU Usage,Total Power,CPU Power,GPU Power
+1756681930,0.2460,18.4500,15.2000,3.2500
+</code></pre>
+<p>The time of the measurement is a Unix timestamp in seconds, the CPU usage goes from 0.0 to 1.0, and the power is in watts.</p>
+<p>When monitoring a process or an application, a second file is written, with the PID or the application name added to the given filename (<code>power.csv-144.csv</code> for <code>-p 144 -f power.csv</code>).
+It has the CPU usage and the power of that process or application:</p>
+<pre><code>Timestamp,CPU Usage,CPU Power
+1756681930,0.0310,1.9154
+</code></pre>
+<p><code>-o</code> writes the latest measurement only: the file is rewritten every second and carries no header, which is a good option for another program polling it for the current value.</p>
+<p>Both value columns of the process file hold <code>-1.0000</code> for a second where the monitored process could not be read at all: it has stopped, it was never running, or the system does not let us get the information needed.
+That is not the same as <code>0.0000</code>, which means a process that was read and used no CPU time.</p>
+<p><code>-a</code> is the exception: an application with no running process at all is reported as <code>0.0000</code> and not as <code>-1.0000</code>, because we can’t tell apart a name that matches nothing from a name whose processes did not use any CPU time.
+<code>-1.0000</code> still appears for <code>-a</code> when processes of the application are found but the system does not let us read any of them.
+A process we cannot read is left out of the sum when others of the application can be read, so the value is then short by what that process used.</p>
+<p>PowerJoular refuses to write a CSV file if a symbolic link is already at its path.
+This is a basic check, not a guarantee, as the link can still be swapped in after the check.
+When running PowerJoular as root, write the CSV files to a folder only root can write to (such as <code>/run/powerjoular</code> for the service), not to a shared folder such as <code>/tmp</code>.</p>
+<p>A file that cannot be written to is reported once, and the monitoring goes on: PowerJoular tries the file again every second, and writes to it again once it can.</p>
+<h2 id="shared-memory-ring-buffer"><a class="header" href="#shared-memory-ring-buffer">Shared memory ring buffer</a></h2>
+<p><code>-r</code> writes every measurement to a shared memory ring buffer, which any program on the same machine can read with low latency.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>OS</th><th>Where the area lives</th></tr>
+</thead>
+<tbody>
+<tr><td>Linux</td><td><code>/dev/shm/powerjoular</code></td></tr>
+<tr><td>Windows</td><td><code>%PROGRAMDATA%\powerjoular</code>, i.e. <code>C:\ProgramData\powerjoular</code></td></tr>
+<tr><td>macOS</td><td><code>/tmp/powerjoular</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>The area is 248 bytes, in the byte order of the machine: a counter of 8 bytes, then 5 entries of 48 bytes each.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Type</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>timestamp</code></td><td>unsigned, 8 bytes</td><td>Unix time in seconds</td></tr>
+<tr><td><code>cpu_power</code></td><td>IEEE double</td><td>CPU power in watts</td></tr>
+<tr><td><code>gpu_power</code></td><td>IEEE double</td><td>GPU power in watts</td></tr>
+<tr><td><code>total_power</code></td><td>IEEE double</td><td>CPU plus GPU power in watts</td></tr>
+<tr><td><code>cpu_usage</code></td><td>IEEE double</td><td>Load of the machine, from 0.0 to 1.0</td></tr>
+<tr><td><code>pid_app_power</code></td><td>IEEE double</td><td>Power of the monitored process or application in watts, zero when none is monitored, and <code>-1</code> when the one monitored could not be read</td></tr>
+</tbody>
+</table>
+</div>
+<p>A measurement goes in the entry the counter points at (<code>counter mod 5</code>), and the counter is raised afterwards.
+A reader follows the counter to know when a new measurement has landed, and the timestamps to know how old each entry is.</p>
+<p>Only one PowerJoular should write to the ring buffer at the same time.
+On Linux and macOS, a second run using <code>-r</code> replaces the file, and the first one keeps writing to the old file, which only the readers that mapped it before still see.
+On Windows, the second run cannot replace the file the first one holds open, and carries on without the ring buffer.</p>
+<p>The ring buffer is created every time PowerJoular starts: a file left at that path, by an earlier run or by anyone else, is deleted first, so PowerJoular never writes into a file it did not create.
+It is readable by everyone and writable only by the user running PowerJoular.
+A reader that mapped the file has to map it again when PowerJoular restarts.
+On Windows, the reader has to close the file first, otherwise PowerJoular cannot replace it and carries on without the ring buffer.
+The file is left in place when PowerJoular stops, so the last entries can still be read.
+When the file cannot be created, PowerJoular carries on without the ring buffer.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="systemd-service"><a class="header" href="#systemd-service">Systemd Service</a></h1>
-<p>A systemd service is provided and can be installed (by copying <code>powerjoular.service</code> in <code>systemd</code> folder to <code>/etc/systemd/system/</code>).
-The service will run the program with the <code>-o</code> option (which only saves the latest power data) and saves data to <code>/tmp/powerjoular-service.csv</code>.
-The service can be enabled to run automatically on boot.</p>
-<p>The systemd service is automatically installed when installing PowerJoular using the installer script.</p>
+<p>A systemd service is provided for Linux and can be installed (by copying <code>powerjoular.service</code> in <code>systemd</code> folder to <code>/usr/lib/systemd/system/</code> or <code>/etc/systemd/system/</code>).
+The service runs <code>/usr/bin/powerjoular</code>, so copy the binary there too, or change <code>ExecStart</code> in the service.
+The service will run the program with the <code>-o</code> option (which only saves the latest power data) and saves data to <code>/run/powerjoular/powerjoular-service.csv</code>.
+The <code>/run/powerjoular</code> folder is made by systemd when the service starts and removed when it stops, and anyone can read the file in it.</p>
+<p>The service runs as root, as reading the energy counters needs it, but with most of the other privileges taken away (it only reads the energy counters and the CPU load, and writes one file in its own folder).
+If it stops on its own (not through <code>systemctl</code>), it is restarted after 30 seconds.</p>
+<p>The service can be started, and enabled to run automatically on boot, with:</p>
+<pre><code>sudo systemctl start powerjoular.service
+sudo systemctl enable powerjoular.service
+</code></pre>
+<p>The systemd service is automatically installed (but not enabled) when installing PowerJoular using the installer script or the Linux packages.</p>
+<p>Version 1 installed the service in <code>/etc/systemd/system/</code>, which takes precedence over the one now installed in <code>/usr/lib/systemd/system/</code>.
+If you installed version 1 with the installer script, delete <code>/etc/systemd/system/powerjoular.service</code> and run <code>sudo systemctl daemon-reload</code>.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="integration-with-systems-and-tools"><a class="header" href="#integration-with-systems-and-tools">Integration with Systems and Tools</a></h1>
-<p>PowerJoular exports its power data to CSV files, or print the values directly on the terminal.
+<p>PowerJoular exports its power data to CSV files and to a shared memory ring buffer, or prints the values directly on the terminal.
 As such, PowerJoular can be used in IDEs, integration systems CI/CD, or alongside other profilers or debugging tools.</p>
 <p>All what is needed is to start PowerJoular and read the generated CSV files.
 PowerJoular can write these CSV files in <code>overwrite</code> mode, and thus reducing the overhead and size of these files.</p>
-<p>With the systemd service provided, PowerJoular can run automatically on startup and write power consumption to <code>/tmp</code> folder (which can be changed in the service).
+<p>For a program running on the same machine, the ring buffer (<code>-r</code>) is the fastest way: the program maps the shared memory area once, and reads the latest measurement whenever it needs it, with no file to open or parse.
+See <a href="#exporting-power-data">Exporting Power Data</a> for the format of the CSV files and the layout of the ring buffer.</p>
+<p>With the systemd service provided, PowerJoular can run automatically on startup and write power consumption to <code>/run/powerjoular</code> folder (which can be changed in the service: the service can only write in its own folder, so a new folder also needs a <code>ReadWritePaths=</code> line there).
 Therefore, offering an automatic way for multiple tools and dashboards to get accurate and real-time power metrics in multiple platforms.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="virtual-machines"><a class="header" href="#virtual-machines">Virtual Machines</a></h1>
-<p>PowerJoular also works inside virtual machines.
+<p>PowerJoular also works inside virtual machines, with a Linux, Windows or macOS guest.
 All its functionalities (such as monitoring a PID or an application) work the same inside a virtual machine as with bare metal installation.</p>
 <p>In virtual machines, PowerJoular in the guest OS needs to get the power consumption of the virtual machine instance itself.
 This can only be done by installing on the host OS, a power monitoring tool (such as PowerJoular itself or other ones), and monitoring the power consumption of the specific guest virtual machine process.</p>
 <p>The power data of the VM process need to be written to a shared file between the host and the guest.
-Inside the guest, PowerJoular will read this file continuously and use the reported power value as the power of the entire virtual machine.</p>
-<p>PowerJoular is agnostic to what power tools in installed in the host and can work with any available tool that is capable of monitoring the VM process.</p>
+Inside the guest, PowerJoular will read this file continuously and use the reported power value as the CPU power of the entire virtual machine.
+A GPU passed through to the virtual machine is still measured directly, as on bare metal.</p>
+<p>PowerJoular is agnostic to what power tools are installed in the host and can work with any available tool that is capable of monitoring the VM process.</p>
+<p>The file can have one of two formats, given with the <code>-s</code> option:</p>
+<ul>
+<li><code>powerjoular</code>: the 3 columns CSV file that <code>-o</code> writes for a monitored process (timestamp, CPU usage and power), where the power is the third column.</li>
+<li><code>watts</code>: a file holding the power in watts and nothing else.</li>
+</ul>
+<p>PowerJoular reads the first line of the file.
+When PowerJoular starts, the file must already be there and hold a power value, otherwise PowerJoular stops with an error, so start the host side first.
+Afterwards, a negative power in the file, such as the <code>-1.0000</code> PowerJoular writes for a process it cannot read, is ignored: the last power read is kept, as it is when the file cannot be read at all.</p>
 <h2 id="use-case-example-with-powerjoular-on-host-and-guest"><a class="header" href="#use-case-example-with-powerjoular-on-host-and-guest">Use case example with PowerJoular on host and guest</a></h2>
 <p>A use case example is using PowerJoular on both the host and the guest.</p>
 <h3 id="in-the-host-os"><a class="header" href="#in-the-host-os">In the host OS</a></h3>
@@ -365,44 +574,64 @@ Inside the guest, PowerJoular will read this file continuously and use the repor
 <li>Install PowerJoular</li>
 <li>Run PowerJoular while specifying the PID of the virtual machine of the guest OS, and writing the power data in a CSV file in overwrite mode.</li>
 <li>For instance, you can run PowerJoular with the following command: <code>powerjoular -p $VM_PID -o /home/vm/vm.csv</code></li>
-<li>Share the <code>/home/vm/vm.csv</code> between the host OS and the guest OS</li>
+<li>This writes two files: <code>/home/vm/vm.csv</code> with the power of the whole host, and <code>/home/vm/vm.csv-$VM_PID.csv</code> with the power of the virtual machine process.</li>
+<li>Share the <code>/home/vm/vm.csv-$VM_PID.csv</code> between the host OS and the guest OS (read-only for the guest, as PowerJoular on the host usually runs as root)</li>
 </ul>
-<h2 id="in-the-guest-os"><a class="header" href="#in-the-guest-os">In the guest OS</a></h2>
+<h3 id="in-the-guest-os"><a class="header" href="#in-the-guest-os">In the guest OS</a></h3>
 <ul>
 <li>Install PowerJoular</li>
-<li>Share the <code>/home/vm/vm.csv</code> between the host OS and the guest OS, potentially having a different path of the file inside the guest. For instance, <code>/opt/vm/vm.csv</code></li>
+<li>Share the <code>/home/vm/vm.csv-$VM_PID.csv</code> between the host OS and the guest OS, potentially having a different path of the file inside the guest. For instance, <code>/opt/vm/vm.csv</code></li>
 <li>Run PowerJoular with the -m and -s options to specify the file and the power data format.</li>
 <li>For example, in our use case example: <code>powerjoular -m /opt/vm/vm.csv -s powerjoular</code></li>
 <li>You can add other options for your needs, such as -p or -a to monitor a specific process or application inside your virtual machine.</li>
 </ul>
+<h2 id="use-case-example-with-another-tool-on-the-host"><a class="header" href="#use-case-example-with-another-tool-on-the-host">Use case example with another tool on the host</a></h2>
+<p>Have the tool on the host write the power of the virtual machine in watts, and nothing else, to the shared file.
+Then read that file in the guest with the <code>watts</code> format: <code>powerjoular -m /opt/vm/vm-power.txt -s watts</code></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="how-powerjoular-works"><a class="header" href="#how-powerjoular-works">How PowerJoular Works</a></h1>
 <p>PowerJoular monitors the CPU and GPU power consumption in computers and servers. It is written in Ada in order to provide a low-impact tool as Ada is constantly ranked among the most energy efficient programming languages, while also improving code maintainability and safety.</p>
 <p>PowerJoular is aimed to software developers, system administrators and to automated tools, with a goal to help these users understand the power consumption of their devices and software, and to build more in-depth tools using our proposed platform.</p>
-<p>PowerJoular’s power monitoring is based on the Intel RAPL through the <a href="https://www.kernel.org/doc/html/latest/power/powercap/powercap.html">Linux Power Capping Framework</a>, and, optionally <a href="https://developer.nvidia.com/nvidia-system-management-interface">NVIDIA’s System Management Interface</a>.
+<p>Since version 2, PowerJoular measures the hardware through our <a href="https://github.com/joular/joularcore">Joular Core</a> library, and the CPU usage through our <a href="https://github.com/joular/cpuload">CPU Load</a> library.
+Both are written in Ada too, and PowerJoular is compiled with them into one binary.</p>
+<p>PowerJoular’s power monitoring is based on the Intel RAPL through the <a href="https://www.kernel.org/doc/html/latest/power/powercap/powercap.html">Linux Power Capping Framework</a> on Linux, and through the Energy Meter Interface, PawnIO or Hubblo’s driver on Windows.
+On macOS, it is based on Apple’s <code>powermetrics</code>.
+For the GPU, it optionally uses <a href="https://developer.nvidia.com/management-library-nvml">NVIDIA’s Management Library (NVML)</a>, and AMD’s hwmon sysfs (Linux) or ADLX (Windows).
 PowerJoular automatically detects the computer configuration and supported modules, and provides power data accordingly.</p>
 <p>On Raspberry Pi and Asus Tinker Board (and similar devices), PowerJoular uses its own research-based empirical regression models to estimate the power consumption of the ARM processor.</p>
 <h2 id="cpu-power-monitoring"><a class="header" href="#cpu-power-monitoring">CPU Power Monitoring</a></h2>
 <p>For the CPU, PowerJoular uses the Intel RAPL power data through the Linux powercap interface by reading the appropriate system files (or our regression models on Raspberry Pi and similar devices).</p>
-<p>It first detects which power domains are supported by the CPU:</p>
-<ul>
-<li>Pkg: which is supported since Intel Sandy Bridge CPUs, and provides energy consumption for the CPU cores, integrated graphics, memory controller and last level caches.
-PowerJoular also checks if DRAM power domain is supported (RAM attached to the memory controller) and adds its power readings to the total.</li>
-<li>Psys: which is supported since Intel Skylake CPUs, and provides energy consumption for the entire SOC (including Pkg along with other components, such as eDRAM, PCH, System Agent). If Psys is supported, it will be exclusively used by PowerJoular for CPU power consumption instead of Pkg and DRAM, as it provides a more comprehensive power reading of the CPU SOC.</li>
-</ul>
+<p>It reads the Pkg domain, which is supported since Intel Sandy Bridge CPUs (and on AMD Ryzen and EPYC), and provides energy consumption for the CPU cores, integrated graphics, memory controller and last level caches.
+On a server with several sockets, only the first one is read.</p>
+<p>On Windows, the same Pkg counter is read through the Energy Meter Interface built into Windows 11, or through the PawnIO driver or Hubblo’s driver, whichever answers first.</p>
+<p>RAPL gives an energy counter that only counts up, and Joular Core turns it into the energy consumed since the last reading.
+PowerJoular divides it by how long the cycle actually took, rather than assuming it was exactly one second, so the watts reported are the watts drawn, even on a busy machine where a cycle takes longer than one second.
+RAPL counters wrap when they fill, and Joular Core corrects that, as long as the counter is read before it fills half of its range, which is the case with a reading every second.</p>
+<p>On macOS, <code>powermetrics</code> is asked for a sample on every cycle, so each value is the average power since the previous cycle.
+On Apple Silicon, it gives the CPU and the GPU of the chip from the same sample. On Intel Macs, it gives the whole chip (cores, integrated graphics and system agent), and no GPU.</p>
 <p>On Raspberry Pi and similar devices, PowerJoular uses regression models we developed (which provides high accuracy, and publish in <a href="https://github.com/joular/powermodels">this repository</a>).
-The model uses CPU utilization (calculated from CPU cycles statistics from <code>/proc/stat</code> and <code>/proc/pid/stat</code> files).</p>
+The model uses CPU utilization (calculated from CPU cycles statistics from the <code>/proc/stat</code> file), and the board is detected from <code>/proc/device-tree/model</code>.</p>
 <h2 id="gpu-power-monitoring"><a class="header" href="#gpu-power-monitoring">GPU Power Monitoring</a></h2>
-<p>For the GPU, PowerJoular checks if NVIDIA SMI is installed, then uses it to verify if GPU power monitoring is supported to the specific graphic card, and to read GPU power consumption every second.</p>
+<p>For the GPU, PowerJoular checks if the Nvidia driver is installed, then uses its NVML library to verify if GPU power monitoring is supported to the specific graphic card, and to read GPU power consumption every second.
+When there is no Nvidia card, it looks for an AMD card: through the hwmon sysfs of the amdgpu driver on Linux, and through ADLX, which comes with the AMD driver, on Windows.
+On Apple Silicon Macs, the GPU power comes from <code>powermetrics</code>, with the CPU power.
+Only the first graphic card found is read.</p>
 <p>Finally, PowerJoular aggregates power readings from all supported components to provide an overall power consumption.
-For instance, if both Intel RAPL and NVIDIA SMI are supported, the tool will provide an aggregated power value for both CPU and GPU.</p>
+For instance, if both Intel RAPL and NVML are supported, the tool will provide an aggregated power value for both CPU and GPU.</p>
 <h2 id="monitoring-a-pid"><a class="header" href="#monitoring-a-pid">Monitoring a PID</a></h2>
-<p>For monitoring a specific process through its ID (PID), PowerJoular uses the Linux statistics in <code>/proc/stat</code> and <code>/proc/pid/stat</code>, and calculates the proportion of CPU cycles used by the process, and thus calculates the power consumed by the process accordingly.</p>
+<p>For monitoring a specific process through its ID (PID), PowerJoular reads the CPU time used by the process and by the whole system (<code>/proc/stat</code> and <code>/proc/pid/stat</code> on Linux, <code>proc_pidinfo</code> and <code>host_statistics</code> on macOS, <code>GetProcessTimes</code> and <code>GetSystemTimes</code> on Windows), and calculates the proportion of CPU cycles used by the process, and thus calculates the power consumed by the process accordingly:</p>
+<pre><code>process power = CPU power × process CPU usage / system CPU usage
+</code></pre>
+<p>The process power is never more than the CPU power, and the GPU power is not shared out to processes.
+When the process cannot be read (it has stopped, or the system does not allow it), its usage and power are written as <code>-1</code> in the CSV file and the ring buffer (and shown as <code>n/a</code> on the terminal), and not as <code>0</code>.</p>
 <h2 id="monitoring-an-application-by-its-name"><a class="header" href="#monitoring-an-application-by-its-name">Monitoring an application by its name</a></h2>
-<p>PowerJoular monitors an application by searching for all its PIDs, on every monitoring cycle (by default, every second) because an application can create or destroy process during its runtime.
-Then, PowerJoular applies the same approach to monitor a PID, but by monitoring all the applications PIDs and calculating the sum of the power of these PIDs.</p>
+<p>PowerJoular monitors an application by searching for all its PIDs, on every monitoring cycle (every second) because an application can create or destroy process during its runtime.
+Then, PowerJoular applies the same approach to monitor a PID, but by summing the CPU time of all the application’s PIDs and calculating the power from that sum.
+An application with no running process is reported as <code>0</code>, and not as <code>-1</code>.</p>
+<p>A process is part of the application when the program it runs has that exact name (without its folder, in any case), so <code>firefox</code> finds every process of Firefox, its content processes included.
+On macOS, the name is the one of the program inside the bundle, and every program inside <code>Firefox.app</code> is found too, as Firefox runs its content processes (<code>plugin-container</code>) from a helper bundle inside it. On Windows a trailing <code>.exe</code> is ignored.</p>
 <h2 id="systemd-service-1"><a class="header" href="#systemd-service-1">Systemd service</a></h2>
-<p>PowerJoular also provides a systemd service which writes power consumption to /tmp folder, allowing it to bypass the added restrictions on reading powercap energy meters to <a href="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=949dd0104c496fa7c14991a23c03c62e44637e71">non-privileged users in Intel CPUs</a>.
+<p>PowerJoular also provides a systemd service which writes power consumption to the <code>/run/powerjoular</code> folder, allowing it to bypass the added restrictions on reading powercap energy meters to <a href="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=949dd0104c496fa7c14991a23c03c62e44637e71">non-privileged users in Intel CPUs</a>.
 The restriction was added due to the recently discovered <a href="https://platypusattack.com/">PLATYPUS vulnerability</a>.
 However, the systemd service still requires privileged access (root/sudo) to be enabled, and the data provided is the runtime power consumption (every second) from aggregate sources (CPU and GPU when available).</p>
 
@@ -442,7 +671,7 @@ However, the systemd service still requires privileged access (root/sudo) to be 
 
         <script src="clipboard-1626706a.min.js"></script>
         <script src="highlight-abc7f01d.js"></script>
-        <script src="book-c22b7243.js"></script>
+        <script src="book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
 

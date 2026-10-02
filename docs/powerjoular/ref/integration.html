@@ -15,8 +15,8 @@
         <link rel="icon" href="../favicon-de23e50b.svg">
         <link rel="shortcut icon" href="../favicon-8114d1fc.png">
         <link rel="stylesheet" href="../css/variables-8adf115d.css">
-        <link rel="stylesheet" href="../css/general-0392ca55.css">
-        <link rel="stylesheet" href="../css/chrome-fc474251.css">
+        <link rel="stylesheet" href="../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../css/chrome-d279d366.css">
         <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-483c5156.js";
+            window.path_to_searchindex_js = "../searchindex-a723df21.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-a9651cd3.js"></script>
+        <script src="../toc-b01ac823.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -175,11 +175,13 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="integration-with-systems-and-tools"><a class="header" href="#integration-with-systems-and-tools">Integration with Systems and Tools</a></h1>
-<p>PowerJoular exports its power data to CSV files, or print the values directly on the terminal.
+<p>PowerJoular exports its power data to CSV files and to a shared memory ring buffer, or prints the values directly on the terminal.
 As such, PowerJoular can be used in IDEs, integration systems CI/CD, or alongside other profilers or debugging tools.</p>
 <p>All what is needed is to start PowerJoular and read the generated CSV files.
 PowerJoular can write these CSV files in <code>overwrite</code> mode, and thus reducing the overhead and size of these files.</p>
-<p>With the systemd service provided, PowerJoular can run automatically on startup and write power consumption to <code>/tmp</code> folder (which can be changed in the service).
+<p>For a program running on the same machine, the ring buffer (<code>-r</code>) is the fastest way: the program maps the shared memory area once, and reads the latest measurement whenever it needs it, with no file to open or parse.
+See <a href="./exports.html">Exporting Power Data</a> for the format of the CSV files and the layout of the ring buffer.</p>
+<p>With the systemd service provided, PowerJoular can run automatically on startup and write power consumption to <code>/run/powerjoular</code> folder (which can be changed in the service: the service can only write in its own folder, so a new folder also needs a <code>ReadWritePaths=</code> line there).
 Therefore, offering an automatic way for multiple tools and dashboards to get accurate and real-time power metrics in multiple platforms.</p>
 
                     </main>
@@ -230,7 +232,7 @@ Therefore, offering an automatic way for multiple tools and dashboards to get ac
 
         <script src="../clipboard-1626706a.min.js"></script>
         <script src="../highlight-abc7f01d.js"></script>
-        <script src="../book-c22b7243.js"></script>
+        <script src="../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
 

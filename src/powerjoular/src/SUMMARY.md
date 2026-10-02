@@ -11,6 +11,7 @@
 # Reference Guide
 - [Compilation](./ref/compilation.md)
 - [Command Line Options](./ref/options.md)
+- [Exporting Power Data](./ref/exports.md)
 - [Systemd Service](./ref/systemd.md)
 - [Integration with Systems and Tools](./ref/integration.md)
 - [Virtual machines](./ref/vm.md)

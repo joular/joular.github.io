@@ -15,8 +15,8 @@
         <link rel="icon" href="../favicon-de23e50b.svg">
         <link rel="shortcut icon" href="../favicon-8114d1fc.png">
         <link rel="stylesheet" href="../css/variables-8adf115d.css">
-        <link rel="stylesheet" href="../css/general-0392ca55.css">
-        <link rel="stylesheet" href="../css/chrome-fc474251.css">
+        <link rel="stylesheet" href="../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../css/chrome-d279d366.css">
         <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-ee74c12a.js";
+            window.path_to_searchindex_js = "../searchindex-5527cac8.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-59639058.js"></script>
+        <script src="../toc-fea6b9de.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -175,46 +175,42 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="installation"><a class="header" href="#installation">Installation</a></h1>
-<p>Joular Core is distributed as pre-built binaries and installers for the most common platforms. For anything else, you can compile it from source in a few minutes.</p>
-<h2 id="pre-built-packages-and-installers"><a class="header" href="#pre-built-packages-and-installers">Pre-built Packages and Installers</a></h2>
-<h3 id="windows"><a class="header" href="#windows">Windows</a></h3>
+<p>Joular Core is added to the program that uses it rather than installed on its own. It can be taken from Alire, or compiled from source.</p>
+<h2 id="with-alire"><a class="header" href="#with-alire">With Alire</a></h2>
+<p>In an Ada project managed by <a href="https://alire.ada.dev">Alire</a>, add the library with:</p>
+<pre><code class="language-bash">alr with joularcore
+</code></pre>
+<p>Alire fetches the library and builds it along with your program. Then add <code>with Joular_Core;</code> to your code (see <a href="./quick_usage.html">Quick Usage</a>).</p>
+<p>Alire offers Joular Core on Linux, Windows and macOS. On BSD, compile it from source with GPRBuild.</p>
+<h2 id="from-source"><a class="header" href="#from-source">From Source</a></h2>
+<p>Clone the <a href="https://github.com/joular/joularcore">GitHub repository</a> and build it with GNAT and GPRBuild, or with Alire. The build gives:</p>
 <ul>
-<li>MSI installer for 64-bit Windows (x86_64)</li>
+<li>a static library (<code>libjoularcore.a</code>), to link into an Ada program, which is the default</li>
+<li>a shared library (<code>libjoularcore.so</code> on Linux, <code>libjoularcore.dll</code> on Windows, <code>libjoularcore.dylib</code> on macOS), which carries the C interface for programs in C, C++, Java, Python, Rust, etc.</li>
 </ul>
-<h3 id="macos"><a class="header" href="#macos">macOS</a></h3>
-<ul>
-<li>PKG installer for Apple Silicon (aarch64)</li>
-</ul>
-<h3 id="linux"><a class="header" href="#linux">Linux</a></h3>
-<ul>
-<li>DEB packages for Debian-based systems (Debian, Ubuntu, Raspberry Pi OS, etc.) — available for x86_64 and arm64 (aarch64)</li>
-<li>RPM packages for Red Hat / Fedora-based systems (RHEL, Fedora, etc.) — x86_64</li>
-<li>AUR package for Arch-based systems — x86_64</li>
-</ul>
-<p>For other architectures or distributions (32-bit Windows, Intel macOS, other Linux setups), compile from source. See <a href="../ref/compilation.html">Compilation</a>.</p>
-<h2 id="binaries"><a class="header" href="#binaries">Binaries</a></h2>
-<p>Compiled binaries for all supported targets are attached to each release on the GitHub repository. Download the binary for your platform, place it somewhere on your <code>PATH</code>, and you’re ready to go. You can also run it from any directory using its full path.</p>
-<p>There are two binaries per release:</p>
-<ul>
-<li><code>joularcore</code> / <code>joularcore.exe</code> — the command-line interface</li>
-<li><code>joularcoregui</code> / <code>joularcoregui.exe</code> — the graphical user interface (opens a window directly, no terminal needed)</li>
-</ul>
+<p>On Linux and Windows, the shared library carries the Ada runtime too, so it is the only file to ship with your program (on Linux, <code>libjoularcore.so.0</code>, the name programs look for). On macOS, the Ada runtime stays a file of its own, which the library loads from the folder of the compiler that built it.</p>
+<p>See <a href="../ref/compilation.html">Compilation</a> for the build commands and options.</p>
 <h2 id="platform-specific-requirements"><a class="header" href="#platform-specific-requirements">Platform-specific Requirements</a></h2>
+<p>Joular Core is a library, so the privileges below are needed for the <em>program using it</em>.</p>
 <h3 id="linux-pc--servers"><a class="header" href="#linux-pc--servers">Linux (PC / servers)</a></h3>
-<p>CPU power is read via the RAPL sysfs interface. On Linux kernel 5.10 and newer, RAPL files are only readable by root. You have two options:</p>
+<p>CPU energy is read via the RAPL powercap sysfs interface. On Linux kernel 5.10 and newer, the RAPL <code>energy_uj</code> files are only readable by root. You have two options:</p>
 <ul>
-<li>Run Joular Core with <code>sudo</code></li>
-<li>Grant read access to the RAPL files for your user (see <a href="https://github.com/joular/joularcore/issues/12">this GitHub issue</a> for instructions)</li>
+<li>Run your program with <code>sudo</code></li>
+<li>Grant read access to the RAPL files for your user (see <a href="https://github.com/joular/powerjoular/issues/1">this GitHub issue</a> for instructions)</li>
 </ul>
-<p>GPU monitoring (Nvidia/AMD) requires <code>nvidia-smi</code> or <code>amd-smi</code> / <code>rocm-smi</code> to be installed separately if needed.</p>
-<h3 id="windows-1"><a class="header" href="#windows-1">Windows</a></h3>
-<p>CPU power monitoring requires a RAPL kernel driver. The supported driver is <a href="https://github.com/hubblo-org/windows-rapl-driver">Hubblo’s windows-rapl-driver</a>. The simplest way to install a signed version is via the <a href="https://github.com/hubblo-org/scaphandre/releases/download/v1.0.0/scaphandre_v1.0.0_installer.exe">Scaphandre installer</a>, which installs the driver as a side effect.</p>
-<p>Once the driver is installed, Joular Core itself runs without administrator rights.</p>
-<p>GPU monitoring (Nvidia/AMD) requires <code>nvidia-smi</code> or <code>amd-smi</code> to be installed separately if needed.</p>
-<h3 id="macos-1"><a class="header" href="#macos-1">macOS</a></h3>
-<p>No additional software is required. Power data is read via <code>powermetrics</code>, which ships with macOS. Because <code>powermetrics</code> requires elevated access to read hardware counters, run the CLI with <code>sudo</code> or use a GUI/default build that can ask for elevation.</p>
+<p>GPU monitoring needs the Nvidia driver for Nvidia cards (NVML is installed with it), and the amdgpu kernel driver for AMD cards. Neither needs special privileges.</p>
+<h3 id="windows"><a class="header" href="#windows">Windows</a></h3>
+<p>CPU energy is read in one of three ways, depending on what the machine offers:</p>
+<ul>
+<li>The <a href="https://learn.microsoft.com/en-us/windows-hardware/drivers/powermeter/energy-meter-interface">Energy Meter Interface</a> is the one used by default and checked first. It needs <strong>no installation and no elevated access</strong>, and works only on Windows 11.</li>
+<li><a href="https://pawnio.eu">PawnIO</a> is the main RAPL driver used (after EMI): it is maintained and properly signed, and its installer is all that is needed, as Joular Core carries the modules it loads. It needs elevated access, so run the program using the library from a terminal with administrative rights.</li>
+<li><a href="https://github.com/hubblo-org/windows-rapl-driver">Hubblo’s RAPL driver</a> still works and is used when PawnIO does not answer (not installed, or the program is not run with administrative rights). It does not require elevated access, but its development has paused. The easiest way to install a signed version is through the <a href="https://github.com/hubblo-org/scaphandre/releases/download/v1.0.0/scaphandre_v1.0.0_installer.exe">Scaphandre installer</a>.</li>
+</ul>
+<p>GPU monitoring needs the Nvidia driver for Nvidia cards (NVML is installed with it), or the AMD driver for AMD cards (ADLX is installed with it).</p>
+<h3 id="macos"><a class="header" href="#macos">macOS</a></h3>
+<p>No additional software is required. Power data is read via <code>powermetrics</code>, which ships with macOS. Because <code>powermetrics</code> only runs as the superuser, run your program with <code>sudo</code>. Without it, both the CPU and the GPU are reported as not available.</p>
 <h3 id="raspberry-pi-and-sbc"><a class="header" href="#raspberry-pi-and-sbc">Raspberry Pi and SBC</a></h3>
-<p>No dependencies and no <code>sudo</code> required. Use a binary built with the <code>sbc</code> feature for your architecture (arm, armv7, or aarch64). Unsupported boards run but report 0 W for CPU power.</p>
+<p>No dependencies and no <code>sudo</code> required. Boards with no power model report the CPU as not available.</p>
 
                     </main>
 
@@ -224,7 +220,7 @@
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../guide/quick_usage_cli.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../guide/quick_usage.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -238,7 +234,7 @@
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../guide/quick_usage_cli.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../guide/quick_usage.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
@@ -264,7 +260,7 @@
 
         <script src="../clipboard-1626706a.min.js"></script>
         <script src="../highlight-abc7f01d.js"></script>
-        <script src="../book-c22b7243.js"></script>
+        <script src="../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
 

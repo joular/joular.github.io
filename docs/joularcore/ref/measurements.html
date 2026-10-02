@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Quick Usage GUI - Joular Core Documentation</title>
+        <title>Reading the Measurements - Joular Core Documentation</title>
 
 
         <!-- Custom HTML head -->
@@ -15,8 +15,8 @@
         <link rel="icon" href="../favicon-de23e50b.svg">
         <link rel="shortcut icon" href="../favicon-8114d1fc.png">
         <link rel="stylesheet" href="../css/variables-8adf115d.css">
-        <link rel="stylesheet" href="../css/general-0392ca55.css">
-        <link rel="stylesheet" href="../css/chrome-fc474251.css">
+        <link rel="stylesheet" href="../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../css/chrome-d279d366.css">
         <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-ee74c12a.js";
+            window.path_to_searchindex_js = "../searchindex-5527cac8.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-59639058.js"></script>
+        <script src="../toc-fea6b9de.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -174,54 +174,52 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="quick-usage--graphical-user-interface"><a class="header" href="#quick-usage--graphical-user-interface">Quick Usage — Graphical User Interface</a></h1>
-<h2 id="starting-the-gui"><a class="header" href="#starting-the-gui">Starting the GUI</a></h2>
-<p>There are two ways to open the GUI:</p>
+                        <h1 id="reading-the-measurements"><a class="header" href="#reading-the-measurements">Reading the Measurements</a></h1>
+<p>Each reading gives one measurement for the CPU and one for the GPU. A measurement says whether the source is available, its value, and its unit.</p>
+<h2 id="energy-and-power"><a class="header" href="#energy-and-power">Energy and Power</a></h2>
 <ul>
-<li><strong>Dedicated binary</strong>: launch <code>joularcoregui</code> (Linux/macOS) or <code>joularcoregui.exe</code> (Windows) directly — double-click in a file manager or run from a terminal.</li>
-<li><strong>CLI flag</strong>: add <code>-g</code> or <code>--gui</code> to any <code>joularcore</code> command, for example:
-<pre><code class="language-bash">joularcore --gui
-joularcore -g --api-port 8080
-</code></pre>
-</li>
+<li>Some hardware reports <strong>energy</strong>: the joules consumed since the previous reading (RAPL on Linux and Windows). The first reading counts from <code>Open</code>.</li>
+<li>Others report <strong>power</strong>: the watts being drawn when read (GPUs), or averaged since the previous reading (Raspberry Pi and Asus Tinker Board models).</li>
+<li>On macOS, the value is the <strong>average power since the previous reading</strong>: Joular Core asks <code>powermetrics</code> for a sample at each reading. Opening the sources waits for the first sample of <code>powermetrics</code> (up to about three seconds).</li>
 </ul>
-<p>On RAPL-based Linux systems, <code>sudo</code> is still required:</p>
-<pre><code class="language-bash">sudo joularcoregui
-sudo joularcore --gui
-</code></pre>
-<p>On macOS, it’ll ask for elevated access to read <code>powermetrics</code>.</p>
-<h2 id="interface-overview"><a class="header" href="#interface-overview">Interface Overview</a></h2>
-<p>The GUI has two screens: <strong>Options</strong> and <strong>Monitor</strong>. Switch between them using the buttons at the top of the window.</p>
-<h3 id="options-screen"><a class="header" href="#options-screen">Options Screen</a></h3>
-<p>Before starting a monitoring session, the Options screen lets you configure:</p>
+<p>To get watts from an energy reading, divide it by the time elapsed since the previous reading. To get joules from a power reading, multiply it by that time. <a href="https://github.com/joular/powerjoular">PowerJoular</a> does the first on every cycle, dividing by the time the cycle actually took rather than assuming it was exactly one second.</p>
+<h2 id="available-not-available-and-zero"><a class="header" href="#available-not-available-and-zero">Available, Not Available, and Zero</a></h2>
 <ul>
-<li><strong>Monitor mode</strong>: choose between monitoring the whole system, a specific PID, or a named application</li>
-<li><strong>Application / PID</strong>: type a process name or PID number directly; a dropdown lists running processes or applications</li>
-<li><strong>CSV export</strong>: toggle CSV file output on or off, and choose the file path using the native file picker</li>
-<li><strong>Advanced options</strong>: choose CPU/GPU filtering, set or keep the CPU idle baseline, enable the ring buffer, and configure the local HTTP/WebSocket API</li>
+<li>A source that is not present, not supported, or not accessible is reported as <strong>not available</strong>. This is not an error: the other sources keep working.</li>
+<li>A source that was available but stops answering reports a value of <strong>zero</strong>, and is still available. For RAPL, the energy is not lost: the next reading that works also counts what was used during the one that failed.</li>
+<li>On macOS, if <code>powermetrics</code> stops answering, its sources read zero, and it is started again around ten seconds later.</li>
 </ul>
-<p>When launched as <code>joularcore --gui</code>, the flag conflicts with terminal/file-oriented options such as <code>--pid</code>, <code>--app</code>, <code>--file</code>, <code>--overwrite</code>, <code>--silent</code>, and <code>--numeric</code>. Startup options such as <code>--ringbuffer</code>, <code>--api-port</code>, <code>--api-allowed-origin</code>, <code>--app-refresh-interval</code>, and the CPU idle baseline flags can still preconfigure the GUI session.</p>
-<p>Once configured, click <strong>Start Monitoring</strong> to begin.</p>
-<h3 id="monitor-screen"><a class="header" href="#monitor-screen">Monitor Screen</a></h3>
-<p>The Monitor screen shows live power readings updated every second:</p>
-<ul>
-<li><strong>Total power</strong> (watts)</li>
-<li><strong>CPU power</strong> (watts)</li>
-<li><strong>GPU power</strong> (watts)</li>
-<li><strong>CPU usage</strong> (%)</li>
-<li><strong>Process / application power</strong> (watts, if a PID or app was selected)</li>
-</ul>
-<p>A rolling graph plots each of these values over the last 60 seconds. Click <strong>Stop</strong> to return to the Options screen.</p>
+<h2 id="what-each-source-actually-measures"><a class="header" href="#what-each-source-actually-measures">What Each Source Actually Measures</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Source</th><th>What the number covers</th></tr>
+</thead>
+<tbody>
+<tr><td>RAPL on Linux</td><td><strong>One</strong> package of powercap, the first one whose name begins with <code>package</code></td></tr>
+<tr><td>RAPL on Windows</td><td>The package domain of the first socket</td></tr>
+<tr><td>Raspberry Pi and Asus Tinker Board</td><td>A model-based estimate: a regression on CPU load, evaluated over the interval between two readings. It is not a reading of the board’s actual draw</td></tr>
+<tr><td>Nvidia (NVML)</td><td>What the card reports for the whole GPU board. Depending on the architecture and driver, this is an average over about a second rather than an instant value</td></tr>
+<tr><td>AMD on Linux (hwmon)</td><td>What the amdgpu driver reports (<code>power1_average</code>, or <code>power1_input</code>), which the kernel documents as the power used by the SoC, the GPU chip. On an APU that chip includes the CPU cores, so work done on the CPU raises what this library calls the GPU, and adding CPU and GPU together counts some of it twice</td></tr>
+<tr><td>AMD on Windows (ADLX)</td><td>Whole GPU board power where the card offers it, and the graphics processor alone where it does not. Which of the two is chosen when the card is opened and does not change while the program runs, so a series of measurements always means one thing</td></tr>
+<tr><td>macOS</td><td>Apple Silicon: the CPU and the GPU parts of the same chip, from the same sample, as <code>powermetrics</code> estimates them. Intel Macs: the whole chip (cores, integrated GPU and system agent), like the RAPL package on Linux and Windows</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="counter-wraps"><a class="header" href="#counter-wraps">Counter Wraps</a></h2>
+<p>RAPL counters wrap when they fill, and the library corrects that. The correction only works if less than half of what the counter holds was used between two readings, so read at least once per minute. How long the counter takes to fill depends on the energy unit of the processor.</p>
+<p>A counter that goes back without looking like a wrap is taken as a reset (for example after the machine was suspended), and that reading gives zero.</p>
+<p>The Energy Meter Interface (EMI) on Windows corrects for the wrap by itself, so Joular Core doesn’t need to do the correction.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../guide/quick_usage_cli.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../ref/interface.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../ref/compilation.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../ref/integration.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -231,11 +229,11 @@ sudo joularcore --gui
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../guide/quick_usage_cli.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../ref/interface.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../ref/compilation.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../ref/integration.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
@@ -261,7 +259,7 @@ sudo joularcore --gui
 
         <script src="../clipboard-1626706a.min.js"></script>
         <script src="../highlight-abc7f01d.js"></script>
-        <script src="../book-c22b7243.js"></script>
+        <script src="../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
 

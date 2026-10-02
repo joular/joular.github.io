@@ -1,84 +1,88 @@
 # Compilation
 
-Joular Core is written in Rust and uses Cargo. A stable Rust toolchain is the only requirement.
+Joular Core is written in Ada and is built with GPRBuild, or with Alire. A modern GNAT compiler is the only requirement.
 
 ## Default Build
 
-```bash
-cargo build --release
-```
-
-Produces two binaries in `target/release/`:
-- `joularcore` / `joularcore.exe` — command-line interface
-- `joularcoregui` / `joularcoregui.exe` — graphical user interface
-
-The default build includes virtual machine support (`vm`), the HTTP/WebSocket API (`api`), and the GUI (`gui`). SBC support is not included by default.
-
-## SBC (Raspberry Pi) Build
+With [Alire](https://alire.ada.dev):
 
 ```bash
-cargo build --release --features sbc
+alr build
 ```
 
-Adds single-board computer support on top of the defaults. The `sbc` feature replaces RAPL-based CPU monitoring with polynomial regression models tuned for each supported SBC. See [Supported Platforms](../guide/supported_platforms.md) for the full list of supported boards.
-
-## Feature Selection
-
-Use `--no-default-features` to start from a minimal build and enable only what you need:
+Or directly with GNAT:
 
 ```bash
-cargo build --release --no-default-features
+gprbuild -P joularcore.gpr
 ```
 
-This produces a CLI-only binary with no VM support, no API, and no GUI — useful for constrained environments where binary size matters.
+The build produces a static library by default, `libjoularcore.a` in `lib/static/`, for Ada programs.
 
-### Available Features
+## Choosing the OS
 
-| Feature | Default | Description |
+The build detects the OS on its own to compile the appropriate version: Linux, Windows, macOS, and BSD systems are each recognised from the target GPRBuild reports.
+
+`-XPJ_OS` overrides it when the version to build is not the one of the machine building it, with `linux`, `windows`, `macos` or `bsd`:
+
+```bash
+gprbuild -P joularcore.gpr -XPJ_OS=windows
+```
+
+OpenBSD has no target name of its own in GPRBuild, so build there with `-XPJ_OS=bsd`. On BSD, build with GPRBuild: the Alire crate is only available on Linux, Windows and macOS.
+
+On Windows, reading the RAPL registers through a driver needs the CPUID instruction of 64 bits x86 processors, to know whether they are the Intel or the AMD ones. Whether the processor is one is detected from the target too, and `-XPJ_X86=True` or `-XPJ_X86=False` overrides it. With `False`, only the Energy Meter Interface is used.
+
+## Library Types
+
+For other library types, set `-XJOULARCORE_LIBRARY_TYPE` (when it is not set, the generic `LIBRARY_TYPE` is used if set, and `static` otherwise):
+
+```bash
+gprbuild -P joularcore.gpr -XJOULARCORE_LIBRARY_TYPE=relocatable
+```
+
+| Library type | Default | Description |
 |---------|:-------:|-------------|
-| `vm`    | **on**  | Enables monitoring inside virtual machines. Joular Core reads power from a shared file written by the host. |
-| `api`   | **on**  | Enables the HTTP and WebSocket API server. CSV export and ring buffer output work regardless of this feature. |
-| `gui`   | **on**  | Compiles the GUI binary (`joularcoregui`). |
-| `sbc`   | off     | Enables SBC support. Replaces RAPL-based monitoring with regression models for Raspberry Pi and Asus Tinker Board. |
+| `static` | **on** | `libjoularcore.a`, linked into an Ada program. |
+| `relocatable` | off | The shared library (`libjoularcore.so` / `.dll` / `.dylib`) that carries the C interface, for programs in other languages. |
+| `static-pic` | off | A static library built position independent, to go inside someone else's shared library. |
 
-### Mix-and-Match Examples
+Each type is built in its own folder: `lib/static/`, `lib/relocatable/` or `lib/static-pic/`.
 
-```bash
-# CLI only — no VM, no API, no GUI
-cargo build --release --no-default-features
+The `relocatable` library is stand-alone (it starts itself up when loaded) and, on every OS but macOS, encapsulated: it carries the Ada runtime too, so it is one self-contained file. On Linux and BSD, it is versioned as `libjoularcore.so.0`.
 
-# CLI with VM support, no GUI or API
-cargo build --release --no-default-features --features vm
+On macOS it cannot be encapsulated, so the Ada runtime stays a file of its own: the library records the folder of the runtime of the compiler that built it, and loads it from there with nothing to set (no `DYLD_LIBRARY_PATH`, so it also works under `sudo` and from `/usr/bin/java` or the system's Python).
 
-# CLI with VM and API, no GUI (good for headless servers)
-cargo build --release --no-default-features --features vm,api
+## Building the Examples
 
-# SBC with GUI, no VM or API
-cargo build --release --no-default-features --features gui,sbc
-
-# SBC with everything
-cargo build --release --features sbc
-```
-
-## Cross-Compilation
-
-Use `cargo-make` with the targets defined in `Makefile.toml`. The targets cover all supported architectures for each OS.
-
-To build for all supported Raspberry Pi architectures (`aarch64`, `arm`, `armv7`) at once:
+The Ada example uses the static library:
 
 ```bash
-cargo make build-sbc
+gprbuild -P example/example.gpr
+./example/example_joular_core
 ```
 
-With the appropriate Rust cross-compilation targets installed (via `rustup target add`), you can cross-compile from any host to any supported target.
+The C example comes with a Makefile that builds the shared library and the program:
 
-## Release Profile
+```bash
+make -C example/c
+```
 
-The release profile in `Cargo.toml` is configured for maximum optimization and smallest binary size:
+To build it by hand instead, from the root of the repository, first compile the library:
 
-- LTO (link-time optimization) enabled
-- Single codegen unit (full cross-crate optimization)
-- `panic = "abort"` (no unwinding machinery)
-- Debug symbols stripped
+```bash
+gprbuild -P joularcore.gpr -XJOULARCORE_LIBRARY_TYPE=relocatable
+```
 
-These settings mean release builds can be slow to compile but produce fast, lean binaries.
+Then compile the C program:
+
+```bash
+gcc example/c/main.c -Iinclude -Llib/relocatable -ljoularcore -Wl,-rpath,"$PWD/lib/relocatable" -o example/c/example_c
+```
+
+`-I` is the folder holding `joularcore.h`, `-L` and `-l` the library to link with, and `-rpath` the folder where the program looks for the library when it runs. Without `-rpath`, the program still compiles but stops on start because it cannot find the library, unless you set `LD_LIBRARY_PATH` (Linux) or `DYLD_LIBRARY_PATH` (macOS) yourself. Windows has no `-rpath`: put a copy of the DLL next to the program instead.
+
+The Python example only needs the shared library, which its Makefile builds:
+
+```bash
+make -C example/python run
+```

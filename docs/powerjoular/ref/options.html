@@ -15,8 +15,8 @@
         <link rel="icon" href="../favicon-de23e50b.svg">
         <link rel="shortcut icon" href="../favicon-8114d1fc.png">
         <link rel="stylesheet" href="../css/variables-8adf115d.css">
-        <link rel="stylesheet" href="../css/general-0392ca55.css">
-        <link rel="stylesheet" href="../css/chrome-fc474251.css">
+        <link rel="stylesheet" href="../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../css/chrome-d279d366.css">
         <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-483c5156.js";
+            window.path_to_searchindex_js = "../searchindex-a723df21.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-a9651cd3.js"></script>
+        <script src="../toc-b01ac823.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -176,24 +176,34 @@
                     <main>
                         <h1 id="command-line-options"><a class="header" href="#command-line-options">Command Line Options</a></h1>
 <p>To use PowerJoular, just run the command <code>powerjoular</code>.
-On PC/servers, PowerJoular uses Intel’s RAPL through the Linux powercap sysfs, and therefore requires root/sudo access on the latest Linux kernels (5.10 and newer): <code>sudo powerjoular</code>.</p>
-<p>By default, the software will show the power consumption of the CPU and its utilization.
-The difference (increase or decrease) of power consumption from the last metric will also be shown.</p>
+On Linux PC/servers, PowerJoular uses Intel’s RAPL through the Linux powercap sysfs, and therefore requires root/sudo access on the latest Linux kernels (5.10 and newer): <code>sudo powerjoular</code>.
+On macOS, <code>powermetrics</code> also requires root/sudo access: <code>sudo powerjoular</code>.</p>
+<p>By default, the software will show the total power consumption, and the power of the CPU and of the GPU (when there is one), on the terminal, every second, until Ctrl+C.</p>
 <p>The following options are available:</p>
 <ul>
 <li><code>-h</code>: show the help message</li>
 <li><code>-v</code>: show version number</li>
-<li><code>-p pid</code>: specifiy a particular PID to monitor</li>
-<li><code>-a appName</code>: specifiy a particular application name to monitor (will monitor all PIDs of the application)</li>
-<li><code>-f filename</code>: save monitoring data to the given filename path</li>
+<li><code>-p pid</code>: specify a particular PID to monitor</li>
+<li><code>-a appName</code>: specify a particular application name to monitor (will monitor all PIDs of the application)</li>
+<li><code>-f filename</code>: save monitoring data to the given filename path, in CSV format</li>
 <li><code>-o filename</code>: save only last monitoring data to the given filename path (file overwritten with only latest power measures)</li>
-<li><code>-t</code>: print energy data to the terminal</li>
-<li><code>-d</code>: print debug info to the terminal</li>
-<li><code>-l</code>: use linear regression models (less accurate than the default polynomial models) for Raspberry Pi energy models</li>
-<li><code>-m</code>: specify a filename for the power consumption of the virtual machine</li>
-<li><code>-s</code>: specify the format of the VM power, either <code>powerjoular</code> format (generated with the <code>-o</code> option: 3 columns csv file with the 3rd containing the power consumption the VM), or <code>watts</code> format (1 column containing just the power consumption of the VM)</li>
+<li><code>-t</code>: print the power data to the terminal</li>
+<li><code>-d</code>: print the available hardware components on start up (the versions of PowerJoular and its libraries, whether the CPU and the GPU can be measured, and the path of the ring buffer with <code>-r</code>)</li>
+<li><code>-r</code>: write the power data to a shared memory ring buffer, for another program to read with low latency</li>
+<li><code>-m filename</code>: specify a filename for the power consumption of the virtual machine (written by the host)</li>
+<li><code>-s format</code>: specify the format of the VM power, either <code>powerjoular</code> format (generated with the <code>-o</code> option for a monitored process: 3 columns csv file with the 3rd containing the power consumption of the VM), or <code>watts</code> format (1 column containing just the power consumption of the VM)</li>
 </ul>
 <p>You can mix options, i.e., <code>powerjoular -tp 144</code> will monitor PID 144 and will print to the terminal.</p>
+<p>A few rules apply when mixing them:</p>
+<ul>
+<li><code>-p</code> and <code>-a</code> cannot be used together.</li>
+<li>With <code>-f</code>, <code>-o</code> or <code>-r</code>, the terminal is only used if <code>-t</code> is also given.</li>
+<li><code>-m</code> and <code>-s</code> go together, and the file given to <code>-m</code> must already hold a power value in that format when PowerJoular starts.</li>
+</ul>
+<p>When monitoring a process (<code>-p</code>) or an application (<code>-a</code>), <code>-f</code> and <code>-o</code> write <strong>two</strong> CSV files: the given filename for the whole system, and the same name with the PID or the application name added to it, for the process or the application.
+For example, <code>powerjoular -p 144 -f power.csv</code> writes <code>power.csv</code> and <code>power.csv-144.csv</code>.</p>
+<p>See <a href="./exports.html">Exporting Power Data</a> for the content of the CSV files and of the ring buffer.</p>
+<p>On Windows, the <code>JOULARCORE_WINDOWS_RAPL</code> environment variable picks how the RAPL counter is read (<code>emi</code>, <code>pawnio</code> or <code>hubblo</code>), instead of trying the three in turn (see <a href="../guide/supported_platforms.html">Supported Platforms</a>).</p>
 
                     </main>
 
@@ -203,7 +213,7 @@ The difference (increase or decrease) of power consumption from the last metric 
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../ref/systemd.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../ref/exports.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -217,7 +227,7 @@ The difference (increase or decrease) of power consumption from the last metric 
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../ref/systemd.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../ref/exports.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
@@ -243,7 +253,7 @@ The difference (increase or decrease) of power consumption from the last metric 
 
         <script src="../clipboard-1626706a.min.js"></script>
         <script src="../highlight-abc7f01d.js"></script>
-        <script src="../book-c22b7243.js"></script>
+        <script src="../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
 

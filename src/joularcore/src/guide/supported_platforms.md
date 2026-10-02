@@ -1,18 +1,17 @@
 # Supported Platforms
 
-Joular Core runs on all major desktop and server operating systems and a selection of single-board computers. The table below summarises what is supported on each platform and architecture.
+Joular Core runs on Linux, Windows and macOS, on PCs, servers, Macs and single-board computers, and reads Nvidia GPUs on BSD systems. The tables below summarise what is supported on each platform and architecture.
 
 ## Operating Systems and Architectures
 
 ### CPU
 
-| OS / Architecture     | x86_64 | i686 | Apple Silicon | arm | armv7 | aarch64 |
-|-----------------------|:------:|:----:|:-------------:|:---:|:-----:|:-------:|
-| Linux (PC / servers)  | ✓      | ✓    |               |     |       |         |
-| Windows               | ✓      | ✓    |               |     |       |         |
-| macOS                 | ✓      |      | ✓             |     |       |         |
-| SBC (Raspberry Pi, Asus) |     |      |               | ✓   | ✓     | ✓       |
-| Virtual Machines      | ✓      | ✓    | ✓             | ✓   | ✓     | ✓       |
+| OS / Architecture     | x86_64 | x86 | Apple Silicon | arm | aarch64 |
+|-----------------------|:------:|:---:|:-------------:|:---:|:-------:|
+| Linux (PC / servers)  | ✓      | ✓   |               |     |         |
+| Windows               | ✓      |     |               |     |         |
+| macOS                 | ✓      |     | ✓             |     |         |
+| SBC (Raspberry Pi, Asus Tinker Board) | |  |            | ✓   | ✓       |
 
 ### GPU
 
@@ -21,60 +20,72 @@ Joular Core runs on all major desktop and server operating systems and a selecti
 | Linux (PC / servers) | ✓      | ✓   |           |
 | Windows              | ✓      | ✓   |           |
 | macOS                |        |     | ✓         |
+| BSD                  | ✓      |     |           |
 | SBC (Raspberry Pi)   |        |     |           |
-| Virtual Machines     | ✓      | ✓   | ✓         |
 
 ## Platform Details
 
-| Platform | OS | Power source | Architectures |
+| Platform | OS | Power source | Reports |
 |---|---|---|---|
-| Linux PC / Server | Linux | Intel RAPL (sysfs), Nvidia via `nvidia-smi`, AMD via `amd-smi` / `rocm-smi` | x86, x86_64 |
-| Windows PC / Server | Windows | Hubblo's RAPL driver, Nvidia via `nvidia-smi`, AMD via `amd-smi` | x86, x86_64 |
-| macOS (Intel) | macOS | `powermetrics` | x86_64 |
-| macOS (Apple Silicon) | macOS | `powermetrics` (CPU + GPU) | aarch64 |
-| Raspberry Pi | Linux | Regression power models | arm, armv7, aarch64 |
-| Asus Tinker Board S | Linux | Regression power models | arm |
-| Virtual Machine (guest) | Windows, Linux, macOS | Shared file from host power tool | x86, x86_64, arm, aarch64 |
+| Linux PC / Server | Linux | RAPL through powercap sysfs, Nvidia through NVML, AMD through amdgpu hwmon sysfs | Energy (CPU), power (GPU) |
+| Windows PC / Server | Windows | RAPL through the Energy Meter Interface, PawnIO or Hubblo's driver, Nvidia through NVML, AMD through ADLX | Energy (CPU), power (GPU) |
+| macOS (Apple Silicon) | macOS | `powermetrics` (CPU and GPU) | Power |
+| macOS (Intel) | macOS | `powermetrics` (CPU only) | Power |
+| Raspberry Pi | Linux | Regression power models | Power |
+| Asus Tinker Board (S) | Linux | Regression power models | Power |
+| BSD | FreeBSD, NetBSD, DragonFly BSD, OpenBSD | Nvidia through NVML, where Nvidia provides its driver (FreeBSD); no CPU support yet | Power |
+
+Energy is the joules consumed since the previous reading, and power is the watts being drawn. See [Reading the Measurements](../ref/measurements.md) for the details.
 
 ## Supported Single-Board Computers
 
-The SBC build includes built-in power models for the following devices:
+Joular Core includes power models for the following devices. Every revision of each model is supported, though the power model was trained on one particular revision (two for the 4 B, rev 1.1 and rev 1.2), on which the accuracy is at its best.
 
-**Raspberry Pi** (all revisions of each model):
-- Zero W (32-bit OS)
-- 1 B, 1 B+ (32-bit OS)
-- 2 B (32-bit OS)
-- 3 B, 3 B+ (32-bit OS)
+**Raspberry Pi**:
+- Zero W, 1 B, 1 B+, 2 B, 3 B, 3 B+ (model measured on a 32-bit OS, also used on a 64-bit one)
 - 4 B (32-bit and 64-bit OS)
-- 400 (64-bit OS)
-- 5 B (64-bit OS)
+- 400, 5 B (64-bit OS only)
 
-**Asus Tinker Board S**
+**Asus Tinker Board (S)**
 
 ## CPU Power Monitoring Details
 
-**Linux and Windows (x86 / x86_64)**  
-CPU power is read from RAPL energy counters. On Linux, Joular Core reads the package counter exposed through the powercap sysfs interface (`/sys/class/powercap/intel-rapl/`). If that interface is absent or unreadable, it warns and continues with CPU power reported as 0 W. On Windows, Joular Core uses Hubblo's/Scaphandre's RAPL kernel driver and supports the Intel and AMD counters exposed by that driver (see [Installation](./installation.md)).
+**Linux (x86 / x86_64)**  
+CPU energy is read from the RAPL package counter exposed through the powercap sysfs interface (`/sys/class/powercap/intel-rapl:N`), for Intel and AMD processors. Joular Core reads one package, the first one whose name begins with `package`, so on a server with several sockets only the first socket is measured. On recent kernels, the counter is only readable by root (see [Installation](./installation.md)). If it cannot be read, the CPU is reported as not available.
+
+**Windows**  
+CPU energy is read from the same RAPL package counter, through one of three approaches, tried in this order:
+- The [Energy Meter Interface](https://learn.microsoft.com/en-us/windows-hardware/drivers/powermeter/energy-meter-interface) (EMI), built into Windows 11. Nothing to install, and no administrative rights needed.
+- The RAPL registers through the [PawnIO](https://pawnio.eu) driver, which needs administrative rights.
+- The RAPL registers through [Hubblo's RAPL driver](https://github.com/hubblo-org/windows-rapl-driver), which does not.
+
+The first one that answers is kept. Setting the `JOULARCORE_WINDOWS_RAPL` environment variable to `emi`, `pawnio` or `hubblo` picks one instead (see [Library Interface](../ref/interface.md)).
 
 **macOS**  
-CPU (and GPU on Apple Silicon) power is read from Apple's `powermetrics` command. This tool ships with macOS and covers both Intel and Apple Silicon hardware. It requires elevated access to read power data.
+CPU power, and GPU power on Apple Silicon, are read from Apple's `powermetrics` tool, which ships with macOS. It covers both Apple Silicon and Intel Macs, and only runs as root. On Intel Macs, the CPU power is the whole chip (cores, integrated graphics and system agent), and there is no GPU power.
 
 **Raspberry Pi and SBC**  
-Power is calculated from CPU utilization using polynomial regression models that were measured against each supported board at various load levels. This requires a binary built with the `sbc` feature. No hardware interface or special permissions are needed; unsupported boards report 0 W.
+Power is calculated from CPU utilization using polynomial regression models that were measured against each supported board at various load levels. The board is detected from `/proc/device-tree/model`, and the CPU utilization is read from `/proc/stat`. No special permissions are needed. On a board with no power model, the CPU is reported as not available.
+
+**BSD**  
+CPU support is planned.
 
 **Virtual Machines**  
-Power is read from a shared file written by a monitoring tool running on the host OS. See [Virtual Machines](../ref/vm.md) for the setup details.
+Inside a virtual machine, the hardware counters are usually not reachable, so the CPU is reported as not available. [PowerJoular](https://github.com/joular/powerjoular) can read the power of a virtual machine from a file the host writes.
 
 ## GPU Power Monitoring Details
 
-**Nvidia (Linux and Windows)**  
-GPU power is read by calling `nvidia-smi --query-gpu=power.draw`. Power values from all detected GPUs are summed. If `nvidia-smi` is not installed or no Nvidia GPUs are found, the GPU power reading is 0 and monitoring continues normally.
+**Nvidia (Linux, Windows and BSD)**  
+GPU power is read through NVML, the library installed with the Nvidia driver, and loaded by Joular Core when the GPU is opened. The first card listed is the one read. If the driver is not installed or that card does not report its power, the GPU is reported as not available. On Linux and Windows, Nvidia is tried first, then AMD, and only one GPU is read: on a machine with both, the Nvidia card is the one measured.
 
-**AMD (Linux and Windows)**  
-GPU power is read by calling `amd-smi` or `rocm-smi` (whichever is available). As with Nvidia, if neither tool is available the GPU reading is 0.
+**AMD (Linux)**  
+GPU power is read from the hwmon sysfs of the amdgpu kernel driver (`/sys/class/hwmon`), with nothing to install. The first amdgpu sensor with a readable power file is the one read.
+
+**AMD (Windows)**  
+GPU power is read through ADLX, the library installed with the AMD driver. The first card listed is the one read.
 
 **Apple Silicon**  
-GPU power is included in the output from `powermetrics` alongside CPU power.
+GPU power comes from the same `powermetrics` sample as the CPU power.
 
 **SBC**  
-GPU monitoring is not supported on single-board computers. GPU power is always reported as 0.
+GPU monitoring is not supported on single-board computers. The GPU is reported as not available.

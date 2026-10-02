@@ -15,8 +15,8 @@
         <link rel="icon" href="favicon-de23e50b.svg">
         <link rel="shortcut icon" href="favicon-8114d1fc.png">
         <link rel="stylesheet" href="css/variables-8adf115d.css">
-        <link rel="stylesheet" href="css/general-0392ca55.css">
-        <link rel="stylesheet" href="css/chrome-fc474251.css">
+        <link rel="stylesheet" href="css/general-e96d0476.css">
+        <link rel="stylesheet" href="css/chrome-d279d366.css">
         <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-483c5156.js";
+            window.path_to_searchindex_js = "searchindex-a723df21.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-a9651cd3.js"></script>
+        <script src="toc-b01ac823.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -177,20 +177,40 @@
                         <h1 id="overview"><a class="header" href="#overview">Overview</a></h1>
 <p><a href="https://www.gnu.org/licenses/gpl-3.0"><img src="https://img.shields.io/badge/License-GPLv3-blue" alt="License: GPL v3"></a>
 <a href="https://www.adaic.org"><img src="https://img.shields.io/badge/Made%20with-Ada-blue" alt="Ada"></a></p>
-<p><img src="powerjoular.png" alt="PowerJoular Logo"></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="powerjoular.png" alt="PowerJoular Logo"><span class="img-wrapper"><img src="powerjoular.png" alt="PowerJoular Logo"></span></label></p>
 <p>PowerJoular is a command line software to monitor, in real time, the power consumption of software and hardware components, across multiple platforms and virtual machines.</p>
 <p>PowerJoular is part of the <a href="https://www.noureddine.org/research/joular/"><img src="https://raw.githubusercontent.com/joular/.github/main/profile/joular.png" alt="Joular Project" width="64" /></a> project.</p>
 <p>PowerJoular can monitor the power consumption, in real time, of the CPU and the GPU in general, and also for a specific application (through its name or PID).
-It works on a Linux system and on multiple platforms (x86_64, ARM) and devices (computers, servers, Raspberry Pi, etc.).</p>
+It works on Linux, Windows and macOS, on multiple architectures (x86_64, ARM) and devices (computers, servers, Macs, Raspberry Pi, etc.).</p>
 <p>The official website of PowerJoular is: <a href="https://www.noureddine.org/research/joular/powerjoular">https://www.noureddine.org/research/joular/powerjoular</a>.</p>
 <h2 id="features"><a class="header" href="#features">Features</a></h2>
 <ul>
 <li>Monitor power consumption of CPU and GPU of PC/servers</li>
+<li>Monitor power consumption of Macs, Apple Silicon and Intel</li>
+<li>Monitor power consumption of Raspberry Pi and Asus Tinker Board devices</li>
 <li>Monitor power consumption inside virtual machines</li>
-<li>Monitor power consumption of individual applications or processes in GNU/Linux</li>
-<li>Expose power consumption to the terminal and CSV files</li>
-<li>Provides a systemd service (daemon) to continuously monitor power of devices</li>
-<li>Low overhead (written in Ada and compiled to native code)</li>
+<li>Monitor power consumption of individual applications or processes</li>
+<li>Expose power consumption to the terminal, CSV files, and a shared memory ring buffer</li>
+<li>Provides a systemd service (daemon) to continuously monitor power of devices on Linux</li>
+<li>Low overhead (written in Ada and compiled to native code, one binary with nothing to install alongside it)</li>
+</ul>
+<h2 id="what-changed-in-version-2"><a class="header" href="#what-changed-in-version-2">What changed in version 2</a></h2>
+<p>Version 2 does the measuring using two Ada libraries we developed, <a href="https://github.com/joular/joularcore">Joular Core</a> and <a href="https://github.com/joular/cpuload">CPU Load</a>, instead of its own code.
+This also brings Windows and macOS support, and AMD graphic cards (Nvidia cards are now read through NVML instead of <code>nvidia-smi</code>).</p>
+<ul>
+<li><strong>New</strong>: <code>-r</code> writes the power data to a shared memory ring buffer.</li>
+<li><strong>Removed</strong>: <code>-k</code>, which measured a process from its threads. It was experimental, and the process readings no longer need it.</li>
+<li><strong>Removed</strong>: <code>-l</code>, which picked the linear power models of the single-board computers. The polynomial models are now the only ones used, as they are much more accurate and their overhead is minimal.</li>
+<li><strong>Removed</strong>: <code>-c</code>, which wrote the timestamps in milliseconds.</li>
+</ul>
+<p>Other main differences:</p>
+<ul>
+<li>The CSV files start with a Unix timestamp in seconds instead of a date and time, and hold four digits after the dot instead of fourteen. The columns and the header have been renamed, with Timestamp and CPU Usage.</li>
+<li>The terminal no longer shows the difference of power consumption from the last metric, and Ctrl+C no longer prints the total energy consumed.</li>
+<li>On Linux, the CPU power is the RAPL package domain only. Version 1 used the Psys domain when there was one, or added the DRAM domain to the package, so the values can be lower than with version 1.</li>
+<li>The energy a RAPL processor reports is divided by how long the cycle actually took, rather than assumed to be exactly one second. On a busy machine where a cycle takes longer than one second, the watts reported are now the watts drawn.</li>
+<li>A file that cannot be written to, or a ring buffer that cannot be opened, is reported once and the monitoring continues. A power source that stops answering reads 0 until it answers again.</li>
+<li>The systemd service writes to <code>/run/powerjoular/powerjoular-service.csv</code> instead of <code>/tmp</code>, and runs with reduced privileges.</li>
 </ul>
 <h2 id="cite-this-work"><a class="header" href="#cite-this-work">Cite this work</a></h2>
 <p>To cite our work in a research paper, please cite our paper in the 18th International Conference on Intelligent Environments (IE2022).</p>
@@ -209,7 +229,7 @@ It works on a Linux system and on multiple platforms (x86_64, ARM) and devices (
 </code></pre>
 <h2 id="license"><a class="header" href="#license">License</a></h2>
 <p>PowerJoular is licensed under the GNU GPL 3 license only (GPL-3.0-only).</p>
-<p>Copyright (c) 2020-2025, Adel Noureddine, Université de Pau et des Pays de l’Adour.
+<p>Copyright (c) 2020-2026, Adel Noureddine.
 All rights reserved. This program and the accompanying materials are made available under the terms of the GNU General Public License v3.0 only (GPL-3.0-only) which accompanies this distribution, and is available at: https://www.gnu.org/licenses/gpl-3.0.en.html</p>
 <p>Author : <a href="https://www.noureddine.org/">Adel Noureddine</a></p>
 
@@ -255,7 +275,7 @@ All rights reserved. This program and the accompanying materials are made availa
 
         <script src="clipboard-1626706a.min.js"></script>
         <script src="highlight-abc7f01d.js"></script>
-        <script src="book-c22b7243.js"></script>
+        <script src="book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
 

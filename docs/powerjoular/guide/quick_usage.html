@@ -15,8 +15,8 @@
         <link rel="icon" href="../favicon-de23e50b.svg">
         <link rel="shortcut icon" href="../favicon-8114d1fc.png">
         <link rel="stylesheet" href="../css/variables-8adf115d.css">
-        <link rel="stylesheet" href="../css/general-0392ca55.css">
-        <link rel="stylesheet" href="../css/chrome-fc474251.css">
+        <link rel="stylesheet" href="../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../css/chrome-d279d366.css">
         <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-483c5156.js";
+            window.path_to_searchindex_js = "../searchindex-a723df21.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-a9651cd3.js"></script>
+        <script src="../toc-b01ac823.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -175,12 +175,20 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="quick-usage"><a class="header" href="#quick-usage">Quick Usage</a></h1>
-<p>To use PowerJoular, just run the command <code>powerjoular</code>.
-On PC/servers, PowerJoular uses Intel’s RAPL through the Linux powercap sysfs, and therefore requires root/sudo access on the latest Linux kernels (5.10 and newer): <code>sudo powerjoular</code>.</p>
-<p>By default, the software will show the power consumption of the CPU and its utilization.
-The difference (increase or decrease) of power consumption from last metric will also be shown.</p>
-<p>To monitor a specific application, just run PowerJoular with the <code>-a appName</code> parameter.
-PowerJoular is a powerful tool with many functionalities that can be accessed using specific parameters. Check the <a href="../ref/options.html">Command Line Options page</a> for the detailed list.</p>
+<p>To use PowerJoular, just run the command <code>powerjoular</code> (or <code>powerjoular.exe</code> on Windows).
+On Linux PC/servers, PowerJoular uses Intel’s RAPL through the Linux powercap sysfs, and therefore requires root/sudo access on the latest Linux kernels (5.10 and newer): <code>sudo powerjoular</code>.
+On macOS, <code>powermetrics</code> also requires root/sudo access: <code>sudo powerjoular</code>.
+On Windows and Raspberry Pi, no special access is needed, except with the PawnIO driver on Windows, which needs a terminal with administrative rights (see <a href="./supported_platforms.html">Supported Platforms</a>).</p>
+<p>By default, the software will show the total power consumption, and the power of the CPU and of the GPU (when there is one), on the terminal, every second, until Ctrl+C:</p>
+<pre><code>Total Power: 18.45 Watts (CPU: 15.20 W, GPU: 3.25 W)
+</code></pre>
+<p>To monitor a specific application, just run PowerJoular with the <code>-a appName</code> parameter, or with <code>-p pid</code> for a specific process.
+The terminal then shows the CPU usage and the CPU power of the application or the process, with the ones of the whole system between brackets:</p>
+<pre><code>Application monitoring:	CPU: 3.10 % (24.60 %)	1.92 Watts (15.20 Watts)
+</code></pre>
+<p>To save the power data to a CSV file, add <code>-f filename</code>, or <code>-o filename</code> to keep only the latest values in the file.
+When a file (or the ring buffer, with <code>-r</code>) is given, PowerJoular no longer prints on the terminal: add <code>-t</code> to print there too.</p>
+<p>PowerJoular is a powerful tool with many functionalities that can be accessed using specific parameters. Check the <a href="../ref/options.html">Command Line Options page</a> for the detailed list.</p>
 
                     </main>
 
@@ -230,7 +238,7 @@ PowerJoular is a powerful tool with many functionalities that can be accessed us
 
         <script src="../clipboard-1626706a.min.js"></script>
         <script src="../highlight-abc7f01d.js"></script>
-        <script src="../book-c22b7243.js"></script>
+        <script src="../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
 

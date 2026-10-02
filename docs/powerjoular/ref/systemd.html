@@ -15,8 +15,8 @@
         <link rel="icon" href="../favicon-de23e50b.svg">
         <link rel="shortcut icon" href="../favicon-8114d1fc.png">
         <link rel="stylesheet" href="../css/variables-8adf115d.css">
-        <link rel="stylesheet" href="../css/general-0392ca55.css">
-        <link rel="stylesheet" href="../css/chrome-fc474251.css">
+        <link rel="stylesheet" href="../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../css/chrome-d279d366.css">
         <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-483c5156.js";
+            window.path_to_searchindex_js = "../searchindex-a723df21.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-a9651cd3.js"></script>
+        <script src="../toc-b01ac823.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -175,16 +175,25 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="systemd-service"><a class="header" href="#systemd-service">Systemd Service</a></h1>
-<p>A systemd service is provided and can be installed (by copying <code>powerjoular.service</code> in <code>systemd</code> folder to <code>/etc/systemd/system/</code>).
-The service will run the program with the <code>-o</code> option (which only saves the latest power data) and saves data to <code>/tmp/powerjoular-service.csv</code>.
-The service can be enabled to run automatically on boot.</p>
-<p>The systemd service is automatically installed when installing PowerJoular using the installer script.</p>
+<p>A systemd service is provided for Linux and can be installed (by copying <code>powerjoular.service</code> in <code>systemd</code> folder to <code>/usr/lib/systemd/system/</code> or <code>/etc/systemd/system/</code>).
+The service runs <code>/usr/bin/powerjoular</code>, so copy the binary there too, or change <code>ExecStart</code> in the service.
+The service will run the program with the <code>-o</code> option (which only saves the latest power data) and saves data to <code>/run/powerjoular/powerjoular-service.csv</code>.
+The <code>/run/powerjoular</code> folder is made by systemd when the service starts and removed when it stops, and anyone can read the file in it.</p>
+<p>The service runs as root, as reading the energy counters needs it, but with most of the other privileges taken away (it only reads the energy counters and the CPU load, and writes one file in its own folder).
+If it stops on its own (not through <code>systemctl</code>), it is restarted after 30 seconds.</p>
+<p>The service can be started, and enabled to run automatically on boot, with:</p>
+<pre><code>sudo systemctl start powerjoular.service
+sudo systemctl enable powerjoular.service
+</code></pre>
+<p>The systemd service is automatically installed (but not enabled) when installing PowerJoular using the installer script or the Linux packages.</p>
+<p>Version 1 installed the service in <code>/etc/systemd/system/</code>, which takes precedence over the one now installed in <code>/usr/lib/systemd/system/</code>.
+If you installed version 1 with the installer script, delete <code>/etc/systemd/system/powerjoular.service</code> and run <code>sudo systemctl daemon-reload</code>.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../ref/options.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../ref/exports.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
@@ -198,7 +207,7 @@ The service can be enabled to run automatically on boot.</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../ref/options.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../ref/exports.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
@@ -228,7 +237,7 @@ The service can be enabled to run automatically on boot.</p>
 
         <script src="../clipboard-1626706a.min.js"></script>
         <script src="../highlight-abc7f01d.js"></script>
-        <script src="../book-c22b7243.js"></script>
+        <script src="../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
 

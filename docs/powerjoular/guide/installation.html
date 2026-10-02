@@ -15,8 +15,8 @@
         <link rel="icon" href="../favicon-de23e50b.svg">
         <link rel="shortcut icon" href="../favicon-8114d1fc.png">
         <link rel="stylesheet" href="../css/variables-8adf115d.css">
-        <link rel="stylesheet" href="../css/general-0392ca55.css">
-        <link rel="stylesheet" href="../css/chrome-fc474251.css">
+        <link rel="stylesheet" href="../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../css/chrome-d279d366.css">
         <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-483c5156.js";
+            window.path_to_searchindex_js = "../searchindex-a723df21.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-a9651cd3.js"></script>
+        <script src="../toc-b01ac823.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -175,14 +175,39 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="installation"><a class="header" href="#installation">Installation</a></h1>
-<p>PowerJoular is written in Ada and can be easily compiled, and its unique binary added to your system PATH.</p>
-<p>Easy-to-use installation scripts are available in the <code>installer</code> folder.
-Just open the installer folder and run the appropriate file to build and/or install or uninstall the program and systemd service.</p>
+<p>PowerJoular is written in Ada and can be easily compiled, and its unique binary added to your system PATH.
+The binary can be copied to any machine of the same architecture and run as it is.</p>
+<p>Ready-made binaries and packages are released in our <a href="https://github.com/joular/powerjoular">GitHub repository</a> release page and in the build workflow:</p>
 <ul>
-<li><code>build-install.sh</code>: will build (using <code>gprbuild</code>) and install the program binary to <code>/usr/bin</code> and systemd service. It requires having installed GNAT and gprbuild (see <a href="../ref/compilation.html">Compilation</a>).</li>
-<li><code>uninstall.sh</code>: deletes the program binary and systemd service.</li>
+<li>Linux: binaries, Debian installation packages (.deb, for Debian, Ubuntu, Raspberry Pi OS, etc.) and RPM packages (.rpm, for Fedora, RHEL, etc.), for x86_64 and aarch64.</li>
+<li>Windows: <code>powerjoular.exe</code>, for x86_64.</li>
+<li>macOS: one binary per chip, <code>powerjoular-macos-arm64</code> for Apple Silicon and <code>powerjoular-macos-x86_64</code> for Intel Macs. Take the one of your Mac, copy it where you want it, and make it executable with <code>chmod +x</code>.</li>
 </ul>
-<p>We also provide Debian installation packages (.deb) for a number of CPU architectures (for Debian, Ubuntu, Raspberry Pi OS, etc.).</p>
+<h2 id="which-linux-build-to-use"><a class="header" href="#which-linux-build-to-use">Which Linux build to use</a></h2>
+<p>The PowerJoular binary runs on the glibc version it was built on or a newer one (but not an older one), so more than one build is published, and every file says which glibc version was used:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>File</th><th>Architectures</th><th>Runs on</th></tr>
+</thead>
+<tbody>
+<tr><td><code>powerjoular-glibc-2.35</code>, <code>powerjoular-glibc-2.35_*.deb</code>, <code>powerjoular-glibc-2.35-*.rpm</code></td><td>x86_64 and aarch64</td><td>Ubuntu 22.04 and newer, Debian 12 and newer, Raspberry Pi OS bookworm and newer, Fedora 36 and newer</td></tr>
+<tr><td><code>powerjoular-glibc-2.34</code>, <code>powerjoular-glibc-2.34_*.deb</code>, <code>powerjoular-glibc-2.34-*.rpm</code></td><td>x86_64 only</td><td>The same, and also RHEL 9, AlmaLinux 9, Rocky 9 and CentOS Stream 9</td></tr>
+</tbody>
+</table>
+</div>
+<p>Take the <code>2.34</code> build if you are unsure, or if the other one gives you a <code>version 'GLIBC_2.35' not found</code> error.
+Both are built from the same code, the difference being the C library (glibc) they were linked against.</p>
+<p>On a 32 bits ARM board or OS (such as the Raspberry Pi Zero W, 1 and 2, the Asus Tinker Board, or a 32 bits Raspberry Pi OS), no ready-made build is published, so compile PowerJoular (see <a href="../ref/compilation.html">Compilation</a>).</p>
+<p>The Linux packages install the binary in <code>/usr/bin</code> along with the systemd service (see <a href="../ref/systemd.html">Systemd Service</a>).</p>
+<h2 id="installation-scripts"><a class="header" href="#installation-scripts">Installation scripts</a></h2>
+<p>Easy-to-use installation scripts are available in the <code>installer/bash-installer</code> folder.
+Just open the folder and run the appropriate file to build and install, or uninstall, the program and systemd service.</p>
+<ul>
+<li><code>build-install.sh</code>: will build (using Alire if it is installed, otherwise <code>gprbuild</code>) and install the program binary to <code>/usr/bin</code> and the systemd service. It requires having installed Alire, or GNAT and gprbuild with the Joular Core and CPU Load repositories checked out next to the PowerJoular folder (see <a href="../ref/compilation.html">Compilation</a>).</li>
+<li><code>uninstall.sh</code>: stops the systemd service, and deletes the program binary and the systemd service.</li>
+</ul>
+<p>These scripts and the packages are for Linux. A <code>PKGBUILD</code> for Arch Linux is also available in the <code>installer/aur</code> folder.</p>
 
                     </main>
 
@@ -232,7 +257,7 @@ Just open the installer folder and run the appropriate file to build and/or inst
 
         <script src="../clipboard-1626706a.min.js"></script>
         <script src="../highlight-abc7f01d.js"></script>
-        <script src="../book-c22b7243.js"></script>
+        <script src="../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
 

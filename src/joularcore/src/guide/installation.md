@@ -1,57 +1,57 @@
 # Installation
 
-Joular Core is distributed as pre-built binaries and installers for the most common platforms. For anything else, you can compile it from source in a few minutes.
+Joular Core is added to the program that uses it rather than installed on its own. It can be taken from Alire, or compiled from source.
 
-## Pre-built Packages and Installers
+## With Alire
 
-### Windows
+In an Ada project managed by [Alire](https://alire.ada.dev), add the library with:
 
-- MSI installer for 64-bit Windows (x86_64)
+```bash
+alr with joularcore
+```
 
-### macOS
+Alire fetches the library and builds it along with your program. Then add `with Joular_Core;` to your code (see [Quick Usage](./quick_usage.md)).
 
-- PKG installer for Apple Silicon (aarch64)
+Alire offers Joular Core on Linux, Windows and macOS. On BSD, compile it from source with GPRBuild.
 
-### Linux
+## From Source
 
-- DEB packages for Debian-based systems (Debian, Ubuntu, Raspberry Pi OS, etc.) — available for x86_64 and arm64 (aarch64)
-- RPM packages for Red Hat / Fedora-based systems (RHEL, Fedora, etc.) — x86_64
-- AUR package for Arch-based systems — x86_64
+Clone the [GitHub repository](https://github.com/joular/joularcore) and build it with GNAT and GPRBuild, or with Alire. The build gives:
 
-For other architectures or distributions (32-bit Windows, Intel macOS, other Linux setups), compile from source. See [Compilation](../ref/compilation.md).
+- a static library (`libjoularcore.a`), to link into an Ada program, which is the default
+- a shared library (`libjoularcore.so` on Linux, `libjoularcore.dll` on Windows, `libjoularcore.dylib` on macOS), which carries the C interface for programs in C, C++, Java, Python, Rust, etc.
 
-## Binaries
+On Linux and Windows, the shared library carries the Ada runtime too, so it is the only file to ship with your program (on Linux, `libjoularcore.so.0`, the name programs look for). On macOS, the Ada runtime stays a file of its own, which the library loads from the folder of the compiler that built it.
 
-Compiled binaries for all supported targets are attached to each release on the GitHub repository. Download the binary for your platform, place it somewhere on your `PATH`, and you're ready to go. You can also run it from any directory using its full path.
-
-There are two binaries per release:
-
-- `joularcore` / `joularcore.exe` — the command-line interface
-- `joularcoregui` / `joularcoregui.exe` — the graphical user interface (opens a window directly, no terminal needed)
+See [Compilation](../ref/compilation.md) for the build commands and options.
 
 ## Platform-specific Requirements
 
+Joular Core is a library, so the privileges below are needed for the *program using it*.
+
 ### Linux (PC / servers)
 
-CPU power is read via the RAPL sysfs interface. On Linux kernel 5.10 and newer, RAPL files are only readable by root. You have two options:
+CPU energy is read via the RAPL powercap sysfs interface. On Linux kernel 5.10 and newer, the RAPL `energy_uj` files are only readable by root. You have two options:
 
-- Run Joular Core with `sudo`
-- Grant read access to the RAPL files for your user (see [this GitHub issue](https://github.com/joular/joularcore/issues/12) for instructions)
+- Run your program with `sudo`
+- Grant read access to the RAPL files for your user (see [this GitHub issue](https://github.com/joular/powerjoular/issues/1) for instructions)
 
-GPU monitoring (Nvidia/AMD) requires `nvidia-smi` or `amd-smi` / `rocm-smi` to be installed separately if needed.
+GPU monitoring needs the Nvidia driver for Nvidia cards (NVML is installed with it), and the amdgpu kernel driver for AMD cards. Neither needs special privileges.
 
 ### Windows
 
-CPU power monitoring requires a RAPL kernel driver. The supported driver is [Hubblo's windows-rapl-driver](https://github.com/hubblo-org/windows-rapl-driver). The simplest way to install a signed version is via the [Scaphandre installer](https://github.com/hubblo-org/scaphandre/releases/download/v1.0.0/scaphandre_v1.0.0_installer.exe), which installs the driver as a side effect.
+CPU energy is read in one of three ways, depending on what the machine offers:
 
-Once the driver is installed, Joular Core itself runs without administrator rights.
+- The [Energy Meter Interface](https://learn.microsoft.com/en-us/windows-hardware/drivers/powermeter/energy-meter-interface) is the one used by default and checked first. It needs **no installation and no elevated access**, and works only on Windows 11.
+- [PawnIO](https://pawnio.eu) is the main RAPL driver used (after EMI): it is maintained and properly signed, and its installer is all that is needed, as Joular Core carries the modules it loads. It needs elevated access, so run the program using the library from a terminal with administrative rights.
+- [Hubblo's RAPL driver](https://github.com/hubblo-org/windows-rapl-driver) still works and is used when PawnIO does not answer (not installed, or the program is not run with administrative rights). It does not require elevated access, but its development has paused. The easiest way to install a signed version is through the [Scaphandre installer](https://github.com/hubblo-org/scaphandre/releases/download/v1.0.0/scaphandre_v1.0.0_installer.exe).
 
-GPU monitoring (Nvidia/AMD) requires `nvidia-smi` or `amd-smi` to be installed separately if needed.
+GPU monitoring needs the Nvidia driver for Nvidia cards (NVML is installed with it), or the AMD driver for AMD cards (ADLX is installed with it).
 
 ### macOS
 
-No additional software is required. Power data is read via `powermetrics`, which ships with macOS. Because `powermetrics` requires elevated access to read hardware counters, run the CLI with `sudo` or use a GUI/default build that can ask for elevation.
+No additional software is required. Power data is read via `powermetrics`, which ships with macOS. Because `powermetrics` only runs as the superuser, run your program with `sudo`. Without it, both the CPU and the GPU are reported as not available.
 
 ### Raspberry Pi and SBC
 
-No dependencies and no `sudo` required. Use a binary built with the `sbc` feature for your architecture (arm, armv7, or aarch64). Unsupported boards run but report 0 W for CPU power.
+No dependencies and no `sudo` required. Boards with no power model report the CPU as not available.

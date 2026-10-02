@@ -15,8 +15,8 @@
         <link rel="icon" href="../favicon-de23e50b.svg">
         <link rel="shortcut icon" href="../favicon-8114d1fc.png">
         <link rel="stylesheet" href="../css/variables-8adf115d.css">
-        <link rel="stylesheet" href="../css/general-0392ca55.css">
-        <link rel="stylesheet" href="../css/chrome-fc474251.css">
+        <link rel="stylesheet" href="../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../css/chrome-d279d366.css">
         <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-483c5156.js";
+            window.path_to_searchindex_js = "../searchindex-a723df21.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-a9651cd3.js"></script>
+        <script src="../toc-b01ac823.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -175,12 +175,17 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="compilation"><a class="header" href="#compilation">Compilation</a></h1>
-<p>PowerJoular is written with Ada, and requires a modern Ada compiler, such as GNAT.</p>
-<p>PowerJoular depends on the following commands and libraries for certain of its functions, but can function without them:</p>
+<p>PowerJoular is written with Ada, and requires a modern Ada compiler, such as GNAT, together with the <a href="https://github.com/joular/joularcore">Joular Core</a> and <a href="https://github.com/joular/cpuload">CPU Load</a> libraries.</p>
+<p>PowerJoular depends on the following libraries and tools for certain of its functions, but can function without them:</p>
 <ul>
-<li>nvidia-smi: for monitoring power consumption of Nvidia graphic cards</li>
-<li>Linux powercap with Intel RAPL support: for monitoring power consumption of Intel processors and SoC</li>
+<li>Linux powercap with RAPL support: for monitoring power consumption of Intel and AMD processors</li>
+<li>The Energy Meter Interface, PawnIO or Hubblo’s RAPL driver: for monitoring power consumption of Intel and AMD processors on Windows</li>
+<li><code>powermetrics</code> (installed with macOS): for monitoring power consumption of Macs</li>
+<li>NVML (installed with the Nvidia driver): for monitoring power consumption of Nvidia graphic cards</li>
+<li>The amdgpu driver (its hwmon sysfs files): for monitoring power consumption of AMD graphic cards on Linux</li>
+<li>ADLX (installed with the AMD driver): for monitoring power consumption of AMD graphic cards on Windows</li>
 </ul>
+<p>None of them is needed to compile PowerJoular: they are looked for when PowerJoular starts.</p>
 <p>On a modern GNU/Linux distribution, just install the GNAT compiler (and GPRBuild), usually available from the distribution’s repositories:</p>
 <pre><code>Fedora:
 sudo dnf install fedora-gnat-project-common gprbuild gcc-gnat
@@ -189,26 +194,35 @@ Debian, Ubuntu or Raspberry Pi OS:
 sudo apt install gnat gprbuild
 </code></pre>
 <p>For other distributions, use their package manager to download the compiler, or check <a href="https://www.noureddine.org/articles/ada-on-windows-and-linux-an-installation-guide">this article for easy instruction for various distributions</a>, including RHEL and its clones which does not ship with Ada support in GCC.</p>
+<p>On Windows and macOS, the easiest way is to install <a href="https://alire.ada.dev/">Alire</a>, which also downloads the GNAT compiler and GPRBuild.</p>
 <h3 id="compilation-with-the-gnat-compiler-and-gprbuild"><a class="header" href="#compilation-with-the-gnat-compiler-and-gprbuild">Compilation with the GNAT compiler and GPRBuild</a></h3>
-<p>To compile the project, just type <code>gprbuild</code> if using the latest GPRBuild versions.</p>
-<p>Or, on older versions, create the <code>/obj</code> folder first, then type <code>gprbuild powerjoular.gpr</code>.</p>
-<p>The PowerJoular binary will be created in the <code>obj/</code> folder.</p>
-<p>By default, the project will statically link the required libraries, and therefore the PowerJoular binary can be copied to any compatible system and used as-is.</p>
-<p>To build with dynamic linking, remove or comment the static switch in the <code>powerjoular.gpr</code> file, in particular these lines:</p>
-<pre><code>package Binder is
-    for Switches ("Ada") use ("-static");
-end Binder;
+<p>Check out the <a href="https://github.com/joular/joularcore">Joular Core</a> and <a href="https://github.com/joular/cpuload">CPU Load</a> repositories next to the PowerJoular folder, then point GPRBuild at them:</p>
+<pre><code>gprbuild -P powerjoular.gpr -aP../joularcore -aP../cpuload -p
 </code></pre>
-<h3 id="compilation-with-the-gnat-compiler-only"><a class="header" href="#compilation-with-the-gnat-compiler-only">Compilation with the GNAT compiler only</a></h3>
-<p>You can also compile PowerJoular with the GNAT compiler only (without the need for GPRBuild).</p>
-<p>Just compile using gnatmake. For example, to compile from <code>obj/</code> folder (so .o and .ali files are generated there), type the following:</p>
-<pre><code>mkdir -p obj
-cd obj
-gnatmake ../src/powerjoular.adb
+<p>The PowerJoular binary will be created in the <code>bin/</code> folder.</p>
+<p>Linux, macOS and Windows are each detected on their own, from the target GPRBuild identifies.
+To build for another OS than the one you are on, use a cross compiler for that OS (given to GPRBuild with <code>--target</code>), and set <code>PJ_OS</code> to <code>linux</code>, <code>macos</code> or <code>windows</code>:</p>
+<pre><code>gprbuild -P powerjoular.gpr -aP../joularcore -aP../cpuload -XPJ_OS=windows -p
 </code></pre>
 <h3 id="compilation-with-alire"><a class="header" href="#compilation-with-alire">Compilation with Alire</a></h3>
 <p>If you have <a href="https://alire.ada.dev/">Alire</a> installed, you can use it to build PowerJoular with:</p>
-<pre><code>alr build</code></pre>
+<pre><code>alr build
+</code></pre>
+<p>Alire fetches the two libraries on its own, so this is the shortest way.</p>
+<p>The PowerJoular binary will be created in the <code>bin/</code> folder.</p>
+<h3 id="static-and-dynamic-linking"><a class="header" href="#static-and-dynamic-linking">Static and dynamic linking</a></h3>
+<p>By default, the project will statically link the Ada runtime and libgcc inside the binary, and therefore the PowerJoular binary can be copied to any compatible system and used as-is.</p>
+<p>To build with dynamic linking of the Ada runtime, replace the static switch with the shared one in the <code>powerjoular.gpr</code> file (removing it is not enough, as GNAT links its runtime statically by default):</p>
+<pre><code>package Binder is
+    for Switches ("Ada") use ("-shared");
+end Binder;
+</code></pre>
+<p>To leave nothing at all outside the binary, including the C library, build with <code>POWERJOULAR_LINKING</code> set to <code>full</code>:</p>
+<pre><code>gprbuild -P powerjoular.gpr -aP../joularcore -aP../cpuload -XPOWERJOULAR_LINKING=full -p
+</code></pre>
+<p>On Linux, a fully static binary cannot reliably load a library while it runs, so the Nvidia graphic card readings, which load NVML while running, can’t be counted on with this option.
+The processor readings are not affected, and PowerJoular carries on without the GPU rather than failing.</p>
+<p>On macOS, Apple ships no static C library, so this option does nothing: the binary is built the same way it is by default.</p>
 
                     </main>
 
@@ -258,7 +272,7 @@ gnatmake ../src/powerjoular.adb
 
         <script src="../clipboard-1626706a.min.js"></script>
         <script src="../highlight-abc7f01d.js"></script>
-        <script src="../book-c22b7243.js"></script>
+        <script src="../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
 

@@ -15,8 +15,8 @@
         <link rel="icon" href="../favicon-de23e50b.svg">
         <link rel="shortcut icon" href="../favicon-8114d1fc.png">
         <link rel="stylesheet" href="../css/variables-8adf115d.css">
-        <link rel="stylesheet" href="../css/general-0392ca55.css">
-        <link rel="stylesheet" href="../css/chrome-fc474251.css">
+        <link rel="stylesheet" href="../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../css/chrome-d279d366.css">
         <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-ee74c12a.js";
+            window.path_to_searchindex_js = "../searchindex-5527cac8.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-59639058.js"></script>
+        <script src="../toc-fea6b9de.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -175,73 +175,38 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="integration-with-systems-and-tools"><a class="header" href="#integration-with-systems-and-tools">Integration with Systems and Tools</a></h1>
-<p>Joular Core is designed to be embedded in larger workflows. It exposes power data through multiple channels — terminal, CSV files, a shared-memory ring buffer, and an HTTP/WebSocket API — so it can feed into whatever downstream system you are working with.</p>
-<p>See <a href="./exports.html">Exporting Power Data</a> for the technical details of each channel. This page focuses on integration patterns.</p>
-<h2 id="cicd-pipelines"><a class="header" href="#cicd-pipelines">CI/CD Pipelines</a></h2>
-<p>Run Joular Core alongside your build or test suite to measure the energy cost of a workload.</p>
-<p><strong>Example: measure energy consumed by a test run</strong></p>
-<pre><code class="language-bash"># Start Joular Core silently, writing to CSV
-joularcore -s -f build_power.csv &amp;
-JOULAR_PID=$!
-
-# Run your workload
-cargo test
-
-# Stop monitoring
-kill $JOULAR_PID
+<p>Joular Core is designed to be embedded in other programs and tools. It only measures the hardware, and leaves to the program using it what to do with the measurements: show them, write them to files, attribute them to processes, etc.</p>
+<p>For example, <a href="https://github.com/joular/powerjoular">PowerJoular</a> uses Joular Core to measure the CPU and the GPU, together with our <a href="https://github.com/joular/cpuload">CPU Load</a> library to share the CPU power out to processes and applications, and exports the result to the terminal, CSV files and a shared memory ring buffer.</p>
+<p>See <a href="./interface.html">Library Interface</a> for the details of the interface. This page focuses on using it from different languages.</p>
+<h2 id="ada-programs"><a class="header" href="#ada-programs">Ada Programs</a></h2>
+<p>Ada programs use the <code>Joular_Core</code> package directly, and link the static library. With Alire, add the library to your project with:</p>
+<pre><code class="language-bash">alr with joularcore
 </code></pre>
-<p>The CSV file will contain one row per second of the test run. Sum the power column and multiply by the sample interval (1 second) to get total energy in joules.</p>
-<h2 id="dashboards-and-monitoring-stacks"><a class="header" href="#dashboards-and-monitoring-stacks">Dashboards and Monitoring Stacks</a></h2>
-<p>The HTTP/WebSocket API makes it straightforward to feed power data into any dashboard.</p>
-<p><strong>Example: stream to a Prometheus / Grafana stack via a scraper</strong></p>
-<pre><code class="language-bash">joularcore --api-port 9001 -s &amp;
+<p>Without Alire, add the folder of the library to the project search path of GPRBuild, and add <code>with "joularcore.gpr";</code> to your project file:</p>
+<pre><code class="language-bash">gprbuild -P your_project.gpr -aP../joularcore
 </code></pre>
-<p>A small scraper can poll <code>GET http://localhost:9001/data</code> on each Prometheus scrape interval and expose the fields as gauges.</p>
-<p><strong>Example: real-time browser dashboard</strong></p>
-<p>Connect a browser-based dashboard directly to the WebSocket endpoint:</p>
-<pre><code class="language-javascript">const ws = new WebSocket("ws://localhost:8080/ws");
-ws.onmessage = (event) =&gt; {
-  const data = JSON.parse(event.data);
-  updateChart(data.timestamp, data.total_power, data.cpu_power, data.gpu_power);
-};
-</code></pre>
-<h2 id="ide-and-profiler-integration"><a class="header" href="#ide-and-profiler-integration">IDE and Profiler Integration</a></h2>
-<p>Joular Core can run as a background service alongside an IDE or profiler. The ring buffer channel provides the lowest latency option for IPC:</p>
-<ol>
-<li>Start Joular Core with <code>joularcore -r -s</code></li>
-<li>In your IDE plugin or profiler, memory-map the ring buffer path (<code>/dev/shm/joularcorering</code> on Linux, <code>/tmp/joularcorering</code> on macOS, <code>Local\\JoularCoreRing</code> on Windows)</li>
-<li>Read the 8-byte <code>u64</code> head counter, then the latest of 5 <code>RingBufferStruct</code> slots. Each slot contains a timestamp plus CPU power, GPU power, total power, CPU usage, and PID/app power.</li>
-</ol>
-<p>The ring buffer is updated every second and is safe to read from multiple processes simultaneously.</p>
-<h2 id="remote-power-databases-and-time-series-storage"><a class="header" href="#remote-power-databases-and-time-series-storage">Remote Power Databases and Time-Series Storage</a></h2>
-<p>Joular Core does not push to remote databases directly, but the CSV and API outputs make it easy to bridge to any time-series store.</p>
-<p><strong>Example: push to InfluxDB with a small shell loop</strong></p>
-<pre><code class="language-bash">joularcore -s --api-port 8080 &amp;
-
-while true; do
-  DATA=$(curl -s http://localhost:8080/data)
-  TS=$(echo $DATA | jq '.timestamp')
-  TOTAL=$(echo $DATA | jq '.total_power')
-  curl -s -XPOST "http://influxdb:8086/write?db=energy" \
-    --data-binary "power,host=$(hostname) total=${TOTAL} ${TS}000000000"
-  sleep 1
-done
-</code></pre>
-<h2 id="running-as-a-service"><a class="header" href="#running-as-a-service">Running as a Service</a></h2>
-<p>On Linux, use the included systemd unit file to have Joular Core run continuously in the background without manual intervention. See <a href="./systemd.html">Systemd Service</a>.</p>
-<p>On Windows and macOS, you can register Joular Core as a service using the OS-native service managers (Windows Service Manager or <code>launchd</code> on macOS). The key is to use <code>-s -o -f &lt;path&gt;</code> or <code>--api-port</code> so data is accessible to other programs without a terminal attached.</p>
-<h2 id="virtual-machine-monitoring"><a class="header" href="#virtual-machine-monitoring">Virtual Machine Monitoring</a></h2>
-<p>For monitoring inside VMs, see the dedicated <a href="./vm.html">Virtual Machines</a> page, which covers how to bridge host-level power readings into the guest using the shared-file mechanism.</p>
+<h2 id="c-c-and-other-languages"><a class="header" href="#c-c-and-other-languages">C, C++ and Other Languages</a></h2>
+<p>Any language with a C FFI can use the shared library (<code>libjoularcore.so</code> on Linux, <code>libjoularcore.dll</code> on Windows, <code>libjoularcore.dylib</code> on macOS) through the C interface in <a href="https://github.com/joular/joularcore/blob/main/include/joularcore.h">include/joularcore.h</a>: C and C++ directly, Python through ctypes, Java through FFM or JNA, Rust through <code>libloading</code> or FFI declarations, etc.</p>
+<p>The two structures of the C interface have the same layout on every target, with no padding: a <code>double</code> followed by two <code>int</code> for one measurement, and the CPU measurement followed by the GPU one for a reading.</p>
+<p>On every OS but macOS, the shared library is one self-contained file, carrying the Ada runtime too, so it is the only file to ship with your program. On Windows, the program looks for the DLL next to it, so put a copy there.</p>
+<p>On macOS, the library loads the Ada runtime from the folder of the compiler that built it (see <a href="./compilation.html">Compilation</a>), so it only runs on a Mac where that same compiler is installed in the same folder.</p>
+<h2 id="python"><a class="header" href="#python">Python</a></h2>
+<p>The <a href="../guide/quick_usage.html">Quick Usage</a> page shows how to call the library from Python with ctypes, and <a href="https://github.com/joular/joularcore/blob/main/example/python/main.py">example/python/main.py</a> is a full example.</p>
+<p>The library leaves the signal handlers of the program loading it in place, so Ctrl+C raises <code>KeyboardInterrupt</code> in Python as usual.</p>
+<h2 id="java"><a class="header" href="#java">Java</a></h2>
+<p>From Java, the library can be called through the Foreign Function and Memory API (FFM) or JNA. The shared library does not install any handler for the signals the JVM relies on (such as <code>SIGSEGV</code> and <code>SIGBUS</code>), so it does not get in the way of the JVM.</p>
+<h2 id="threads"><a class="header" href="#threads">Threads</a></h2>
+<p>The library is not thread safe: call <code>Open</code>, <code>Read</code> and <code>Close</code> from a single thread, as one monitoring loop is the intended use for the current version. A program that needs the measurements in several threads can read them in one thread and share the values with the others.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../ref/systemd.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../ref/measurements.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../ref/vm.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../ref/how_it_works.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -251,11 +216,11 @@ done
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../ref/systemd.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../ref/measurements.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../ref/vm.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../ref/how_it_works.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
@@ -281,7 +246,7 @@ done
 
         <script src="../clipboard-1626706a.min.js"></script>
         <script src="../highlight-abc7f01d.js"></script>
-        <script src="../book-c22b7243.js"></script>
+        <script src="../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
 

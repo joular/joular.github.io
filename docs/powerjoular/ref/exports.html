@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Virtual Machines - Joular Core Documentation</title>
+        <title>Exporting Power Data - PowerJoular Documentation</title>
 
 
         <!-- Custom HTML head -->
@@ -15,8 +15,8 @@
         <link rel="icon" href="../favicon-de23e50b.svg">
         <link rel="shortcut icon" href="../favicon-8114d1fc.png">
         <link rel="stylesheet" href="../css/variables-8adf115d.css">
-        <link rel="stylesheet" href="../css/general-0392ca55.css">
-        <link rel="stylesheet" href="../css/chrome-fc474251.css">
+        <link rel="stylesheet" href="../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../css/chrome-d279d366.css">
         <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-ee74c12a.js";
+            window.path_to_searchindex_js = "../searchindex-a723df21.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-59639058.js"></script>
+        <script src="../toc-b01ac823.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -137,7 +137,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Joular Core Documentation</h1>
+                    <h1 class="menu-title">PowerJoular Documentation</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -174,82 +174,92 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="virtual-machines"><a class="header" href="#virtual-machines">Virtual Machines</a></h1>
-<p>Joular Core works inside virtual machines with the same feature set as on bare metal: system-wide monitoring, per-process monitoring, per-application monitoring, and all export channels.</p>
-<p>The challenge specific to virtual machines is that the guest OS has no direct access to RAPL or other hardware power interfaces — those are managed by the hypervisor. Joular Core solves this by reading power data from a file written by a tool running on the host.</p>
-<h2 id="how-it-works"><a class="header" href="#how-it-works">How It Works</a></h2>
-<ol>
-<li>On the <strong>host OS</strong>, run a power monitoring tool (Joular Core itself, or any other tool) and have it continuously write the power consumption of the VM process to a file that is shared between the host and the guest.</li>
-<li>On the <strong>guest OS</strong>, set environment variables telling Joular Core where that file is and what format it uses.</li>
-<li>Joular Core in the guest reads the file every second and treats the reported value as its total CPU (or GPU) power.</li>
-<li>From there, process and application attribution works normally — proportional to CPU utilisation within the guest.</li>
-</ol>
-<p>Joular Core is agnostic to what tool runs on the host. Any tool that can write power data in one of the supported formats will work.</p>
-<h2 id="environment-variables"><a class="header" href="#environment-variables">Environment Variables</a></h2>
+                        <h1 id="exporting-power-data"><a class="header" href="#exporting-power-data">Exporting Power Data</a></h1>
+<p>PowerJoular exports its power data to the terminal, to CSV files, and to a shared memory ring buffer.
+The CSV files and the ring buffer can be used at the same time, and with the terminal when <code>-t</code> is given.</p>
+<h2 id="terminal"><a class="header" href="#terminal">Terminal</a></h2>
+<p>With no option, PowerJoular prints the power of the machine on the terminal, once a second, on the same line:</p>
+<pre><code>Total Power: 18.45 Watts (CPU: 15.20 W, GPU: 3.25 W)
+</code></pre>
+<p>The GPU is only shown when one was found.</p>
+<p>When monitoring a process (<code>-p</code>) or an application (<code>-a</code>), the terminal shows its CPU usage and its CPU power, with the CPU usage and the CPU power of the whole system between brackets (the GPU is not shown):</p>
+<pre><code>PID monitoring:	CPU: 3.10 % (24.60 %)	1.92 Watts (15.20 Watts)
+Application monitoring:	CPU: 3.10 % (24.60 %)	1.92 Watts (15.20 Watts)
+</code></pre>
+<p><code>n/a</code> is shown when the process or the application could not be read.</p>
+<p>When the output is not a terminal (a file or a pipe), each measurement is printed on its own line.</p>
+<h2 id="csv-files"><a class="header" href="#csv-files">CSV files</a></h2>
+<p><code>-f</code> adds a row every second to the file, and starts a new or empty file with a header (an existing file is added to, not emptied):</p>
+<pre><code>Timestamp,CPU Usage,Total Power,CPU Power,GPU Power
+1756681930,0.2460,18.4500,15.2000,3.2500
+</code></pre>
+<p>The time of the measurement is a Unix timestamp in seconds, the CPU usage goes from 0.0 to 1.0, and the power is in watts.</p>
+<p>When monitoring a process or an application, a second file is written, with the PID or the application name added to the given filename (<code>power.csv-144.csv</code> for <code>-p 144 -f power.csv</code>).
+It has the CPU usage and the power of that process or application:</p>
+<pre><code>Timestamp,CPU Usage,CPU Power
+1756681930,0.0310,1.9154
+</code></pre>
+<p><code>-o</code> writes the latest measurement only: the file is rewritten every second and carries no header, which is a good option for another program polling it for the current value.</p>
+<p>Both value columns of the process file hold <code>-1.0000</code> for a second where the monitored process could not be read at all: it has stopped, it was never running, or the system does not let us get the information needed.
+That is not the same as <code>0.0000</code>, which means a process that was read and used no CPU time.</p>
+<p><code>-a</code> is the exception: an application with no running process at all is reported as <code>0.0000</code> and not as <code>-1.0000</code>, because we can’t tell apart a name that matches nothing from a name whose processes did not use any CPU time.
+<code>-1.0000</code> still appears for <code>-a</code> when processes of the application are found but the system does not let us read any of them.
+A process we cannot read is left out of the sum when others of the application can be read, so the value is then short by what that process used.</p>
+<p>PowerJoular refuses to write a CSV file if a symbolic link is already at its path.
+This is a basic check, not a guarantee, as the link can still be swapped in after the check.
+When running PowerJoular as root, write the CSV files to a folder only root can write to (such as <code>/run/powerjoular</code> for the service), not to a shared folder such as <code>/tmp</code>.</p>
+<p>A file that cannot be written to is reported once, and the monitoring goes on: PowerJoular tries the file again every second, and writes to it again once it can.</p>
+<h2 id="shared-memory-ring-buffer"><a class="header" href="#shared-memory-ring-buffer">Shared memory ring buffer</a></h2>
+<p><code>-r</code> writes every measurement to a shared memory ring buffer, which any program on the same machine can read with low latency.</p>
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>Variable</th><th>Description</th></tr>
+<tr><th>OS</th><th>Where the area lives</th></tr>
 </thead>
 <tbody>
-<tr><td><code>VM_CPU_POWER_FILE</code></td><td>Path (inside the guest) to the file containing CPU power data</td></tr>
-<tr><td><code>VM_CPU_POWER_FORMAT</code></td><td>Format of that file: <code>joularcore</code>, <code>powerjoular</code>, or <code>watts</code> (default: <code>watts</code>)</td></tr>
-<tr><td><code>VM_GPU_POWER_FILE</code></td><td>Path (inside the guest) to the file containing GPU power data</td></tr>
-<tr><td><code>VM_GPU_POWER_FORMAT</code></td><td>Format of that file: <code>joularcore</code>, <code>powerjoular</code>, or <code>watts</code> (default: <code>watts</code>)</td></tr>
+<tr><td>Linux</td><td><code>/dev/shm/powerjoular</code></td></tr>
+<tr><td>Windows</td><td><code>%PROGRAMDATA%\powerjoular</code>, i.e. <code>C:\ProgramData\powerjoular</code></td></tr>
+<tr><td>macOS</td><td><code>/tmp/powerjoular</code></td></tr>
 </tbody>
 </table>
 </div>
-<p>You only need to set the variables for the components you want to monitor. If <code>VM_CPU_POWER_FILE</code> is not set, the VM feature is inactive and Joular Core falls back to whatever hardware interface is available in the guest (which may return 0 if there is none).</p>
-<h2 id="supported-file-formats"><a class="header" href="#supported-file-formats">Supported File Formats</a></h2>
-<h3 id="watts"><a class="header" href="#watts"><code>watts</code></a></h3>
-<p>A plain text file containing a single numeric value in watts, with no header. Updated by the host on every measurement cycle.</p>
-<pre><code>18.45
-</code></pre>
-<h3 id="powerjoular"><a class="header" href="#powerjoular"><code>powerjoular</code></a></h3>
-<p>A CSV file with at least three columns. The third column (index 2) contains the power value in watts.</p>
-<pre><code>...,18.45,...
-</code></pre>
-<h3 id="joularcore"><a class="header" href="#joularcore"><code>joularcore</code></a></h3>
-<p>A CSV file in Joular Core’s standard append-mode output format, with a header row and one or more data rows. Joular Core reads the last non-empty data row.</p>
-<pre><code>Timestamp,Total Power (W),CPU Power (W),GPU Power (W),CPU Usage (%)
-1712345678,18.45,15.20,3.25,24.60
-</code></pre>
-<p>When using this format for CPU power, Joular Core reads the first available value from <code>App Power (W)</code>, <code>Process Power (W)</code>, then <code>CPU Power (W)</code>. For GPU power, it reads <code>GPU Power (W)</code>.</p>
-<p>Do not use Joular Core overwrite mode (<code>-o</code>) as the producer for <code>VM_CPU_POWER_FORMAT=joularcore</code> or <code>VM_GPU_POWER_FORMAT=joularcore</code>: the current overwrite mode keeps only the latest data row and does not preserve the header needed by this parser. For a single-value producer file, use the <code>watts</code> format instead.</p>
-<h2 id="step-by-step-example-joular-core-on-both-host-and-guest"><a class="header" href="#step-by-step-example-joular-core-on-both-host-and-guest">Step-by-Step Example: Joular Core on Both Host and Guest</a></h2>
-<p>This example uses Joular Core itself on the host to monitor the VM process, and Joular Core inside the guest to attribute that power to individual processes.</p>
-<h3 id="host-setup"><a class="header" href="#host-setup">Host Setup</a></h3>
-<p>Find the PID of the virtual machine process (for QEMU/KVM this is <code>qemu-system-x86_64</code>, for VirtualBox it is <code>VirtualBoxVM</code>, etc.).</p>
-<p>Run Joular Core on the host, monitoring that process and appending to a shared CSV file:</p>
-<pre><code class="language-bash">joularcore -p &lt;VM_PID&gt; -f /shared/vm_power.csv -s
-</code></pre>
-<p>The file <code>/shared/vm_power.csv</code> must be accessible from inside the guest — mount the directory using VirtFS, a shared folder, or any other mechanism supported by your hypervisor.</p>
-<h3 id="guest-setup"><a class="header" href="#guest-setup">Guest Setup</a></h3>
-<p>Inside the guest, set the environment variables so Joular Core knows where to find the power data. Assuming the shared file is mounted at <code>/mnt/host/vm_power.csv</code> inside the guest:</p>
-<pre><code class="language-bash">export VM_CPU_POWER_FILE=/mnt/host/vm_power.csv
-export VM_CPU_POWER_FORMAT=joularcore
-</code></pre>
-<p>Then run Joular Core as usual. You can monitor any process or application inside the guest:</p>
-<pre><code class="language-bash">joularcore -a myapp
-</code></pre>
-<p>Joular Core reads the VM process power from the shared file and distributes it proportionally to processes based on their CPU utilisation within the guest.</p>
-<h2 id="notes"><a class="header" href="#notes">Notes</a></h2>
-<ul>
-<li>The shared file must be on a file system visible to both host and guest. tmpfs (<code>/dev/shm</code>) on Linux is a good choice for low-latency sharing.</li>
-<li>For <code>joularcore</code> format, keep the producer in append mode so the header remains available. For overwrite-style sharing, write a single numeric watts value and set the format to <code>watts</code>.</li>
-<li>If the file is temporarily unavailable or empty, Joular Core in the guest treats power as 0 for that sample and continues.</li>
-<li>The <code>VM_CPU_POWER_FILE</code> and <code>VM_GPU_POWER_FILE</code> paths are interpreted inside the guest. They do not need to match the host path.</li>
-</ul>
+<p>The area is 248 bytes, in the byte order of the machine: a counter of 8 bytes, then 5 entries of 48 bytes each.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Type</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>timestamp</code></td><td>unsigned, 8 bytes</td><td>Unix time in seconds</td></tr>
+<tr><td><code>cpu_power</code></td><td>IEEE double</td><td>CPU power in watts</td></tr>
+<tr><td><code>gpu_power</code></td><td>IEEE double</td><td>GPU power in watts</td></tr>
+<tr><td><code>total_power</code></td><td>IEEE double</td><td>CPU plus GPU power in watts</td></tr>
+<tr><td><code>cpu_usage</code></td><td>IEEE double</td><td>Load of the machine, from 0.0 to 1.0</td></tr>
+<tr><td><code>pid_app_power</code></td><td>IEEE double</td><td>Power of the monitored process or application in watts, zero when none is monitored, and <code>-1</code> when the one monitored could not be read</td></tr>
+</tbody>
+</table>
+</div>
+<p>A measurement goes in the entry the counter points at (<code>counter mod 5</code>), and the counter is raised afterwards.
+A reader follows the counter to know when a new measurement has landed, and the timestamps to know how old each entry is.</p>
+<p>Only one PowerJoular should write to the ring buffer at the same time.
+On Linux and macOS, a second run using <code>-r</code> replaces the file, and the first one keeps writing to the old file, which only the readers that mapped it before still see.
+On Windows, the second run cannot replace the file the first one holds open, and carries on without the ring buffer.</p>
+<p>The ring buffer is created every time PowerJoular starts: a file left at that path, by an earlier run or by anyone else, is deleted first, so PowerJoular never writes into a file it did not create.
+It is readable by everyone and writable only by the user running PowerJoular.
+A reader that mapped the file has to map it again when PowerJoular restarts.
+On Windows, the reader has to close the file first, otherwise PowerJoular cannot replace it and carries on without the ring buffer.
+The file is left in place when PowerJoular stops, so the last entries can still be read.
+When the file cannot be created, PowerJoular carries on without the ring buffer.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../ref/integration.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../ref/options.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../ref/how_it_works.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../ref/systemd.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -259,11 +269,11 @@ export VM_CPU_POWER_FORMAT=joularcore
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../ref/integration.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../ref/options.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../ref/how_it_works.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../ref/systemd.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
@@ -289,7 +299,7 @@ export VM_CPU_POWER_FORMAT=joularcore
 
         <script src="../clipboard-1626706a.min.js"></script>
         <script src="../highlight-abc7f01d.js"></script>
-        <script src="../book-c22b7243.js"></script>
+        <script src="../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
 

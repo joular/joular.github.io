@@ -15,8 +15,8 @@
         <link rel="icon" href="../favicon-de23e50b.svg">
         <link rel="shortcut icon" href="../favicon-8114d1fc.png">
         <link rel="stylesheet" href="../css/variables-8adf115d.css">
-        <link rel="stylesheet" href="../css/general-0392ca55.css">
-        <link rel="stylesheet" href="../css/chrome-fc474251.css">
+        <link rel="stylesheet" href="../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../css/chrome-d279d366.css">
         <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-ee74c12a.js";
+            window.path_to_searchindex_js = "../searchindex-5527cac8.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-59639058.js"></script>
+        <script src="../toc-fea6b9de.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -175,158 +175,61 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="how-joular-core-works"><a class="header" href="#how-joular-core-works">How Joular Core Works</a></h1>
-<p>This page describes the internal architecture of Joular Core: how it reads hardware power data, how it attributes that power to processes and applications, how it produces output, and how the different subsystems fit together.</p>
+<p>This page describes the internal architecture of Joular Core: how it detects the hardware, how it reads each source on each OS, and how to add new hardware or a new OS.</p>
 <h2 id="high-level-architecture"><a class="header" href="#high-level-architecture">High-Level Architecture</a></h2>
-<p>At startup, Joular Core:</p>
+<p>The library has two sources, the CPU and the GPU, each measured by its own monitor:</p>
 <ol>
-<li>Parses command-line arguments</li>
-<li>Detects the platform and initialises the appropriate power readers and CPU utilisation trackers</li>
-<li>Optionally calibrates an idle CPU baseline</li>
-<li>Enters a monitoring loop that fires once per second</li>
-<li>On each iteration: reads power, reads CPU utilisation, attributes process/app power, and sends the result to all configured output channels</li>
-<li>On Ctrl+C: flushes outputs and exits cleanly</li>
+<li><code>Open</code> asks each requested monitor to detect its hardware. The monitor tries, in order, every way it knows to read that hardware on this OS, and keeps the first one that answers. It also takes a first reading of cumulative counters (e.g. RAPL), so the next reading can report the energy consumed since then.</li>
+<li><code>Read</code> asks each monitor that could be opened for one measurement: the energy consumed since the previous reading, or the power drawn, depending on what the hardware reports.</li>
+<li><code>Close</code> closes what each monitor opened (e.g. a driver on Windows, the <code>powermetrics</code> process on macOS).</li>
 </ol>
-<pre><code>┌──────────────────────────────────────────────────────────┐
-│                   Argument Parsing                       │
-└──────────────────────────┬───────────────────────────────┘
-                           │
-┌──────────────────────────▼───────────────────────────────┐
-│                  Platform Setup                          │
-│  Detect OS → create CPU/GPU energy readers               │
-│             → create CPU utilisation trackers            │
-│             → set up ring buffer (if -r)                 │
-│             → set up API server (if --api-port)          │
-└──────┬──────────────────────┬──────────────────┬─────────┘
-       │                      │                  │
-       ▼                      ▼                  ▼
-  Monitor Loop          Ring Buffer          API Server
-  (1 Hz)                Writer               (async)
-       │
-       ├── CPU energy reader
-       ├── GPU energy reader
-       ├── CPU utilisation reader
-       ├── Process tracker (optional)
-       └── App tracker (optional)
-            │
-            ▼
-       MonitorSample
-            │
-            ├── Terminal output
-            ├── CSV file output
-            ├── Ring buffer write
-            └── API broadcast
+<pre><code>            Open / Read / Close
+                    │
+        ┌───────────┴───────────┐
+        ▼                       ▼
+   CPU_Monitor             GPU_Monitor
+   (one body per OS)       (one body per OS)
+        │                       │
+        ├── RAPL (Linux)        ├── NVML (Nvidia)
+        ├── Board models (SBC)  ├── hwmon sysfs (AMD, Linux)
+        ├── RAPL (Windows)      ├── ADLX (AMD, Windows)
+        └── powermetrics        └── powermetrics
 </code></pre>
-<h2 id="platform-abstraction"><a class="header" href="#platform-abstraction">Platform Abstraction</a></h2>
-<p>The codebase is built around three traits defined in <code>src/energy.rs</code>:</p>
-<ul>
-<li><strong><code>CPUEnergy</code></strong> — returns the current CPU power in watts via <code>get_power()</code></li>
-<li><strong><code>GPUEnergy</code></strong> — returns the current GPU power in watts via <code>get_power()</code></li>
-<li><strong><code>PlatformEnergy</code></strong> — a factory that creates the above readers and the CPU utilisation trackers, and provides the process/app power attribution formula</li>
-</ul>
-<p>Each supported OS has a concrete implementation of these traits. The monitoring loop talks only to these trait objects, so it is identical on every platform.</p>
-<h3 id="linux"><a class="header" href="#linux">Linux</a></h3>
-<p>CPU power is read from the RAPL (Running Average Power Limit) package counter exposed through the powercap sysfs interface at <code>/sys/class/powercap/intel-rapl/</code>. The interface exposes cumulative energy counters in microjoules; Joular Core reads two consecutive values and converts the energy delta over elapsed time to watts. If the package counter is absent or unreadable, Joular Core warns once and reports 0 W for CPU power until the interface becomes usable.</p>
-<p>CPU utilisation is computed from <code>/proc/stat</code>. Joular Core reads the <code>user</code>, <code>nice</code>, <code>system</code>, <code>idle</code>, <code>iowait</code>, <code>irq</code>, <code>softirq</code>, and <code>steal</code> tick counters on each sample, computes the delta from the previous sample, and calculates utilisation as:</p>
-<pre><code>utilisation = 1 − (Δidle / Δtotal)
+<p>Each source is opened, read and closed on its own: a source that fails while being opened is closed again and reported as not available, and a source that fails while being read reports zero. Neither stops the other source.</p>
+<h2 id="linux"><a class="header" href="#linux">Linux</a></h2>
+<p><strong>CPU.</strong> The CPU monitor tries RAPL first, then the power models of single-board computers.</p>
+<p>RAPL is read from the powercap sysfs interface at <code>/sys/class/powercap/intel-rapl:N</code>. Joular Core looks for the first domain whose name begins with <code>package</code> (it is usually <code>intel-rapl:0</code>, but on some machines another domain such as <code>psys</code> comes first), and reads its <code>energy_uj</code> counter, in microjoules. The <code>max_energy_range_uj</code> file gives where the counter wraps. The counter reads zero without root on most systems, and the CPU is then reported as not available.</p>
+<p>On Raspberry Pi and Asus Tinker Board, the board is detected from <code>/proc/device-tree/model</code>. The power is calculated from CPU utilization using polynomial regression models:</p>
+<pre><code>power = c₀ + c₁·u + c₂·u² + … + c₉·u⁹
 </code></pre>
-<p>Per-process utilisation is computed from <code>/proc/&lt;pid&gt;/stat</code>, which exposes cumulative user and kernel CPU time (in clock ticks) for each process. Joular Core computes the delta from the previous sample normalised by the total CPU time delta from <code>/proc/stat</code>.</p>
-<p>GPU power on Linux is read by:</p>
-<ul>
-<li><strong>Nvidia</strong>: calling <code>nvidia-smi --query-gpu=power.draw --format=csv,noheader,nounits</code> and parsing the output. Power values from all GPUs are summed.</li>
-<li><strong>AMD</strong>: calling <code>amd-smi</code> or <code>rocm-smi</code> with JSON output and extracting the power fields.</li>
-</ul>
-<h3 id="windows"><a class="header" href="#windows">Windows</a></h3>
-<p>CPU power is read from Hubblo’s/Scaphandre’s RAPL Windows kernel driver via <code>DeviceIoControl</code>. The driver exposes Intel or AMD RAPL MSR energy counters through a Windows device interface; Joular Core reads those counters and converts energy deltas over elapsed time to watts.</p>
-<p>CPU utilisation is read from the Win32 API via <code>GetSystemTimes()</code>, which returns <code>idle</code>, <code>kernel</code>, and <code>user</code> times as <code>FILETIME</code> structures. Utilisation is computed from the deltas between two successive calls.</p>
-<p>Per-process CPU time is read via <code>GetProcessTimes()</code>. Application monitoring enumerates processes using the Windows Toolhelp32 API (<code>CreateToolhelp32Snapshot</code>, <code>Process32First</code>, <code>Process32Next</code>).</p>
-<p>GPU power on Windows follows the same approach as Linux: <code>nvidia-smi</code> for Nvidia, <code>amd-smi</code> for AMD.</p>
-<h3 id="macos"><a class="header" href="#macos">macOS</a></h3>
-<p>CPU power, and GPU power on Apple Silicon, are read from Apple’s <code>powermetrics</code> tool, which ships with macOS. Joular Core spawns <code>powermetrics</code> as a subprocess, forces the C locale, and parses the text sample blocks. On Apple Silicon, <code>powermetrics</code> reports CPU and GPU power separately; on Intel Macs it reports CPU package power only.</p>
-<p>Because <code>powermetrics</code> requires elevated privileges to access hardware counters, Joular Core must be run with elevated access on macOS.</p>
-<p>CPU utilisation on macOS is read via the Mach kernel API (<code>host_statistics64</code> with <code>HOST_CPU_LOAD_INFO</code>), which returns per-CPU user, system, and idle tick counters.</p>
-<p>Process and application monitoring on macOS uses Mach task info APIs to read per-process CPU times.</p>
-<h3 id="single-board-computers-sbc"><a class="header" href="#single-board-computers-sbc">Single-Board Computers (SBC)</a></h3>
-<p>SBC platforms (Raspberry Pi, Asus Tinker Board) do not have a hardware power interface accessible to software. Instead, Joular Core calculates CPU power from CPU utilisation using polynomial regression models:</p>
-<pre><code>power = c₀ + c₁·u + c₂·u² + … + cₙ·uⁿ
-</code></pre>
-<p>where <code>u</code> is the current CPU utilisation as a fraction from 0.0 to 1.0 and <code>c₀…cₙ</code> are model coefficients measured empirically for each specific board model and revision.</p>
-<p>The built-in models cover the supported Raspberry Pi and Asus Tinker Board models when the binary is built with the <code>sbc</code> feature. A custom model can be supplied via the <code>SBC_POWER_MODEL_JSON</code> environment variable; the file format must match the <a href="https://github.com/joular/powermodels">Joular Power Models Database</a> schema. Unsupported boards return 0 W.</p>
-<p>GPU power is always 0 on SBC platforms.</p>
-<h3 id="virtual-machines"><a class="header" href="#virtual-machines">Virtual Machines</a></h3>
-<p>In a VM, there is no direct hardware interface. Joular Core reads power from a shared file written by the host. The file is read on every sampling cycle. If the file is absent or empty, the power value for that sample is 0. The supported file formats are described in <a href="./vm.html">Virtual Machines</a>.</p>
-<h2 id="the-monitoring-loop"><a class="header" href="#the-monitoring-loop">The Monitoring Loop</a></h2>
-<p>The monitoring loop is in <code>src/monitor.rs</code> (<code>JoularCoreMonitor::poll</code>). It runs once per second and produces a <code>MonitorSample</code>:</p>
-<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>pub struct MonitorSample {
-    pub timestamp: u64,       // Unix epoch seconds
-    pub cpu_power: f64,       // Watts
-    pub gpu_power: f64,       // Watts
-    pub total_power: f64,     // cpu_power + gpu_power
-    pub cpu_usage: f64,       // Percentage (0–100)
-    pub process_power: Option&lt;f64&gt;,       // Watts, if -p is set
-    pub app_power: Option&lt;(f64, usize)&gt;,  // (Watts, PID count), if -a is set
-}
-<span class="boring">}</span></code></pre>
-<p>Each field:</p>
-<ul>
-<li><strong><code>timestamp</code></strong>: wall-clock time at the moment of reading (<code>SystemTime::now()</code>)</li>
-<li><strong><code>cpu_power</code></strong> / <strong><code>gpu_power</code></strong>: raw readings from the hardware interface</li>
-<li><strong><code>total_power</code></strong>: sum of CPU and GPU power</li>
-<li><strong><code>cpu_usage</code></strong>: system-wide CPU utilisation percentage</li>
-<li><strong><code>process_power</code></strong> / <strong><code>app_power</code></strong>: attributed power, computed as described below</li>
-</ul>
-<p>Before the main loop starts, <code>loop_init()</code> takes one throwaway reading to warm up the energy counters. RAPL counts cumulative energy since boot; the first real delta needs a prior reference value.</p>
-<h2 id="process-and-application-power-attribution"><a class="header" href="#process-and-application-power-attribution">Process and Application Power Attribution</a></h2>
-<p>Joular Core attributes CPU power to a process (or application) using a proportional model:</p>
-<pre><code>process_power = 100 × (process_cpu_utilisation × attributed_cpu_power) / system_cpu_utilisation
-</code></pre>
-<p>where:</p>
-<ul>
-<li><strong><code>process_cpu_utilisation</code></strong> is the fraction of total CPU time used by the process (or the sum of all PIDs for an application) in the last second</li>
-<li><strong><code>attributed_cpu_power</code></strong> is <code>max(0, cpu_power − idle_baseline)</code> — the raw CPU power minus the idle baseline (zero if no baseline is configured)</li>
-<li><strong><code>system_cpu_utilisation</code></strong> is the overall CPU utilisation percentage</li>
-</ul>
-<p>If <code>system_cpu_utilisation</code> is below a tiny threshold, the attributed power is zero to avoid dividing by idle noise.</p>
-<p>This model assumes that a process’s share of CPU power is proportional to its share of CPU time. This is an approximation — it does not account for frequency scaling within a core, NUMA topology, or work done in kernel threads on behalf of the process — but it is a practical and widely used approach for software-level power attribution.</p>
-<h3 id="cpu-idle-baseline"><a class="header" href="#cpu-idle-baseline">CPU Idle Baseline</a></h3>
-<p>When the <code>--cpu-idle-baseline</code> or <code>--calibrate-cpu-idle-baseline</code> option is set, the baseline is subtracted from the raw CPU power before attribution:</p>
-<pre><code>attributed_cpu_power = max(0, cpu_power − baseline)
-</code></pre>
-<p>This removes the base power the CPU consumes just running the operating system at rest, so that the attributed power more accurately reflects the energy consumed by the workload itself.</p>
-<p>Auto-calibration (<code>--calibrate-cpu-idle-baseline</code>) collects 5 power samples at 1-second intervals before starting the main loop and uses their average as the baseline.</p>
-<h3 id="application-monitoring-and-pid-refresh"><a class="header" href="#application-monitoring-and-pid-refresh">Application Monitoring and PID Refresh</a></h3>
-<p>When monitoring a named application (<code>-a</code>), Joular Core maintains a list of all PIDs whose process name matches the supplied string. This list is refreshed periodically (every <code>--app-refresh-interval</code> seconds, default 3) to pick up new processes spawned after monitoring started and drop ones that have exited. Setting the interval to 0 rescans on every second.</p>
-<h2 id="output-pipeline"><a class="header" href="#output-pipeline">Output Pipeline</a></h2>
-<p>After each <code>poll()</code> call, the <code>MonitorSample</code> is sent to an <code>OutputBundle</code>, which dispatches it to all active output channels:</p>
+<p>where <code>u</code> is the CPU utilization from 0.0 to 1.0, measured from <code>/proc/stat</code> over the interval between two readings, and <code>c₀…c₉</code> are the model coefficients measured for each board (models fitted at a lower degree have their remaining coefficients at zero). Some boards have separate models for 32-bit and 64-bit systems. The models come from our <a href="https://github.com/joular/powermodels">Joular Power Models Database</a>.</p>
+<p><strong>GPU.</strong> The GPU monitor tries Nvidia cards through NVML first, then AMD cards through the hwmon sysfs of the amdgpu kernel driver. For AMD, Joular Core looks in <code>/sys/class/hwmon</code> for the first amdgpu sensor with a readable power file, and prefers <code>power1_average</code> (an average over a short period) to <code>power1_input</code> (an instant reading).</p>
+<h2 id="windows"><a class="header" href="#windows">Windows</a></h2>
+<p><strong>CPU.</strong> The same RAPL package counter of the first socket can be reached in three ways, tried in this order, and the first one that answers is kept:</p>
 <ol>
-<li>
-<p><strong>Terminal</strong> (<code>OutputWriter</code> in <code>Terminal</code> mode): formats the reading with ANSI colour codes and writes it to stdout, overwriting the previous line using carriage return and ANSI erase-line sequences. In numeric mode (<code>-i</code>), a bare float is printed instead.</p>
-</li>
-<li>
-<p><strong>CSV file</strong> (<code>OutputWriter</code> in <code>CsvFile</code> mode): appends one row to the CSV file. In overwrite mode (<code>-o</code>), the file is truncated to zero before each write so only the latest row is kept, without a header.</p>
-</li>
-<li>
-<p><strong>Ring buffer</strong> (<code>RingBufferWriter</code>): writes an 8-byte <code>u64</code> head counter followed by 5 <code>RingBufferStruct</code> slots. Each slot contains a timestamp plus CPU power, GPU power, total power, CPU usage, and PID/app power. On Linux and macOS this is a memory-mapped file (<code>memmap2</code>); on Windows it uses Win32 file mapping (<code>CreateFileMapping</code> / <code>MapViewOfFile</code>).</p>
-</li>
-<li>
-<p><strong>API</strong> (when the <code>api</code> feature is enabled): broadcasts an <code>ApiData</code> struct to all connected HTTP and WebSocket clients via a Tokio broadcast channel. The HTTP handler (<code>GET /data</code>) reads the latest broadcast value; the WebSocket handler (<code>/ws</code>) streams each new broadcast as a JSON message.</p>
-</li>
+<li>The Energy Meter Interface (EMI), built into Windows 11. The processor driver publishes the RAPL domains as channels of a meter, and Joular Core opens the meter publishing the package channel. A meter publishing something else (a board rail, a battery) is refused. Windows hands over a 64-bit counter already unwrapped, so there is no wrap to correct.</li>
+<li>The MSR registers through the PawnIO driver. The driver reads no register on its own: Joular Core loads into it a signed module saying which registers it lets through (one for Intel, one for AMD from family 17h onwards; older AMD processors are refused, and are left to Hubblo’s driver).</li>
+<li>The MSR registers through Hubblo’s RAPL driver, which only lets the RAPL registers through, so opening the device is enough.</li>
 </ol>
-<h2 id="api-server"><a class="header" href="#api-server">API Server</a></h2>
-<p>The API server (<code>src/api.rs</code>) is built with the Axum web framework running on a Tokio async runtime. Joular Core starts it on a background thread with its own runtime after successfully binding <code>127.0.0.1:&lt;PORT&gt;</code>. Communication from the synchronous monitoring loop to the API server is done via a <code>tokio::sync::broadcast::Sender&lt;ApiData&gt;</code>.</p>
+<p>When reading the registers directly, Joular Core asks the processor for its vendor with the CPUID instruction, to know which registers hold the energy unit and the package counter on Intel and AMD. Silvermont and Airmont Atoms, whose energy unit would be read wrongly, are refused.</p>
+<p><strong>GPU.</strong> The GPU monitor tries Nvidia cards through NVML first, then AMD cards through ADLX. ADLX gives the whole board power where the card offers it, and the graphics processor alone where it does not. Which of the two is used is chosen when the card is opened, and does not change afterwards.</p>
+<h2 id="macos"><a class="header" href="#macos">macOS</a></h2>
+<p>The CPU, and the GPU on Apple Silicon, are read from Apple’s <code>powermetrics</code> tool (<code>/usr/bin/powermetrics</code>, given by its full path so that <code>PATH</code> cannot point at another program). One <code>powermetrics</code> process serves both sources: it is started by the first <code>Open</code>, and stopped by the last <code>Close</code>.</p>
+<p>Each reading asks <code>powermetrics</code> for a sample (with the <code>SIGINFO</code> signal), so a reading is the average power since the previous one. <code>powermetrics</code> still takes a sample of its own every ten minutes (this is what makes it stop once the program using the library is gone), so readings should be closer than that. The CPU and the GPU are read one after the other, and readings within 0.1 seconds share one sample, so both values come from the same sample.</p>
+<p>On Apple Silicon, <code>powermetrics</code> reports the CPU and the GPU each on a line. On Intel Macs, it reports the whole chip on one line, and no GPU.</p>
+<p><code>powermetrics</code> only runs as root, so Joular Core checks that before starting it. If it stops answering, its sources read zero, and it is started again on a reading about ten seconds later.</p>
+<h2 id="bsd"><a class="header" href="#bsd">BSD</a></h2>
+<p>Only Nvidia GPUs are supported for now, through NVML. CPU support is planned.</p>
+<h2 id="nvidia-gpus-on-linux-windows-and-bsd-nvml"><a class="header" href="#nvidia-gpus-on-linux-windows-and-bsd-nvml">Nvidia GPUs on Linux, Windows and BSD: NVML</a></h2>
+<p>NVML is the library installed with the Nvidia driver (<code>libnvidia-ml.so.1</code> on Linux and BSD, <code>nvml.dll</code> on Windows, in the system folder, or in the Nvidia folder of Program Files for older drivers). Joular Core loads it when the GPU is opened, rather than linking to it, so the library works the same on a machine with no Nvidia driver. It reads the power of the first card listed. The same applies to ADLX on Windows (<code>amdadlx64.dll</code>, or <code>amdadlx32.dll</code> for a 32 bits build).</p>
+<h2 id="energy-counters"><a class="header" href="#energy-counters">Energy Counters</a></h2>
+<p>The RAPL counters of Linux, and of Windows when read through a driver, only count up, and wrap back to zero once full. Joular Core keeps the previous value of each counter, and turns two readings into the energy consumed between them:</p>
 <ul>
-<li><strong><code>GET /data</code></strong>: returns the last received value as JSON.</li>
-<li><strong><code>/ws</code></strong>: the WebSocket handler subscribes to the broadcast channel and pushes each new value as a JSON message to the connected client.</li>
-<li>CORS is enabled via <code>tower-http</code>’s <code>CorsLayer</code>. By default only <code>http://127.0.0.1:&lt;PORT&gt;</code> and <code>http://localhost:&lt;PORT&gt;</code> are allowed. Extra origins come from repeatable <code>--api-allowed-origin</code>, and <code>*</code> allows any origin.</li>
+<li>When the new value is lower, the counter wrapped, so the range it wraps at is added.</li>
+<li>A drop that does not look like a wrap (one that would mean more than half the range was used between two readings) is taken as a counter reset, for example after the machine was suspended, and gives zero.</li>
+<li>A counter that could not be read gives zero, and keeps the previous value, so the next reading that works covers the gap.</li>
 </ul>
-<h2 id="graceful-shutdown"><a class="header" href="#graceful-shutdown">Graceful Shutdown</a></h2>
-<p>Joular Core installs a Ctrl+C handler via the <code>ctrlc</code> crate. When the signal is received:</p>
-<ol>
-<li>A shared <code>Arc&lt;AtomicBool&gt;</code> flag is set to <code>false</code>, causing the monitoring loop to exit after the current iteration.</li>
-<li>The ANSI cursor (hidden at startup) is restored.</li>
-<li>All buffered output is flushed and file handles are dropped cleanly.</li>
-</ol>
+<p>Only one wrap can be corrected between two readings, so read more often than the counter takes to fill half its range. Under load, this is a few minutes, hence the advice to read at least once per minute.</p>
 <h2 id="code-layout"><a class="header" href="#code-layout">Code Layout</a></h2>
 <div class="table-wrapper">
 <table>
@@ -334,59 +237,43 @@
 <tr><th>Path</th><th>Purpose</th></tr>
 </thead>
 <tbody>
-<tr><td><code>src/main.rs</code></td><td>CLI entry point: argument parsing, monitoring loop, output setup</td></tr>
-<tr><td><code>src/maingui.rs</code></td><td>GUI binary entry point</td></tr>
-<tr><td><code>src/lib.rs</code></td><td>Library root: re-exports all public modules</td></tr>
-<tr><td><code>src/args.rs</code></td><td>Clap-derived argument struct</td></tr>
-<tr><td><code>src/common.rs</code></td><td><code>JoularContext</code>: platform detection and component initialisation</td></tr>
-<tr><td><code>src/monitor.rs</code></td><td><code>JoularCoreMonitor</code>: the sampling loop and <code>MonitorSample</code></td></tr>
-<tr><td><code>src/energy.rs</code></td><td><code>CPUEnergy</code>, <code>GPUEnergy</code>, <code>PlatformEnergy</code> traits</td></tr>
-<tr><td><code>src/cpu.rs</code></td><td><code>CPUUtilization</code>, <code>ProcessCPUUtilization</code>, <code>AppCPUUtilization</code> traits and Linux implementations</td></tr>
-<tr><td><code>src/output.rs</code></td><td><code>OutputWriter</code>, <code>OutputBundle</code>, <code>OutputSink</code> traits</td></tr>
-<tr><td><code>src/ringbuffer.rs</code></td><td><code>RingBufferWriter</code>: shared-memory ring buffer for Linux/macOS/Windows</td></tr>
-<tr><td><code>src/api.rs</code></td><td>Axum-based HTTP and WebSocket API server</td></tr>
-<tr><td><code>src/logging.rs</code></td><td><code>tracing</code>-based structured logging helpers</td></tr>
-<tr><td><code>src/platform/linux.rs</code></td><td>Linux-specific power readers and process trackers</td></tr>
-<tr><td><code>src/platform/windows.rs</code></td><td>Windows-specific power readers and process trackers</td></tr>
-<tr><td><code>src/platform/macos.rs</code></td><td>macOS-specific <code>powermetrics</code> integration and process trackers</td></tr>
-<tr><td><code>src/platform/sbc.rs</code></td><td>SBC regression model power calculation</td></tr>
-<tr><td><code>src/platform/nvidia.rs</code></td><td>Nvidia GPU power via <code>nvidia-smi</code></td></tr>
-<tr><td><code>src/platform/amdgpu.rs</code></td><td>AMD GPU power via <code>amd-smi</code> / <code>rocm-smi</code></td></tr>
-<tr><td><code>src/vm.rs</code></td><td>Virtual machine shared-file power reader</td></tr>
-<tr><td><code>src/gui/</code></td><td>egui-based GUI: model, views, history, theme</td></tr>
+<tr><td><code>src/joular_core.ads</code></td><td>The Ada interface: <code>Open</code>, <code>Read</code>, <code>Close</code>, <code>Version</code></td></tr>
+<tr><td><code>src/joular_core-c_api.ads</code></td><td>The C interface, matching <code>include/joularcore.h</code></td></tr>
+<tr><td><code>src/joular_core-cpu_monitor.ads</code>, <code>src/joular_core-gpu_monitor.ads</code></td><td>The two monitors, with one body per OS</td></tr>
+<tr><td><code>src/joular_core-energy_counters.adb</code></td><td>The energy between two readings of a counter that wraps (RAPL on Linux and Windows)</td></tr>
+<tr><td><code>src/joular_core-gpu_nvidia_nvml.adb</code></td><td>Nvidia GPUs through NVML, on Linux, Windows and BSD</td></tr>
+<tr><td><code>src/linux/</code></td><td>RAPL through powercap, the power models of single-board computers, AMD GPUs through hwmon</td></tr>
+<tr><td><code>src/windows/</code></td><td>RAPL through EMI, PawnIO and Hubblo’s driver, the CPUID vendor check, AMD GPUs through ADLX, loading a shared library and finding NVML, and the Win32 bindings they share</td></tr>
+<tr><td><code>src/macos/</code></td><td><code>powermetrics</code>, and the specs file recording where the shared library finds the Ada runtime</td></tr>
+<tr><td><code>src/bsd/</code></td><td>Nvidia GPUs only</td></tr>
+<tr><td><code>src/posix/</code></td><td>What Linux, macOS and the BSDs do the same way (loading a shared library)</td></tr>
+<tr><td><code>include/joularcore.h</code></td><td>The C declarations</td></tr>
+<tr><td><code>example/</code></td><td>Example programs in Ada, C and Python</td></tr>
+<tr><td><code>tools/</code></td><td>The PawnIO modules, and the script turning them into an Ada package</td></tr>
 </tbody>
 </table>
 </div>
-<h2 id="key-dependencies"><a class="header" href="#key-dependencies">Key Dependencies</a></h2>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Crate</th><th>Version</th><th>Purpose</th></tr>
-</thead>
-<tbody>
-<tr><td><code>clap</code></td><td>4.x</td><td>Command-line argument parsing</td></tr>
-<tr><td><code>egui</code> / <code>eframe</code></td><td>0.34</td><td>Cross-platform GUI framework</td></tr>
-<tr><td><code>axum</code></td><td>0.8</td><td>HTTP and WebSocket API server</td></tr>
-<tr><td><code>tokio</code></td><td>1.x</td><td>Async runtime for the API server</td></tr>
-<tr><td><code>tower-http</code></td><td>0.6</td><td>CORS middleware</td></tr>
-<tr><td><code>serde</code> / <code>serde_json</code></td><td>1.x</td><td>JSON serialisation for the API</td></tr>
-<tr><td><code>sysinfo</code></td><td>0.38</td><td>System and process information (used for process enumeration)</td></tr>
-<tr><td><code>memmap2</code></td><td>0.9</td><td>Memory-mapped I/O for the Unix ring buffer</td></tr>
-<tr><td><code>windows</code></td><td>0.62</td><td>Win32 API bindings</td></tr>
-<tr><td><code>mach2</code></td><td>0.6</td><td>Mach kernel API bindings (macOS)</td></tr>
-<tr><td><code>libc</code></td><td>0.2</td><td>C library bindings (macOS)</td></tr>
-<tr><td><code>ctrlc</code></td><td>3.x</td><td>Cross-platform Ctrl+C handler</td></tr>
-<tr><td><code>tracing</code></td><td>0.1</td><td>Structured logging</td></tr>
-<tr><td><code>rfd</code></td><td>0.17</td><td>Native file dialog (GUI file picker)</td></tr>
-</tbody>
-</table>
-</div>
+<h2 id="adding-new-hardware-or-a-new-os"><a class="header" href="#adding-new-hardware-or-a-new-os">Adding New Hardware or a New OS</a></h2>
+<p>Each hardware component is one package with three functions: <code>Open</code> (detect and open, returning <code>False</code> when the hardware is not there or cannot be read), <code>Get_Power</code> or <code>Get_Energy</code> (one reading, in watts or joules), and <code>Close</code>.</p>
+<p>The code shared by every OS is in <code>src</code>, and the code of each OS is in its own folder, picked by <code>joularcore.gpr</code> from <code>PJ_OS</code>. Each OS folder has its own body of the two monitors, <code>CPU_Monitor</code> and <code>GPU_Monitor</code>, which lists the packages that can read that hardware on that OS, tries them in order and keeps the first one that answers.</p>
+<ul>
+<li>To support new hardware, write such a package in the folder of the OS it runs on (or in <code>src</code> if it is portable, like NVML), and add it to the monitor of that OS.</li>
+<li>To support a new OS, add its folder with its two monitors, and add it to <code>PJ_OS</code> in the project file.</li>
+</ul>
+<p>Windows RAPL splits this further, as the same counter is reached in several ways. <code>RAPL_Windows</code> tries each way in order and keeps the first that answers: <code>RAPL_EMI_Windows</code>, which reads RAPL from the Energy Meter Interface, then <code>RAPL_MSR_Windows</code>, which reads the MSR registers with a driver. That second one keeps the vendor detection and the counter, and hands the reading of a single register to one of two interchangeable packages, <code>MSR_PawnIO</code> and <code>MSR_Hubblo</code>. Supporting another driver means writing another such package with <code>Open</code>, <code>Read</code> and <code>Close</code>, adding it to <code>Driver_Kind</code> in <code>RAPL_MSR_Windows</code>, and to the list tried in <code>RAPL_Windows.Open</code>.</p>
+<h2 id="third-party-components"><a class="header" href="#third-party-components">Third Party Components</a></h2>
+<p>Joular Core carries two <a href="https://github.com/namazso/PawnIO.Modules">PawnIO modules</a>, <code>IntelMSR.bin</code> and <code>AMDFamily17.bin</code>, taken byte for byte from release 0.2.11. The PawnIO driver checks their signature before running them, so they are shipped as they are and cannot be rebuilt here.</p>
+<p>They are licensed under the GNU Lesser General Public License version 2.1 or later, copyright namazso and contributors. A copy of that license is in <code>tools/pawnio/COPYING</code>, next to the modules themselves.</p>
+<p>They are turned into <code>src/windows/joular_core-pawnio_modules.ads</code> by <code>tools/gen_pawnio_modules.py</code>, which is also how that file is regenerated when a newer release is taken:</p>
+<pre><code class="language-bash">python3 tools/gen_pawnio_modules.py
+</code></pre>
+<p>The SHA-256 of each module is pinned in that script, which refuses to write anything when a module on disk is not the one it expects. Running it with <code>--check</code> writes nothing and only reports whether the modules, their digests and the committed package still agree.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../ref/vm.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../ref/integration.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
@@ -397,7 +284,7 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../ref/vm.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../ref/integration.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
@@ -424,7 +311,7 @@
 
         <script src="../clipboard-1626706a.min.js"></script>
         <script src="../highlight-abc7f01d.js"></script>
-        <script src="../book-c22b7243.js"></script>
+        <script src="../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
 

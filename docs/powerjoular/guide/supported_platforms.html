@@ -15,8 +15,8 @@
         <link rel="icon" href="../favicon-de23e50b.svg">
         <link rel="shortcut icon" href="../favicon-8114d1fc.png">
         <link rel="stylesheet" href="../css/variables-8adf115d.css">
-        <link rel="stylesheet" href="../css/general-0392ca55.css">
-        <link rel="stylesheet" href="../css/chrome-fc474251.css">
+        <link rel="stylesheet" href="../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../css/chrome-d279d366.css">
         <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-483c5156.js";
+            window.path_to_searchindex_js = "../searchindex-a723df21.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-a9651cd3.js"></script>
+        <script src="../toc-b01ac823.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -177,13 +177,37 @@
                         <h1 id="supported-platforms"><a class="header" href="#supported-platforms">Supported Platforms</a></h1>
 <p>PowerJoular monitors the following platforms:</p>
 <ul>
-<li>PC/Servers using a RAPL supported Intel processor (since Sandy Bridge) or a RAPL supported AMD processor (since Ryzen), and optionally an Nvidia graphic card.</li>
+<li>PC/Servers using a RAPL supported Intel processor (since Sandy Bridge) or a RAPL supported AMD processor (since Ryzen, including EPYC), and optionally an Nvidia or an AMD graphic card.</li>
+<li>Macs, with Apple Silicon (M series) or Intel processors.</li>
 <li>Raspberry Pi devices (multiple models) and Asus Tinker Board.</li>
 <li>Inside virtual machines in all supported host platforms.</li>
 </ul>
-<p>In all platforms, PowerJoular works currently only on GNU/Linux.</p>
-<p>On PC/Servers, PowerJoular uses powercap Linux interface to read Intel RAPL (Running Average Power Limit) energy consumption.</p>
-<p>PowerJoular supports RAPL package domain (core, including integrated graphics, and dram), and for more recent processors, we support Psys package (which covers the energy consumption of the entire SoC).</p>
+<p>PowerJoular works on GNU/Linux, Windows and macOS.</p>
+<p>PowerJoular does the energy and CPU usage measuring through two Ada libraries we developed:</p>
+<ul>
+<li><a href="https://github.com/joular/joularcore">Joular Core</a>: for CPU and GPU energy and power consumption.</li>
+<li><a href="https://github.com/joular/cpuload">CPU Load</a>: for CPU usage of the whole system, of a specific PID, and of a specific application (all its PIDs).</li>
+</ul>
+<p>On Linux PC/Servers, PowerJoular uses powercap Linux interface to read RAPL (Running Average Power Limit) energy consumption, for Intel and AMD processors.</p>
+<p>PowerJoular reads the RAPL package domain (cores, integrated graphics, memory controller and last level caches).
+On a server with several sockets, only the first one is measured.</p>
+<p>On Windows PC/Servers, PowerJoular reads the same RAPL package counter in one of three ways, and keeps the first one that answers:</p>
+<ul>
+<li>The <a href="https://learn.microsoft.com/en-us/windows-hardware/drivers/powermeter/energy-meter-interface">Energy Meter Interface</a> (EMI), built into Windows 11. Nothing to install.</li>
+<li>The RAPL registers through the <a href="https://pawnio.eu">PawnIO</a> driver.</li>
+<li>The RAPL registers through <a href="https://github.com/hubblo-org/windows-rapl-driver">Hubblo’s RAPL driver</a>.</li>
+</ul>
+<p>Setting the <code>JOULARCORE_WINDOWS_RAPL</code> environment variable to <code>emi</code>, <code>pawnio</code> or <code>hubblo</code> picks one instead of trying them in turn. Nothing has to be configured otherwise.</p>
+<p>On macOS, PowerJoular uses <code>powermetrics</code>, which is installed with macOS and reports the power drawn over each cycle.
+Apple Silicon Macs give their CPU and the GPU built into the same chip.
+Intel Macs give the CPU only (the whole chip: cores, integrated graphics and system agent).</p>
+<p>For the GPU, PowerJoular supports:</p>
+<ul>
+<li>Nvidia graphic cards on Linux and Windows, through NVML, which is installed with the Nvidia driver.</li>
+<li>AMD graphic cards on Linux, through the hwmon sysfs of the amdgpu driver.</li>
+<li>AMD graphic cards on Windows, through ADLX, which is installed with the AMD driver.</li>
+<li>The GPU of Apple Silicon Macs, through <code>powermetrics</code>.</li>
+</ul>
 <p>On virtual machines, PowerJoular requires two steps:</p>
 <ul>
 <li>Installing PowerJoular itself or another power monitoring tool in the host machine.
@@ -207,6 +231,7 @@ However, the model is generated and trained on a specific revision (listed betwe
 <li>Model 5 B (rev 1.0), for 64 bits OS</li>
 <li>Asus Tinker Board (S)</li>
 </ul>
+<p>The models listed for 32 bits OS are also used on a 64 bits OS.</p>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -215,11 +240,21 @@ However, the model is generated and trained on a specific revision (listed betwe
 <tbody>
 <tr><td style="text-align: center">Raspberry Pi</td><td style="text-align: center">GNU/Linux</td><td style="text-align: center">Our regression models</td><td style="text-align: center">ARM</td></tr>
 <tr><td style="text-align: center">Asus Tinker Board</td><td style="text-align: center">GNU/Linux</td><td style="text-align: center">Our regression models</td><td style="text-align: center">ARM</td></tr>
-<tr><td style="text-align: center">Linux PC/Server</td><td style="text-align: center">GNU/Linux</td><td style="text-align: center">RAPL (using powercap), Nvidia-smi</td><td style="text-align: center">x86, x86_64</td></tr>
-<tr><td style="text-align: center">Linux Virtual Machine</td><td style="text-align: center">GNU/Linux guest, any host</td><td style="text-align: center">Host’s architecture (RAPL, regression models, others)</td><td style="text-align: center">x86, x86_64, ARM</td></tr>
+<tr><td style="text-align: center">Linux PC/Server</td><td style="text-align: center">GNU/Linux</td><td style="text-align: center">RAPL (using powercap), Nvidia NVML, AMD hwmon sysfs</td><td style="text-align: center">x86, x86_64</td></tr>
+<tr><td style="text-align: center">Windows PC/Server</td><td style="text-align: center">Windows</td><td style="text-align: center">RAPL (using EMI, PawnIO or Hubblo’s driver), Nvidia NVML, AMD ADLX</td><td style="text-align: center">x86_64</td></tr>
+<tr><td style="text-align: center">Mac</td><td style="text-align: center">macOS</td><td style="text-align: center">powermetrics</td><td style="text-align: center">Apple Silicon (ARM), Intel (x86_64)</td></tr>
+<tr><td style="text-align: center">Virtual Machine</td><td style="text-align: center">GNU/Linux, Windows or macOS guest, any host</td><td style="text-align: center">Host’s architecture (RAPL, regression models, others)</td><td style="text-align: center">x86, x86_64, ARM</td></tr>
 </tbody>
 </table>
 </div>
+<h2 id="required-privileges"><a class="header" href="#required-privileges">Required privileges</a></h2>
+<p>Without the privileges below, and with no graphic card to read, PowerJoular finds no power source and stops. With a graphic card, it carries on and the CPU power reads 0 (<code>-d</code> shows what can be measured).</p>
+<ul>
+<li><strong>Linux, PC or server</strong>: reading RAPL files needs elevated privileges on the recent kernels (5.10 and newer), so run <code>sudo powerjoular</code>, or give read rights to the files. See <a href="https://github.com/joular/powerjoular/issues/1">this issue</a>.</li>
+<li><strong>Windows</strong>: with the Energy Meter Interface (EMI), no special privileges or driver are needed. Otherwise, a RAPL driver is needed: <a href="https://pawnio.eu">PawnIO</a>, which needs PowerJoular to run from a terminal with administrative rights, or <a href="https://github.com/hubblo-org/windows-rapl-driver">Hubblo’s RAPL driver</a>, which does not. The easiest way to get a signed version of Hubblo’s driver is through the <a href="https://github.com/hubblo-org/scaphandre/releases">Scaphandre installer</a>. Reading the CPU time of a process belonging to another user also needs a terminal with administrative rights, so <code>-p</code> and <code>-a</code> on someone else’s process need it too.</li>
+<li><strong>macOS</strong>: <code>powermetrics</code> only runs as the superuser, so run <code>sudo powerjoular</code>. Without it, PowerJoular finds no power source and stops. Reading the CPU time of a process belonging to another user also needs root, so <code>-p</code> and <code>-a</code> on someone else’s process need <code>sudo</code> too.</li>
+<li><strong>Raspberry Pi, and GPU readings on Linux and Windows</strong>: no special privileges needed.</li>
+</ul>
 
                     </main>
 
@@ -269,7 +304,7 @@ However, the model is generated and trained on a specific revision (listed betwe
 
         <script src="../clipboard-1626706a.min.js"></script>
         <script src="../highlight-abc7f01d.js"></script>
-        <script src="../book-c22b7243.js"></script>
+        <script src="../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
 
