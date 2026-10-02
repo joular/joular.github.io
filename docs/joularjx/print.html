@@ -181,7 +181,7 @@
 <p><img src="joularjx.png" alt="JoularJX Logo"></p>
 <p>JoularJX is part of the <a href="https://www.noureddine.org/research/joular/"><img src="https://raw.githubusercontent.com/joular/.github/main/profile/joular.png" alt="Joular Project" width="64" /></a> project.</p>
 <p>JoularJX is a Java-based agent for power monitoring at the source code level with support for modern Java versions and multi-OS to monitor power consumption of hardware and software.</p>
-<p>JoularJX is a Java agent where you can simply hook it to the Java Virtual Machine when starting your Java program. To get power readings, JoularJX uses a custom PowerMonitor program (based on Hubblo’s Windows RAPL driver) on Windows, Intel RAPL (through powercap) on GNU/Linux, Powermetrics on macOS, and our accurate power models on Raspberry Pi and similar devices.</p>
+<p>JoularJX is a Java agent where you can simply hook it to the Java Virtual Machine when starting your Java program. To get power readings, JoularJX uses a custom PowerMonitor program (based on Hubblo’s Windows RAPL driver) on Windows, Intel RAPL (through powercap) on Linux, Powermetrics on macOS, and our accurate power models on Raspberry Pi and similar devices.</p>
 <p>JoularJX is the successor of <a href="https://www.noureddine.org/research/jalen">Jalen</a>, and the core approach of statistical sampling is based and inspired by the work we did in monitoring energy hotspots in software (<a href="https://hal.inria.fr/hal-00715331/document">ASE 2012 conference paper</a>, and <a href="https://hal.inria.fr/hal-01069142/document">ASE Journal paper in 2015</a>).</p>
 <p>The official website of JoularJX is: <a href="https://www.noureddine.org/research/joular/joularjx">https://www.noureddine.org/research/joular/joularjx</a>.</p>
 <h2 id="features"><a class="header" href="#features">Features</a></h2>
@@ -191,7 +191,7 @@
 <li>Monitor power consumption of methods’ call tree and execution branches</li>
 <li>Monitor energy of Java applications running in virtual machines</li>
 <li>Uses a Java agent, no source code instrumentation needed</li>
-<li>Uses Intel RAPL (powercap interface) for getting accurate power reading on GNU/Linux, our research-based regression models on Raspberry Pi devices, and a custom program monitor (based on Intel Power Gadget) for accurate power readings on Windows</li>
+<li>Uses Intel RAPL (powercap interface) for getting accurate power reading on Linux, our research-based regression models on Raspberry Pi devices, and a custom program monitor (based on Intel Power Gadget) for accurate power readings on Windows</li>
 <li>Provides real-time power consumption of every method in the monitored program</li>
 <li>Provides total energy for every method on program exit</li>
 </ul>
@@ -219,14 +219,14 @@ All rights reserved. This program and the accompanying materials are made availa
 <h1 id="supported-platforms"><a class="header" href="#supported-platforms">Supported Platforms</a></h1>
 <p>JoularJX support the following platforms and operating systems:</p>
 <ul>
-<li>PC/Servers using a RAPL supported Intel processor (since Sandy Bridge) or a RAPL supported AMD processor (since Ryzen), on GNU/Linux, on Windows and on macOS.</li>
+<li>PC/Servers using a RAPL supported Intel processor (since Sandy Bridge) or a RAPL supported AMD processor (since Ryzen), on Linux, on Windows and on macOS.</li>
 <li>Virtual machines (any supported guest on any guest)</li>
 </ul>
 <p>The supported list of Raspberry Pi and Asus Tinker Board models are listed below.
 We support all revisions of each model lineup.
 However, the model is generated and trained on a specific revision (listed between brackets), and the accuracy is best on this particular revision.</p>
 <ul>
-<li>Raspberry Pi devices (multiple models) on GNU/Linux:
+<li>Raspberry Pi devices (multiple models) on Linux:
 <ul>
 <li>Model Zero W (rev 1.1), for 32 bits OS</li>
 <li>Model 1 B (rev 2), for 32 bits OS</li>
@@ -247,11 +247,11 @@ However, the model is generated and trained on a specific revision (listed betwe
 <tr><th style="text-align: center">Platform</th><th style="text-align: center">Supported OS</th><th style="text-align: center">Based on</th><th style="text-align: center">Supported Architecture</th></tr>
 </thead>
 <tbody>
-<tr><td style="text-align: center">Linux PC/Server</td><td style="text-align: center">GNU/Linux</td><td style="text-align: center">RAPL (using powercap)</td><td style="text-align: center">x86, x86_64</td></tr>
+<tr><td style="text-align: center">Linux PC/Server</td><td style="text-align: center">Linux</td><td style="text-align: center">RAPL (using powercap)</td><td style="text-align: center">x86, x86_64</td></tr>
 <tr><td style="text-align: center">Windows PC/Server</td><td style="text-align: center">Windows</td><td style="text-align: center">Hubblo’s Windows RAPL driver</td><td style="text-align: center">x86, x86_64</td></tr>
 <tr><td style="text-align: center">macOS PC</td><td style="text-align: center">macOS</td><td style="text-align: center">Powermetrics</td><td style="text-align: center">x86_64, ARM</td></tr>
-<tr><td style="text-align: center">Raspberry Pi</td><td style="text-align: center">GNU/Linux</td><td style="text-align: center">Our regression models</td><td style="text-align: center">ARM</td></tr>
-<tr><td style="text-align: center">Asus Tinker Board</td><td style="text-align: center">GNU/Linux</td><td style="text-align: center">Our regression models</td><td style="text-align: center">ARM</td></tr>
+<tr><td style="text-align: center">Raspberry Pi</td><td style="text-align: center">Linux</td><td style="text-align: center">Our regression models</td><td style="text-align: center">ARM</td></tr>
+<tr><td style="text-align: center">Asus Tinker Board</td><td style="text-align: center">Linux</td><td style="text-align: center">Our regression models</td><td style="text-align: center">ARM</td></tr>
 <tr><td style="text-align: center">Virtual Machine</td><td style="text-align: center">Supported guests (Windows, Linux, macOS), any host</td><td style="text-align: center">Host’s architecture (RAPL, regression models, others)</td><td style="text-align: center">x86, x86_64, ARM</td></tr>
 </tbody>
 </table>
@@ -272,9 +272,9 @@ In particuliar, it can get the data from two main approaches:</p>
 <ul>
 <li>On Windows, to read the data from the RAPL driver, we use a custom program monitor called <a href="https://github.com/joular/WinPowerMonitor">Power Monitor for Windows</a>. It used to be part of JoularJX, but now it is in its own repository. Download the binary (or compile the source code), and specify its path in <code>config.properties</code>. Runs on Intel or AMD CPUs (since Ryzen). You can substitute that software with <a href="https://github.com/joular/joularcore">Joular Core</a>.
 Either way (WinPowerMonitor or Joular Core), you need to install the <a href="https://github.com/hubblo-org/windows-rapl-driver">Windows RAPL driver by Hubblo</a>. The easiest way to install the driver is to install the windows version of <a href="https://github.com/hubblo-org/scaphandre">Scaphandre</a> tool from <a href="https://github.com/hubblo-org/scaphandre/releases/download/v1.0.0/scaphandre_v1.0.0_installer.exe">this link directly</a> (release 1.0.0).</li>
-<li>On PC/server GNU/Linux, JoularJX uses Intel RAPL interface through powercap, and therefore requires running on an Intel CPU or an AMD CPU (since Ryzen).</li>
+<li>On PC/server Linux, JoularJX uses Intel RAPL interface through powercap, and therefore requires running on an Intel CPU or an AMD CPU (since Ryzen).</li>
 <li>On macOS, JoularJX uses <code>powermetrics</code>, a tool bundled with macOS which requires running with <code>sudo</code> access. It is recommended to authorize the current users to run <code>/usr/bin/powermetrics</code> without requiring a password by making the proper modification to the <code>sudoers</code> file.</li>
-<li>On Raspberry Pi devices on GNU/Linux, JoularJX uses our own research-based regression models to estimate CPU power consumption with support for the following device models (we support all revisions of each model lineup.</li>
+<li>On Raspberry Pi devices on Linux, JoularJX uses our own research-based regression models to estimate CPU power consumption with support for the following device models (we support all revisions of each model lineup.</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="quick-usage"><a class="header" href="#quick-usage">Quick Usage</a></h1>

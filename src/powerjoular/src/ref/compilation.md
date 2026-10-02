@@ -12,7 +12,7 @@ PowerJoular depends on the following libraries and tools for certain of its func
 
 None of them is needed to compile PowerJoular: they are looked for when PowerJoular starts.
 
-On a modern GNU/Linux distribution, just install the GNAT compiler (and GPRBuild), usually available from the distribution's repositories:
+On a modern Linux distribution, just install the GNAT compiler (and GPRBuild), usually available from the distribution's repositories:
 
 ```
 Fedora:

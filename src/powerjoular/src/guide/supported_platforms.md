@@ -6,7 +6,7 @@ PowerJoular monitors the following platforms:
 - Raspberry Pi devices (multiple models) and Asus Tinker Board.
 - Inside virtual machines in all supported host platforms.
 
-PowerJoular works on GNU/Linux, Windows and macOS.
+PowerJoular works on Linux, Windows and macOS.
 
 PowerJoular does the energy and CPU usage measuring through two Ada libraries we developed:
 - [Joular Core](https://github.com/joular/joularcore): for CPU and GPU energy and power consumption.
@@ -61,12 +61,12 @@ The models listed for 32 bits OS are also used on a 64 bits OS.
 
 | Platform | Supported OS | Based on | Supported Architecture |
 |:--------------:|:---------------------:|:-----------------------------:|:-----------------------------:|
-|        Raspberry Pi       |        GNU/Linux       |             Our regression models             |             ARM            |
-|        Asus Tinker Board       |        GNU/Linux       |             Our regression models             |             ARM            |
-|     Linux PC/Server    |        GNU/Linux        |             RAPL (using powercap), Nvidia NVML, AMD hwmon sysfs            |             x86, x86_64            |
+|        Raspberry Pi       |        Linux       |             Our regression models             |             ARM            |
+|        Asus Tinker Board       |        Linux       |             Our regression models             |             ARM            |
+|     Linux PC/Server    |        Linux        |             RAPL (using powercap), Nvidia NVML, AMD hwmon sysfs            |             x86, x86_64            |
 |     Windows PC/Server    |        Windows        |             RAPL (using EMI, PawnIO or Hubblo's driver), Nvidia NVML, AMD ADLX            |             x86_64            |
 |     Mac    |        macOS        |             powermetrics            |             Apple Silicon (ARM), Intel (x86_64)            |
-|     Virtual Machine    |        GNU/Linux, Windows or macOS guest, any host       |             Host's architecture (RAPL, regression models, others)            |             x86, x86_64, ARM            |
+|     Virtual Machine    |        Linux, Windows or macOS guest, any host       |             Host's architecture (RAPL, regression models, others)            |             x86, x86_64, ARM            |
 
 ## Required privileges
 

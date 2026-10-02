@@ -9,7 +9,7 @@ JoularJX is part of the <a href="https://www.noureddine.org/research/joular/"><i
 
 JoularJX is a Java-based agent for power monitoring at the source code level with support for modern Java versions and multi-OS to monitor power consumption of hardware and software.
 
-JoularJX is a Java agent where you can simply hook it to the Java Virtual Machine when starting your Java program. To get power readings, JoularJX uses a custom PowerMonitor program (based on Hubblo's Windows RAPL driver) on Windows, Intel RAPL (through powercap) on GNU/Linux, Powermetrics on macOS, and our accurate power models on Raspberry Pi and similar devices.
+JoularJX is a Java agent where you can simply hook it to the Java Virtual Machine when starting your Java program. To get power readings, JoularJX uses a custom PowerMonitor program (based on Hubblo's Windows RAPL driver) on Windows, Intel RAPL (through powercap) on Linux, Powermetrics on macOS, and our accurate power models on Raspberry Pi and similar devices.
 
 JoularJX is the successor of [Jalen](https://www.noureddine.org/research/jalen), and the core approach of statistical sampling is based and inspired by the work we did in monitoring energy hotspots in software ([ASE 2012 conference paper](https://hal.inria.fr/hal-00715331/document), and [ASE Journal paper in 2015](https://hal.inria.fr/hal-01069142/document)).
 
@@ -22,7 +22,7 @@ The official website of JoularJX is: [https://www.noureddine.org/research/joular
 - Monitor power consumption of methods' call tree and execution branches
 - Monitor energy of Java applications running in virtual machines
 - Uses a Java agent, no source code instrumentation needed
-- Uses Intel RAPL (powercap interface) for getting accurate power reading on GNU/Linux, our research-based regression models on Raspberry Pi devices, and a custom program monitor (based on Intel Power Gadget) for accurate power readings on Windows
+- Uses Intel RAPL (powercap interface) for getting accurate power reading on Linux, our research-based regression models on Raspberry Pi devices, and a custom program monitor (based on Intel Power Gadget) for accurate power readings on Windows
 - Provides real-time power consumption of every method in the monitored program
 - Provides total energy for every method on program exit
 

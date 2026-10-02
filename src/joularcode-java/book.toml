@@ -1,0 +1,7 @@
+[book]
+authors = ["Adel Noureddine"]
+language = "en"
+#multilingual = false
+src = "src"
+title = "Joular Code for Java Documentation"
+#default-theme = "light"

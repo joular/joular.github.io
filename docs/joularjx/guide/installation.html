@@ -189,9 +189,9 @@ In particuliar, it can get the data from two main approaches:</p>
 <ul>
 <li>On Windows, to read the data from the RAPL driver, we use a custom program monitor called <a href="https://github.com/joular/WinPowerMonitor">Power Monitor for Windows</a>. It used to be part of JoularJX, but now it is in its own repository. Download the binary (or compile the source code), and specify its path in <code>config.properties</code>. Runs on Intel or AMD CPUs (since Ryzen). You can substitute that software with <a href="https://github.com/joular/joularcore">Joular Core</a>.
 Either way (WinPowerMonitor or Joular Core), you need to install the <a href="https://github.com/hubblo-org/windows-rapl-driver">Windows RAPL driver by Hubblo</a>. The easiest way to install the driver is to install the windows version of <a href="https://github.com/hubblo-org/scaphandre">Scaphandre</a> tool from <a href="https://github.com/hubblo-org/scaphandre/releases/download/v1.0.0/scaphandre_v1.0.0_installer.exe">this link directly</a> (release 1.0.0).</li>
-<li>On PC/server GNU/Linux, JoularJX uses Intel RAPL interface through powercap, and therefore requires running on an Intel CPU or an AMD CPU (since Ryzen).</li>
+<li>On PC/server Linux, JoularJX uses Intel RAPL interface through powercap, and therefore requires running on an Intel CPU or an AMD CPU (since Ryzen).</li>
 <li>On macOS, JoularJX uses <code>powermetrics</code>, a tool bundled with macOS which requires running with <code>sudo</code> access. It is recommended to authorize the current users to run <code>/usr/bin/powermetrics</code> without requiring a password by making the proper modification to the <code>sudoers</code> file.</li>
-<li>On Raspberry Pi devices on GNU/Linux, JoularJX uses our own research-based regression models to estimate CPU power consumption with support for the following device models (we support all revisions of each model lineup.</li>
+<li>On Raspberry Pi devices on Linux, JoularJX uses our own research-based regression models to estimate CPU power consumption with support for the following device models (we support all revisions of each model lineup.</li>
 </ul>
 
                     </main>
