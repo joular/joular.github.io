@@ -1,0 +1,648 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>CPU Load Documentation</title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-e96d0476.css">
+        <link rel="stylesheet" href="css/chrome-d279d366.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-ef1855d1.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-8aae2392.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">CPU Load Documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="overview"><a class="header" href="#overview">Overview</a></h1>
+<p><a href="https://www.gnu.org/licenses/lgpl-3.0"><img src="https://img.shields.io/badge/License-LGPLv3-blue" alt="License: LGPL v3"></a> <a href="https://www.adaic.org"><img src="https://img.shields.io/badge/Made%20with-Ada-blue" alt="Ada"></a></p>
+<p>CPU Load is an Ada library that reports the CPU load of the system, of a specific process by its ID, or of a specific application by its name (meaning every one of its processes running when a sample is taken).
+It gives one simple interface: take a sample, wait, take another, and compare the two.</p>
+<p>CPU Load is part of the <a href="https://www.noureddine.org/research/joular/">Joular project</a>.</p>
+<p>It compiles to native code with minimal overhead, and also provides a C interface, so it can be used from any language with a C FFI (C, C++, Java, Python, Rust, etc.).</p>
+<p>CPU Load is the library <a href="https://github.com/joular/powerjoular">PowerJoular</a> uses to measure the CPU load, alongside <a href="https://github.com/joular/joularcore">Joular Core</a> for the hardware.</p>
+<h2 id="key-features"><a class="header" href="#key-features">Key Features</a></h2>
+<ul>
+<li>Measure the CPU load of the whole system, of one process by its ID, or of an application by its name (every process of it)</li>
+<li>Measure on Linux, Windows and macOS (Apple Silicon and Intel Macs)</li>
+<li>Match an application with the program its processes actually run, so <code>firefox</code> finds every process of Firefox</li>
+<li>Give every load as a share of the whole machine, from 0.0 to 1.0</li>
+<li>Tell apart a process that could not be read (a negative load) from one that used no CPU time (0.0)</li>
+<li>Keep no state: a sample is a plain record, so it can be taken in one thread and compared in another</li>
+<li>Read the counters with no particular rights (except for the processes of other users on macOS and Windows)</li>
+<li>Static library for Ada programs, and a shared library with a C interface for other languages (one self-contained file on Linux and Windows)</li>
+</ul>
+<h2 id="license"><a class="header" href="#license">License</a></h2>
+<p>CPU Load is licensed under the GNU LGPL 3 license only (LGPL-3.0-only).</p>
+<p>Copyright © 2026, Adel Noureddine.<br>All rights reserved. This program and the accompanying materials are made available under the terms of the <a href="https://www.gnu.org/licenses/lgpl-3.0.en.html">GNU Lesser General Public License v3.0 only (LGPL-3.0-only)</a>.</p>
+<p>Author: <a href="https://www.noureddine.org/">Adel Noureddine</a></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="supported-platforms"><a class="header" href="#supported-platforms">Supported Platforms</a></h1>
+<p>CPU Load runs on Linux, Windows and macOS, on PCs, servers, Macs and single-board computers such as the Raspberry Pi. It reads what the operating system counts, not the hardware, so it works the same whatever the processor.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>What is measured</th><th>OS</th><th>Method</th></tr>
+</thead>
+<tbody>
+<tr><td>The whole system</td><td>Linux</td><td>The <code>cpu</code> line of <code>/proc/stat</code></td></tr>
+<tr><td>The whole system</td><td>macOS</td><td><code>host_statistics</code>, macOS’ CPU counters</td></tr>
+<tr><td>The whole system</td><td>Windows</td><td><code>GetSystemTimes</code></td></tr>
+<tr><td>One process, by its number</td><td>Linux</td><td><code>utime</code> + <code>stime</code> of <code>/proc/&lt;pid&gt;/stat</code></td></tr>
+<tr><td>One process, by its number</td><td>macOS</td><td><code>proc_pidinfo</code>, the user and system time of the process</td></tr>
+<tr><td>One process, by its number</td><td>Windows</td><td><code>OpenProcess</code> + <code>GetProcessTimes</code></td></tr>
+<tr><td>An application, every process of it</td><td>Linux</td><td><code>/proc</code> scanned, each process named by <code>/proc/&lt;pid&gt;/exe</code></td></tr>
+<tr><td>An application, every process of it</td><td>macOS</td><td><code>proc_listpids</code>, each process named by <code>proc_pidpath</code></td></tr>
+<tr><td>An application, every process of it</td><td>Windows</td><td><code>EnumProcesses</code> + <code>QueryFullProcessImageNameW</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>BSD support is planned and will come in a future version.</p>
+<h2 id="matching-an-application"><a class="header" href="#matching-an-application">Matching an Application</a></h2>
+<p>An application is given by the name of its program, without its folder. The name must match exactly, but upper or lower case does not matter.
+Every OS matches the program with the process that actually runs, so <code>firefox</code> finds every process of Firefox, its content processes included.</p>
+<p><strong>Linux</strong><br>A process is named by the program <code>/proc/&lt;pid&gt;/exe</code> points to. A process whose <code>/proc/&lt;pid&gt;/exe</code> cannot be read (such as a kernel thread, which runs no program directly, or another user’s process) falls back on <code>/proc/&lt;pid&gt;/comm</code>: the name the process was given, cut to 15 characters.</p>
+<p><strong>macOS</strong><br>A process is named by the program inside the bundle, so <code>firefox</code> finds the application inside <code>Firefox.app</code>, and also every program inside <code>Firefox.app</code>: for example, its content processes run <code>plugin-container</code>, from a helper bundle inside it.</p>
+<p><strong>Windows</strong><br>A trailing <code>.exe</code> is ignored, so <code>firefox</code> also finds <code>firefox.exe</code>.</p>
+<h2 id="macs"><a class="header" href="#macs">Macs</a></h2>
+<p>macOS is supported on Apple Silicon and Intel Macs, with the library built for the chip it runs on.
+An x86_64 build running under Rosetta on an Apple Silicon Mac reads process times about 40 times too low, so process and application loads come out close to 0%.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="installation"><a class="header" href="#installation">Installation</a></h1>
+<p>CPU Load is added to the program that uses it rather than installed on its own. It can be taken from Alire, or compiled from source.</p>
+<h2 id="with-alire"><a class="header" href="#with-alire">With Alire</a></h2>
+<p>In an Ada project managed by <a href="https://alire.ada.dev">Alire</a>, add the library with:</p>
+<pre><code class="language-bash">alr with cpuload
+</code></pre>
+<p>Alire fetches the library and builds it along with your program. Then add <code>with CPU_Load;</code> to your code (see <a href="#quick-usage">Quick Usage</a>).</p>
+<p>Alire offers CPU Load on Linux, Windows and macOS.</p>
+<h2 id="from-source"><a class="header" href="#from-source">From Source</a></h2>
+<p>Clone the <a href="https://github.com/joular/cpuload">GitHub repository</a> and build it with GNAT and GPRBuild, or with Alire. The build gives:</p>
+<ul>
+<li>a static library (<code>libcpuload.a</code>), to link into an Ada program, which is the default</li>
+<li>a shared library (<code>libcpuload.so</code> on Linux, <code>libcpuload.dll</code> on Windows, <code>libcpuload.dylib</code> on macOS), which carries the C interface for programs in C, C++, Java, Python, Rust, etc.</li>
+</ul>
+<p>On Linux and Windows, the shared library carries the Ada runtime too, so it is the only file to ship with your program (on Linux, <code>libcpuload.so.0</code>, the name programs look for). On macOS, the Ada runtime stays a file of its own, which the library loads from the folder of the compiler that built it.</p>
+<p>See <a href="#compilation">Compilation</a> for the build commands and options.</p>
+<h2 id="platform-specific-requirements"><a class="header" href="#platform-specific-requirements">Platform-specific Requirements</a></h2>
+<p>CPU Load is a library, so the privileges below are needed for the <em>program using it</em>.</p>
+<p>The counters need no particular rights on Linux, Windows or macOS: any user can read the load of the whole machine, and of their own processes.</p>
+<ul>
+<li><strong>Linux</strong>: the load of other users’ processes can be read too, but not the program they run, so they are matched by the name in <code>/proc/&lt;pid&gt;/comm</code> instead (see <a href="#supported-platforms">Supported Platforms</a>).</li>
+<li><strong>macOS</strong>: the processes of other users cannot be read unless the program runs as root (with <code>sudo</code>), so their load is negative.</li>
+<li><strong>Windows</strong>: the processes of other users cannot be read. One of them followed by its ID reads a negative load, and in an application they are left out, as their program cannot be found either (an application made only of them reads <code>0.0</code>).</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="quick-usage"><a class="header" href="#quick-usage">Quick Usage</a></h1>
+<p>CPU Load has one simple interface: take a sample, wait, take another, then compare the two.</p>
+<ul>
+<li><code>Take</code> reads the CPU counters of the whole machine, and of one process or of one application when one is given.</li>
+<li><code>System_Usage</code> gives the load of the whole machine between two samples.</li>
+<li><code>Process_Usage</code> gives the load of the process or of the application between two samples.</li>
+</ul>
+<p>Every load is a share of the whole machine, from <code>0.0</code> to <code>1.0</code>: a process using all of one core of an eight core machine reads <code>0.125</code>, not <code>1.0</code>. A negative load means the process or the application could not be read at all. See <a href="#reading-the-numbers">Reading the Numbers</a> for the details.</p>
+<h2 id="using-from-ada"><a class="header" href="#using-from-ada">Using from Ada</a></h2>
+<pre><code class="language-ada">with Ada.Text_IO; use Ada.Text_IO;
+with CPU_Load; use CPU_Load;
+
+procedure Measure is
+    --  The first sample, which the first reading below is measured against
+    Before : Sample := Take ("firefox");
+    After : Sample;
+begin
+    for I in 1 .. 5 loop
+        delay 1.0;
+        After := Take ("firefox");
+
+        --  The same pair of samples gives both figures
+        Put_Line ("machine:" &amp; Long_Float'Image (100.0 * System_Usage (Before, After)) &amp; " %");
+        Put_Line ("firefox:" &amp; Long_Float'Image (100.0 * Process_Usage (Before, After)) &amp; " %");
+
+        --  This reading becomes the one the next is measured against
+        Before := After;
+    end loop;
+end Measure;
+</code></pre>
+<p>To follow several things at once, read the machine once and measure each of them against that one reading. Each is then measured over exactly the same period of time, and the machine’s counters are read once instead of once per thing:</p>
+<pre><code class="language-ada">Machine := Take;
+Ours := Take (Our_PID, Machine);
+Theirs := Take ("firefox", Machine);
+</code></pre>
+<p>With Alire, add the library to your project with <code>alr with cpuload</code>.</p>
+<p>A full example program is in <a href="https://github.com/joular/cpuload/blob/HEAD/example/src/example_cpu_load.adb">example/src/example_cpu_load.adb</a>. It follows the machine, itself, and an application named on the command line, once per second until stopped with Ctrl+C. To build and run it:</p>
+<pre><code class="language-bash">gprbuild -P example/example.gpr -p
+./example/example_cpu_load firefox
+</code></pre>
+<p>A number after the name stops it after that many readings (<code>""</code> follows no application):</p>
+<pre><code class="language-bash">./example/example_cpu_load "" 3
+</code></pre>
+<h2 id="using-from-c"><a class="header" href="#using-from-c">Using from C</a></h2>
+<p>The C declarations are in <a href="https://github.com/joular/cpuload/blob/HEAD/include/cpuload.h">include/cpuload.h</a>. Build the relocatable (shared) library (see <a href="#compilation">Compilation</a>), then:</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;unistd.h&gt;
+#include "cpuload.h"
+
+cpuload_sample before, after;
+
+cpuload_take_app("firefox", &amp;before);
+sleep(1);
+cpuload_take_app("firefox", &amp;after);
+
+printf("machine: %.2f%%\n", 100.0 * cpuload_system_usage(&amp;before, &amp;after));
+printf("firefox: %.2f%%\n", 100.0 * cpuload_process_usage(&amp;before, &amp;after));
+</code></pre>
+<p><code>cpuload_take_pid_with</code> and <code>cpuload_take_app_with</code> are the same as <code>cpuload_take_pid</code> and <code>cpuload_take_app</code>, but measure against a machine sample already taken instead of taking another one:</p>
+<pre><code class="language-c">cpuload_sample machine, mine, theirs;
+
+cpuload_take_system(&amp;machine);
+cpuload_take_pid_with(getpid(), &amp;machine, &amp;mine);
+cpuload_take_app_with("firefox", &amp;machine, &amp;theirs);
+</code></pre>
+<p>A full example program is in <a href="https://github.com/joular/cpuload/blob/HEAD/example/c/main.c">example/c/main.c</a>. Like the Ada one, it follows the machine, itself, and an application named on the command line, once per second until stopped with Ctrl+C. It comes with a Makefile that builds the shared library and the program:</p>
+<pre><code class="language-bash">make -C example/c run APP=firefox
+</code></pre>
+<p>Run from the root of the repository with no application, for two readings:</p>
+<pre><code class="language-bash">./example/c/example_c "" 2
+</code></pre>
+<p>It prints:</p>
+<pre><code>CPU Load 0.0.4
+Following the machine and this program. Name an application to follow it as well: ./example/c/example_c firefox
+machine 8.29% | this program 0.00%
+machine 7.89% | this program 0.00%
+Stopping
+</code></pre>
+<h2 id="using-from-python"><a class="header" href="#using-from-python">Using from Python</a></h2>
+<p>From Python, the same interface through ctypes:</p>
+<pre><code class="language-python">import ctypes, time
+
+class Sample(ctypes.Structure):
+    _fields_ = [("busy", ctypes.c_int64), ("total", ctypes.c_int64), ("used", ctypes.c_int64)]
+
+lib = ctypes.CDLL("lib/relocatable/libcpuload.so")  # libcpuload.dylib on macOS, libcpuload.dll on Windows
+lib.cpuload_system_usage.restype = ctypes.c_double
+lib.cpuload_process_usage.restype = ctypes.c_double
+lib.cpuload_version.restype = ctypes.c_char_p
+
+before, after = Sample(), Sample()
+
+lib.cpuload_take_app(b"firefox", ctypes.byref(before))
+time.sleep(1)
+lib.cpuload_take_app(b"firefox", ctypes.byref(after))
+
+print("machine:", 100.0 * lib.cpuload_system_usage(ctypes.byref(before), ctypes.byref(after)), "%")
+print("firefox:", 100.0 * lib.cpuload_process_usage(ctypes.byref(before), ctypes.byref(after)), "%")
+</code></pre>
+<p><code>cpuload_take_pid_with</code> and <code>cpuload_take_app_with</code> are there as well, taking the machine sample as their middle argument.</p>
+<p>A full example program is in <a href="https://github.com/joular/cpuload/blob/HEAD/example/python/main.py">example/python/main.py</a>, with a Makefile that builds the shared library:</p>
+<pre><code class="language-bash">make -C example/python run APP=firefox
+</code></pre>
+<p>Other languages (C++, Java, Rust, etc.) use the same C interface. See <a href="#integration-with-systems-and-tools">Integration with Systems and Tools</a>.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="compilation"><a class="header" href="#compilation">Compilation</a></h1>
+<p>CPU Load is written in Ada and is built with GPRBuild, or with Alire. A modern GNAT compiler is the only requirement.</p>
+<h2 id="default-build"><a class="header" href="#default-build">Default Build</a></h2>
+<p>With <a href="https://alire.ada.dev">Alire</a>:</p>
+<pre><code class="language-bash">alr build
+</code></pre>
+<p>Or directly with GNAT:</p>
+<pre><code class="language-bash">gprbuild -P cpuload.gpr
+</code></pre>
+<p>The build produces a static library by default, <code>libcpuload.a</code> in <code>lib/static/</code>, for Ada programs.</p>
+<h2 id="choosing-the-os"><a class="header" href="#choosing-the-os">Choosing the OS</a></h2>
+<p>The build detects the OS on its own: Linux, macOS and Windows are each recognised from the target GPRBuild reports, so nothing has to be passed.</p>
+<p><code>-XPJ_OS</code> still says which OS to build for (<code>linux</code>, <code>macos</code> or <code>windows</code>) when it is not the one of the machine building it:</p>
+<pre><code class="language-bash">gprbuild -P cpuload.gpr -XPJ_OS=windows
+</code></pre>
+<p>A library built for another OS reads no counters at all: the machine reads 0%, and processes and applications read negative.</p>
+<h2 id="library-types"><a class="header" href="#library-types">Library Types</a></h2>
+<p>For other library types, set <code>-XCPULOAD_LIBRARY_TYPE</code> (when it is not set, the generic <code>LIBRARY_TYPE</code> is used if set, and <code>static</code> otherwise):</p>
+<pre><code class="language-bash">gprbuild -P cpuload.gpr -XCPULOAD_LIBRARY_TYPE=relocatable
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Library type</th><th style="text-align: center">Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>static</code></td><td style="text-align: center"><strong>on</strong></td><td><code>libcpuload.a</code>, linked into an Ada program.</td></tr>
+<tr><td><code>relocatable</code></td><td style="text-align: center">off</td><td>The shared library (<code>libcpuload.so</code> / <code>.dll</code> / <code>.dylib</code>) that carries the C interface, for programs in other languages.</td></tr>
+<tr><td><code>static-pic</code></td><td style="text-align: center">off</td><td>A static library built position independent, to go inside someone else’s shared library.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Each type is built in its own folder: <code>lib/static/</code>, <code>lib/relocatable/</code> or <code>lib/static-pic/</code>.</p>
+<p>The <code>relocatable</code> library is stand-alone (it starts itself up when loaded) and, on Linux and Windows, encapsulated: it carries the Ada runtime too, so it is one self-contained file. On Linux, it is versioned as <code>libcpuload.so.0</code>.</p>
+<p>On macOS it cannot be encapsulated, so the Ada runtime stays a file of its own: the library records the folder of the runtime of the compiler that built it, and loads it from there with nothing to set (no <code>DYLD_LIBRARY_PATH</code>, so it also works under <code>sudo</code> and from the system’s Python).</p>
+<h2 id="building-the-examples"><a class="header" href="#building-the-examples">Building the Examples</a></h2>
+<p>The Ada example uses the static library:</p>
+<pre><code class="language-bash">gprbuild -P example/example.gpr -p
+./example/example_cpu_load firefox
+</code></pre>
+<p>The C example comes with a Makefile that builds the shared library and the program:</p>
+<pre><code class="language-bash">make -C example/c run APP=firefox
+</code></pre>
+<p>To build it by hand instead, from the root of the repository, first compile the library:</p>
+<pre><code class="language-bash">gprbuild -P cpuload.gpr -XCPULOAD_LIBRARY_TYPE=relocatable
+</code></pre>
+<p>Then compile the C program:</p>
+<pre><code class="language-bash">gcc example/c/main.c -Iinclude -Llib/relocatable -lcpuload -Wl,-rpath,"$PWD/lib/relocatable" -o example/c/example_c
+</code></pre>
+<p><code>-I</code> is the folder holding <code>cpuload.h</code>, <code>-L</code> and <code>-l</code> the library to link with, and <code>-rpath</code> the folder where the program looks for the library when it runs. Without <code>-rpath</code>, the program still compiles but stops on start because it cannot find the library, unless you set <code>LD_LIBRARY_PATH</code> (Linux) or <code>DYLD_LIBRARY_PATH</code> (macOS) yourself. Windows has no <code>-rpath</code>: put a copy of the DLL next to the program instead (which is what the Makefile does).</p>
+<p>The Python example only needs the shared library, which its Makefile builds:</p>
+<pre><code class="language-bash">make -C example/python run APP=firefox
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="library-interface"><a class="header" href="#library-interface">Library Interface</a></h1>
+<p>CPU Load has the same interface in Ada and in C: take a sample, compare two samples, and the version of the library.</p>
+<h2 id="ada"><a class="header" href="#ada">Ada</a></h2>
+<p>The whole interface is the <code>CPU_Load</code> package.</p>
+<h3 id="types"><a class="header" href="#types">Types</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Process_ID</code></td><td>The ID of a process (a <code>Natural</code>).</td></tr>
+<tr><td><code>Sample</code></td><td>One reading of the CPU counters, in microseconds: <code>Busy</code> (machine time not spent idle, summed over every core), <code>Total</code> (machine time there was to spend: the elapsed time times the number of cores, <code>0</code> if the sample could not be taken) and <code>Used</code> (CPU time of the process or application sampled, <code>0</code> for the system alone, negative if it could not be read), all three <code>Integer_64</code>.</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="subprograms"><a class="header" href="#subprograms">Subprograms</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Subprogram</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>function Take return Sample</code></td><td>Sample the system alone.</td></tr>
+<tr><td><code>function Take (PID : in Process_ID) return Sample</code></td><td>Sample the system and one process. <code>0</code> samples the system alone.</td></tr>
+<tr><td><code>function Take (App : in String) return Sample</code></td><td>Sample the system and every process of an application. <code>App</code> is the program’s name without its folder: the name must match exactly, but upper or lower case does not matter (see <a href="#supported-platforms">Supported Platforms</a>). <code>""</code> samples the system alone.</td></tr>
+<tr><td><code>function Take (PID : in Process_ID; Machine : in Sample) return Sample</code></td><td>The same as <code>Take (PID)</code>, measured against a machine sample already taken.</td></tr>
+<tr><td><code>function Take (App : in String; Machine : in Sample) return Sample</code></td><td>The same as <code>Take (App)</code>, measured against a machine sample already taken.</td></tr>
+<tr><td><code>function System_Usage (Before, After : in Sample) return Long_Float</code></td><td>CPU load of the whole machine between two samples, from <code>0.0</code> to <code>1.0</code> (samples of any kind: system, process or application).</td></tr>
+<tr><td><code>function Process_Usage (Before, After : in Sample) return Long_Float</code></td><td>CPU load of the process or application between two samples, from <code>0.0</code> to <code>1.0</code>, and negative if it could not be read at all.</td></tr>
+<tr><td><code>function Version return String</code></td><td>The version of the library.</td></tr>
+</tbody>
+</table>
+</div>
+<p>The two <code>Take</code> functions with a <code>Machine</code> sample measure everything over exactly the same period of time, and read the machine’s counters once:</p>
+<pre><code class="language-ada">Machine := Take;
+Ours := Take (Our_PID, Machine);
+Theirs := Take ("firefox", Machine);
+</code></pre>
+<h2 id="c"><a class="header" href="#c">C</a></h2>
+<p>The C declarations are in <a href="https://github.com/joular/cpuload/blob/HEAD/include/cpuload.h">include/cpuload.h</a>. Use them with the relocatable (shared) library, which starts itself up when loaded: no other initialization call is needed.</p>
+<h3 id="types-1"><a class="header" href="#types-1">Types</a></h3>
+<pre><code class="language-c">typedef struct cpuload_sample {
+    int64_t busy;   /* machine time not spent idle, added up over every core */
+    int64_t total;  /* machine time altogether, idle included, added up over every core */
+    int64_t used;   /* CPU time of what was sampled, 0 for a sample of the system, -1 if it could not be read */
+} cpuload_sample;
+</code></pre>
+<p>A <code>total</code> of 0 means the sample could not be taken at all.</p>
+<h3 id="functions"><a class="header" href="#functions">Functions</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Function</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>void cpuload_take_system(cpuload_sample *out)</code></td><td>Same as <code>Take</code>: a sample of the whole system.</td></tr>
+<tr><td><code>void cpuload_take_pid(unsigned int pid, cpuload_sample *out)</code></td><td>Same as <code>Take (PID)</code>. <code>0</code> samples the system alone, and a <code>pid</code> too large to be any process (e.g. a negative <code>pid_t</code> turned unsigned) gives a <code>used</code> of <code>-1</code>.</td></tr>
+<tr><td><code>void cpuload_take_app(const char *app, cpuload_sample *out)</code></td><td>Same as <code>Take (App)</code>. <code>NULL</code> or <code>""</code> samples the system alone.</td></tr>
+<tr><td><code>void cpuload_take_pid_with(unsigned int pid, const cpuload_sample *machine, cpuload_sample *out)</code></td><td>Same as <code>Take (PID, Machine)</code>.</td></tr>
+<tr><td><code>void cpuload_take_app_with(const char *app, const cpuload_sample *machine, cpuload_sample *out)</code></td><td>Same as <code>Take (App, Machine)</code>.</td></tr>
+<tr><td><code>double cpuload_system_usage(const cpuload_sample *before, const cpuload_sample *after)</code></td><td>Same as <code>System_Usage</code>.</td></tr>
+<tr><td><code>double cpuload_process_usage(const cpuload_sample *before, const cpuload_sample *after)</code></td><td>Same as <code>Process_Usage</code>.</td></tr>
+<tr><td><code>const char *cpuload_version(void)</code></td><td>Same as <code>Version</code>. The string is owned by the library, so do not free it.</td></tr>
+</tbody>
+</table>
+</div>
+<p>A <code>NULL</code> <code>machine</code> counts as a sample with a <code>total</code> of 0: <code>cpuload_system_usage</code> then gives <code>0.0</code>, and so does <code>cpuload_process_usage</code> unless the process could not be read.
+A <code>NULL</code> <code>before</code> or <code>after</code> gives <code>0.0</code>, and a <code>NULL</code> <code>out</code> does nothing.</p>
+<h2 id="constraints"><a class="header" href="#constraints">Constraints</a></h2>
+<ul>
+<li>The library keeps no state. Linked statically into an Ada program, it can be called from any number of tasks.</li>
+<li>The shared library must be called from one thread at a time, whatever the language: it runs on an Ada runtime without tasking, which has a single working stack for the whole process. A sample is a plain record either way, so it can be taken in one thread and compared in another.</li>
+<li>Sample about a second apart (see <a href="#reading-the-numbers">Reading the Numbers</a>).</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="reading-the-numbers"><a class="header" href="#reading-the-numbers">Reading the Numbers</a></h1>
+<p>A sample holds the CPU counters of one moment, and the load is what changed between two samples.</p>
+<h2 id="units"><a class="header" href="#units">Units</a></h2>
+<p>Every counter in a <code>Sample</code> is in <strong>microseconds</strong>, on every OS.</p>
+<p>Both loads, <code>System_Usage</code> and <code>Process_Usage</code>, run from <code>0.0</code> to <code>1.0</code> and are a share of the <strong>whole machine</strong>, not of one core: a process using all of one core of an eight core machine reads <code>0.125</code>, not <code>1.0</code>.
+A core here is a CPU as the OS counts them, so a hardware thread on a processor with Hyper-Threading or SMT. To get a load as a share of one of them, multiply it by their number.</p>
+<h2 id="negative-and-zero"><a class="header" href="#negative-and-zero">Negative and Zero</a></h2>
+<p><strong>A negative load means the process could not be read at all</strong>: not running (a process that has ended but is not yet cleaned up by the system counts as not running), or not allowed to get the information needed. That is not the same as <code>0.0</code>, which means no CPU time used at all.</p>
+<p>A process is read in both samples, and the load is negative when it could not be read in one of them.</p>
+<h2 id="applications"><a class="header" href="#applications">Applications</a></h2>
+<p>For an application, a process that could not be read is left out of the sum, so the figure is short by what it used. The answer is negative only when some of the application’s processes are running and none of them would say anything at all, or when the processes could not be listed. An application that is not running reads <code>0.0</code>.</p>
+<p>On Windows, the processes of other users cannot even be named, so they are never part of an application: an application made only of them reads <code>0.0</code>.</p>
+<p>An application is every process running its program when the sample is taken. A process of the application that ends between two samples takes all of its time out of the second one, so that stretch reads low, or <code>0.0</code>.</p>
+<h2 id="samples-that-cannot-be-compared"><a class="header" href="#samples-that-cannot-be-compared">Samples That Cannot Be Compared</a></h2>
+<ul>
+<li>A sample with a total of 0 could not be taken at all (the counters of the machine could not be read). The loads computed with it are <code>0.0</code>, or negative when the process could not be read.</li>
+<li>Two samples given the wrong way round give <code>0.0</code>.</li>
+</ul>
+<p>A total of 0 on the very first sample is worth checking: it is what a library built for another OS gives (see <a href="#compilation">Compilation</a>), and without the check a program would print 0% forever and look idle. The example programs do this check.</p>
+<h2 id="how-often-to-sample"><a class="header" href="#how-often-to-sample">How Often to Sample</a></h2>
+<p>Sample about a second apart: Linux counts a process in 10 ms units and Windows in about 15 ms, too coarse for shorter waits. macOS counts a process in nanoseconds, and reads it well below a second, though the machine itself is still counted in 10 ms ticks.</p>
+<p>On macOS, the counters of the machine are 32 bits, counting 100 times per second for each busy core: on a 10 core machine kept busy, they can wrap after about 50 days. Only the load measured across the wrap shows 0%.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="integration-with-systems-and-tools"><a class="header" href="#integration-with-systems-and-tools">Integration with Systems and Tools</a></h1>
+<p>CPU Load is designed to be embedded in other programs and tools. It only measures the CPU load, and leaves to the program using it what to do with the numbers: show them, write them to files, share power out to processes, etc.</p>
+<p>For example, <a href="https://github.com/joular/powerjoular">PowerJoular</a> uses CPU Load together with our <a href="https://github.com/joular/joularcore">Joular Core</a> library: Joular Core gives the power of the CPU, and CPU Load the load of the machine and of the monitored process or application. The power of the process is then the CPU power times its load, divided by the load of the machine.</p>
+<p>See <a href="#library-interface">Library Interface</a> for the details of the interface. This page focuses on using it from different languages.</p>
+<h2 id="ada-programs"><a class="header" href="#ada-programs">Ada Programs</a></h2>
+<p>Ada programs use the <code>CPU_Load</code> package directly, and link the static library. With Alire, add the library to your project with:</p>
+<pre><code class="language-bash">alr with cpuload
+</code></pre>
+<p>Without Alire, add the folder of the library to the project search path of GPRBuild, and add <code>with "cpuload.gpr";</code> to your project file:</p>
+<pre><code class="language-bash">gprbuild -P your_project.gpr -aP../cpuload
+</code></pre>
+<h2 id="c-c-and-other-languages"><a class="header" href="#c-c-and-other-languages">C, C++ and Other Languages</a></h2>
+<p>Any language with a C FFI can use the shared library (<code>libcpuload.so</code> on Linux, <code>libcpuload.dll</code> on Windows, <code>libcpuload.dylib</code> on macOS) through the C interface in <a href="https://github.com/joular/cpuload/blob/HEAD/include/cpuload.h">include/cpuload.h</a>: C and C++ directly, Python through ctypes, Java through FFM or JNA, Rust through <code>libloading</code> or FFI declarations, etc.</p>
+<p>A sample is three 64-bit integers, <code>busy</code>, <code>total</code> and <code>used</code>, in this order, with the same layout on every target.</p>
+<p>On Linux and Windows, the shared library is one self-contained file, carrying the Ada runtime too, so it is the only file to ship with your program. On Windows, the program looks for the DLL next to it, so put a copy there.</p>
+<p>On macOS, the library loads the Ada runtime from the folder of the compiler that built it (see <a href="#compilation">Compilation</a>), so it runs on a Mac where that same compiler is installed in the same folder.</p>
+<h2 id="python"><a class="header" href="#python">Python</a></h2>
+<p>The <a href="#quick-usage">Quick Usage</a> page shows how to call the library from Python with ctypes, and <a href="https://github.com/joular/cpuload/blob/HEAD/example/python/main.py">example/python/main.py</a> is a full example.</p>
+<p>ctypes takes every result as an <code>int</code> unless told otherwise, so declare <code>ctypes.c_double</code> as the result of <code>cpuload_system_usage</code> and <code>cpuload_process_usage</code>, or the loads come back wrong. The full example declares the types of every function it calls.</p>
+<p>The library leaves the signal handlers of the program loading it in place, so Ctrl+C raises <code>KeyboardInterrupt</code> in Python as usual. The example still puts Python’s Ctrl+C handler back after loading the library, as a safeguard.</p>
+<h2 id="java"><a class="header" href="#java">Java</a></h2>
+<p>From Java, the library can be called through the Foreign Function and Memory API (FFM) or JNA. The shared library does not install any handler for the signals the JVM relies on (such as <code>SIGSEGV</code> and <code>SIGBUS</code>), so it does not get in the way of the JVM.</p>
+<h2 id="threads"><a class="header" href="#threads">Threads</a></h2>
+<p>The shared library must be called from one thread at a time. A sample is a plain record, so it can be taken in one thread and compared in another.</p>
+<p>Linked statically into an Ada program, the library can be called from any number of tasks, as it keeps no state.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="how-cpu-load-works"><a class="header" href="#how-cpu-load-works">How CPU Load Works</a></h1>
+<p>This page describes the internal architecture of CPU Load: what a sample holds, how a load is calculated, how each OS is read, and how to add a new OS.</p>
+<h2 id="samples-and-loads"><a class="header" href="#samples-and-loads">Samples and Loads</a></h2>
+<p>A sample holds three counters, read at one moment, in microseconds:</p>
+<ul>
+<li><code>Busy</code>: the machine time not spent idle, summed over every core.</li>
+<li><code>Total</code>: the machine time there was to spend: the elapsed time times the number of cores.</li>
+<li><code>Used</code>: the CPU time of the process or of the application sampled, and 0 for the system alone.</li>
+</ul>
+<p>These counters count up, so a load is what changed between two samples:</p>
+<pre><code>system load  = (Busy after − Busy before) / (Total after − Total before)
+process load = (Used after − Used before) / (Total after − Total before)
+</code></pre>
+<p>As <code>Total</code> covers every core, a load is a share of the whole machine.</p>
+<p>When a process or an application is sampled, the counters of the machine are read first, and the process right after. The small lag between the two is the same in both samples, so it cancels out.</p>
+<p>An application is every process running its program at the moment of the sample: CPU Load lists the processes, keeps the ones running the program named, and adds up their CPU time. A process that could not be read is left out of the sum.</p>
+<h2 id="linux"><a class="header" href="#linux">Linux</a></h2>
+<p><strong>The machine.</strong> The first line of <code>/proc/stat</code> gives the time of all the cores together, in clock ticks (usually 100 per second, as <code>sysconf</code> says). <code>Busy</code> is user, nice, system, irq, softirq and steal. The idle time is idle and iowait. The guest times are already inside user and nice, so they are not added again.</p>
+<p><strong>A process.</strong> <code>utime</code> and <code>stime</code> of <code>/proc/&lt;pid&gt;/stat</code> give the time the process spent running its own code and in the kernel. The name of the process, in brackets, may hold spaces or brackets, so the fields are counted from the last <code>)</code>. A process in state <code>Z</code> (zombie), <code>X</code> or <code>x</code> (dead) has ended, and is not read.</p>
+<p><strong>An application.</strong> <code>/proc</code> is scanned, and each process is named by the program <code>/proc/&lt;pid&gt;/exe</code> points to, without the <code> (deleted)</code> the kernel adds when the program’s file was replaced while it runs. When it cannot be read, the name in <code>/proc/&lt;pid&gt;/comm</code> is used instead.</p>
+<p>The files are read through file descriptors rather than <code>Ada.Text_IO</code>, whose <code>Open</code> fails when several tasks call it at once.</p>
+<h2 id="macos"><a class="header" href="#macos">macOS</a></h2>
+<p><strong>The machine.</strong> <code>host_statistics</code> gives the user, system and nice ticks of all the cores (100 per second), which make <code>Busy</code>. <code>Total</code> comes from the monotonic clock (<code>mach_absolute_time</code>) times the number of cores, rather than from the idle ticks, which macOS updates only every 90 ms or so.</p>
+<p><strong>A process.</strong> <code>proc_pidinfo</code> gives the user and system time of the process, in the units of <code>mach_absolute_time</code>, turned into microseconds with <code>mach_timebase_info</code> (125/3 on Apple Silicon, 1/1 on Intel). It fails for the processes of other users unless the program runs as root.</p>
+<p><strong>An application.</strong> <code>proc_listpids</code> lists the processes, and <code>proc_pidpath</code> gives the full path of each one’s program. A process is part of the application when its program has the name given, or when it runs from inside the bundle of that name (<code>&lt;name&gt;.app</code>), as Firefox runs its content processes from a helper bundle inside <code>Firefox.app</code>.</p>
+<p>Under Rosetta, a process is still counted in the units of Apple Silicon (24 MHz), which an x86_64 build reads with the units of an Intel Mac: process times come out about 40 times too low.</p>
+<h2 id="windows"><a class="header" href="#windows">Windows</a></h2>
+<p><strong>The machine.</strong> <code>GetSystemTimes</code> gives the idle, kernel and user times, in 100 ns units. The kernel time includes the idle time, so <code>Total</code> is the kernel and user times, and <code>Busy</code> is <code>Total</code> without the idle time.</p>
+<p><strong>A process.</strong> <code>OpenProcess</code> (asking for limited information only), then <code>GetProcessTimes</code>, give the kernel and user times of the process. The processes of other users cannot be opened, so they are not read. A process that has ended can still be queried while a handle to it is held. Its exit time, which stays zero until it ends, tells it apart, and such a process is not read.</p>
+<p><strong>An application.</strong> <code>EnumProcesses</code> lists the processes (with room for twice as many each time the list fills up, up to 65536), and <code>QueryFullProcessImageNameW</code> gives the path of each one’s program, through the same <code>OpenProcess</code>: the processes of other users cannot be named, so they are left out. A trailing <code>.exe</code> is ignored on both sides of the comparison.</p>
+<h2 id="code-layout"><a class="header" href="#code-layout">Code Layout</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Path</th><th>Purpose</th></tr>
+</thead>
+<tbody>
+<tr><td><code>src/cpu_load.ads</code>, <code>src/cpu_load.adb</code></td><td>The interface (<code>Sample</code>, <code>Take</code>, <code>System_Usage</code>, <code>Process_Usage</code>, <code>Version</code>), and what an application is, the same on every OS</td></tr>
+<tr><td><code>src/cpu_load-platform.ads</code></td><td>The four functions each OS provides</td></tr>
+<tr><td><code>src/cpu_load-c_api.ads</code>, <code>src/cpu_load-c_api.adb</code></td><td>The C interface, matching <code>include/cpuload.h</code></td></tr>
+<tr><td><code>src/linux/</code>, <code>src/macos/</code>, <code>src/windows/</code></td><td>One body of <code>CPU_Load.Platform</code> per OS (<code>src/macos</code> also holds the specs file recording where the shared library finds the Ada runtime)</td></tr>
+<tr><td><code>include/cpuload.h</code></td><td>The C declarations</td></tr>
+<tr><td><code>example/</code></td><td>Example programs in Ada, C and Python</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="adding-a-new-os"><a class="header" href="#adding-a-new-os">Adding a New OS</a></h2>
+<p>The package spec <code>src/cpu_load.ads</code> and its body <code>src/cpu_load.adb</code> are shared by every OS. They hold the <code>Take</code> and usage functions, and what an application is: every process running its program, their times added up.</p>
+<p>Each OS has its own body of <code>src/cpu_load-platform.ads</code>, which has four functions about the machine:</p>
+<ul>
+<li><code>Measure_System</code>: the machine’s own CPU counters</li>
+<li><code>Used_By_PID</code>: the CPU time one process has used</li>
+<li><code>Runs</code>: whether a process runs the program an application is named by</li>
+<li><code>For_Each_Process</code>: every process running</li>
+</ul>
+<p>One body per OS lives in <code>src/linux</code>, <code>src/macos</code> and <code>src/windows</code>, and <code>cpuload.gpr</code> picks the folder for the OS being built from <code>PJ_OS</code>.</p>
+<p>To support a new OS, write a body of <code>CPU_Load.Platform</code> for it, then add the OS and its folder to <code>PJ_OS</code> in <code>cpuload.gpr</code>, and to <code>alire.toml</code>.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-09f2665d.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+
+    </div>
+    </body>
+</html>
