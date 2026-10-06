@@ -14,7 +14,7 @@ java -javaagent:joularcodejava-<version>.jar -jar yourProgram.jar
 
 On Linux PC/Servers, Joular Code for Java reads the CPU power from RAPL directly, which needs root, or read access to the RAPL files (see [Installation](./installation.md)).
 
-Everywhere else (Windows, macOS, Raspberry Pi), start [PowerJoular](https://github.com/joular/powerjoular) with the `-r` option, so it writes its power data to the shared memory ring buffer Joular Code for Java reads (with `sudo` on macOS, and from a terminal with administrative rights on Windows with the PawnIO driver):
+Everywhere else (Windows, macOS, FreeBSD, Raspberry Pi), start [PowerJoular](https://github.com/joular/powerjoular) with the `-r` option, so it writes its power data to the shared memory ring buffer Joular Code for Java reads (with `sudo` on macOS, with `sudo` and the `cpuctl` module on FreeBSD, and from a terminal with administrative rights on Windows with the PawnIO driver):
 
 ```
 powerjoular -r

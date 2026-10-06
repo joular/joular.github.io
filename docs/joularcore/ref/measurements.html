@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-5527cac8.js";
+            window.path_to_searchindex_js = "../searchindex-d1af38a3.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-fea6b9de.js"></script>
@@ -178,7 +178,7 @@
 <p>Each reading gives one measurement for the CPU and one for the GPU. A measurement says whether the source is available, its value, and its unit.</p>
 <h2 id="energy-and-power"><a class="header" href="#energy-and-power">Energy and Power</a></h2>
 <ul>
-<li>Some hardware reports <strong>energy</strong>: the joules consumed since the previous reading (RAPL on Linux and Windows). The first reading counts from <code>Open</code>.</li>
+<li>Some hardware reports <strong>energy</strong>: the joules consumed since the previous reading (RAPL on Linux, Windows and FreeBSD). The first reading counts from <code>Open</code>.</li>
 <li>Others report <strong>power</strong>: the watts being drawn when read (GPUs), or averaged since the previous reading (Raspberry Pi and Asus Tinker Board models).</li>
 <li>On macOS, the value is the <strong>average power since the previous reading</strong>: Joular Core asks <code>powermetrics</code> for a sample at each reading. Opening the sources waits for the first sample of <code>powermetrics</code> (up to about three seconds).</li>
 </ul>
@@ -198,6 +198,7 @@
 <tbody>
 <tr><td>RAPL on Linux</td><td><strong>One</strong> package of powercap, the first one whose name begins with <code>package</code></td></tr>
 <tr><td>RAPL on Windows</td><td>The package domain of the first socket</td></tr>
+<tr><td>RAPL on FreeBSD</td><td>The package domain of the first processor, <code>/dev/cpuctl0</code></td></tr>
 <tr><td>Raspberry Pi and Asus Tinker Board</td><td>A model-based estimate: a regression on CPU load, evaluated over the interval between two readings. It is not a reading of the board’s actual draw</td></tr>
 <tr><td>Nvidia (NVML)</td><td>What the card reports for the whole GPU board. Depending on the architecture and driver, this is an average over about a second rather than an instant value</td></tr>
 <tr><td>AMD on Linux (hwmon)</td><td>What the amdgpu driver reports (<code>power1_average</code>, or <code>power1_input</code>), which the kernel documents as the power used by the SoC, the GPU chip. On an APU that chip includes the CPU cores, so work done on the CPU raises what this library calls the GPU, and adding CPU and GPU together counts some of it twice</td></tr>

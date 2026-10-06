@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-ef1855d1.js";
+            window.path_to_searchindex_js = "../searchindex-89e24e1d.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-8aae2392.js"></script>
@@ -181,22 +181,23 @@
 <pre><code class="language-bash">alr with cpuload
 </code></pre>
 <p>Alire fetches the library and builds it along with your program. Then add <code>with CPU_Load;</code> to your code (see <a href="./quick_usage.html">Quick Usage</a>).</p>
-<p>Alire offers CPU Load on Linux, Windows and macOS.</p>
+<p>Alire offers CPU Load on Linux, Windows, macOS and FreeBSD.</p>
 <h2 id="from-source"><a class="header" href="#from-source">From Source</a></h2>
 <p>Clone the <a href="https://github.com/joular/cpuload">GitHub repository</a> and build it with GNAT and GPRBuild, or with Alire. The build gives:</p>
 <ul>
 <li>a static library (<code>libcpuload.a</code>), to link into an Ada program, which is the default</li>
-<li>a shared library (<code>libcpuload.so</code> on Linux, <code>libcpuload.dll</code> on Windows, <code>libcpuload.dylib</code> on macOS), which carries the C interface for programs in C, C++, Java, Python, Rust, etc.</li>
+<li>a shared library (<code>libcpuload.so</code> on Linux and FreeBSD, <code>libcpuload.dll</code> on Windows, <code>libcpuload.dylib</code> on macOS), which carries the C interface for programs in C, C++, Java, Python, Rust, etc.</li>
 </ul>
-<p>On Linux and Windows, the shared library carries the Ada runtime too, so it is the only file to ship with your program (on Linux, <code>libcpuload.so.0</code>, the name programs look for). On macOS, the Ada runtime stays a file of its own, which the library loads from the folder of the compiler that built it.</p>
+<p>On Linux, Windows and FreeBSD, the shared library carries the Ada runtime too, so it is the only file to ship with your program (on Linux and FreeBSD, <code>libcpuload.so.0</code>, the name programs look for). On macOS, the Ada runtime stays a file of its own, which the library loads from the folder of the compiler that built it.</p>
 <p>See <a href="../ref/compilation.html">Compilation</a> for the build commands and options.</p>
 <h2 id="platform-specific-requirements"><a class="header" href="#platform-specific-requirements">Platform-specific Requirements</a></h2>
 <p>CPU Load is a library, so the privileges below are needed for the <em>program using it</em>.</p>
-<p>The counters need no particular rights on Linux, Windows or macOS: any user can read the load of the whole machine, and of their own processes.</p>
+<p>The counters need no particular rights on Linux, Windows, macOS or FreeBSD: any user can read the load of the whole machine, and of their own processes.</p>
 <ul>
 <li><strong>Linux</strong>: the load of other users’ processes can be read too, but not the program they run, so they are matched by the name in <code>/proc/&lt;pid&gt;/comm</code> instead (see <a href="./supported_platforms.html">Supported Platforms</a>).</li>
 <li><strong>macOS</strong>: the processes of other users cannot be read unless the program runs as root (with <code>sudo</code>), so their load is negative.</li>
 <li><strong>Windows</strong>: the processes of other users cannot be read. One of them followed by its ID reads a negative load, and in an application they are left out, as their program cannot be found either (an application made only of them reads <code>0.0</code>).</li>
+<li><strong>FreeBSD</strong>: the processes of other users can be read too, with the program they run, unless the system hides them (<code>security.bsd.see_other_uids=0</code>): one of them followed by its ID then reads a negative load, and in an application they are left out.</li>
 </ul>
 
                     </main>

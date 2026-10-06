@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-d7d8b02a.js";
+            window.path_to_searchindex_js = "searchindex-3a24fa9e.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-421028e5.js"></script>
@@ -182,7 +182,7 @@
 <p>Joular Code for Java is a lightweight and efficient Java agent for monitoring the energy consumption of methods and execution branches at the source code level.</p>
 <p>This project is part of <a href="https://github.com/joular/joularcode">Joular Code</a>, and is the successor of <a href="https://github.com/joular/joularjx">JoularJX</a>.</p>
 <p>It is a Java agent where you can simply hook it to the Java Virtual Machine when starting your Java program, or attach it to a program already running.
-To get power readings, it reads Intel and AMD RAPL directly (through powercap) on Linux, and uses the shared memory ring buffer of <a href="https://github.com/joular/powerjoular">PowerJoular</a> on Windows, macOS and Raspberry Pi devices (and on Linux too, if you prefer). Inside a virtual machine, it reads the power the host writes to a file shared with the guest.</p>
+To get power readings, it reads Intel and AMD RAPL directly (through powercap) on Linux, and uses the shared memory ring buffer of <a href="https://github.com/joular/powerjoular">PowerJoular</a> on Windows, macOS, FreeBSD and Raspberry Pi devices (and on Linux too, if you prefer). Inside a virtual machine, it reads the power the host writes to a file shared with the guest.</p>
 <h2 id="features"><a class="header" href="#features">Features</a></h2>
 <ul>
 <li>Monitor power consumption and energy of each method and execution branch at runtime</li>
@@ -192,7 +192,7 @@ To get power readings, it reads Intel and AMD RAPL directly (through powercap) o
 <li>Gets the CPU power from Linux RAPL directly, from PowerJoular’s shared memory ring buffer, or from the host of a virtual machine</li>
 <li>Generates CSV files with the power (watts) and the energy (joules) of each execution branch</li>
 <li>Provides two sets of results: one for all methods (including the JDK ones), and one filtered and calculated for your application’s methods</li>
-<li>Works on Windows, macOS, Linux and Raspberry Pi</li>
+<li>Works on Windows, macOS, Linux, FreeBSD and Raspberry Pi</li>
 </ul>
 <h2 id="license"><a class="header" href="#license">License</a></h2>
 <p>Joular Code for Java is licensed under the GNU LGPL 3 license only (LGPL-3.0-only).</p>
@@ -203,13 +203,13 @@ All rights reserved. This program and the accompanying materials are made availa
 <h1 id="supported-platforms"><a class="header" href="#supported-platforms">Supported Platforms</a></h1>
 <p>Joular Code for Java supports the following platforms and operating systems:</p>
 <ul>
-<li>PC/Servers using a RAPL supported Intel processor (since Sandy Bridge) or a RAPL supported AMD processor (since Ryzen), on Linux and on Windows.</li>
+<li>PC/Servers using a RAPL supported Intel processor (since Sandy Bridge) or a RAPL supported AMD processor (since Ryzen), on Linux, on Windows and on FreeBSD.</li>
 <li>Macs, with Apple Silicon or Intel processors.</li>
 <li>Raspberry Pi devices and Asus Tinker Board, on Linux.</li>
 <li>Virtual machines (any supported guest on any host).</li>
 </ul>
 <p>On Linux PC/Servers, Joular Code for Java can read RAPL directly, with nothing else to install.
-On Windows, macOS and Raspberry Pi, it gets the CPU power from <a href="https://github.com/joular/powerjoular">PowerJoular</a> (version 2.0.0 or later), which runs alongside the monitored application and writes its power data to a shared memory ring buffer.
+On Windows, macOS, FreeBSD and Raspberry Pi, it gets the CPU power from <a href="https://github.com/joular/powerjoular">PowerJoular</a> (version 2.0.0 or later), which runs alongside the monitored application and writes its power data to a shared memory ring buffer.
 In a virtual machine, it reads the power that the host writes to a file shared with the guest.
 See <a href="#power-sources">Power Sources</a> for the details.</p>
 <p>Only the power of the CPU is attributed to methods. The power of the GPU is not taken into account.</p>
@@ -242,10 +242,11 @@ However, the model is generated and trained on a specific revision (listed betwe
 <tbody>
 <tr><td style="text-align: center">Linux PC/Server</td><td style="text-align: center">Linux</td><td style="text-align: center">RAPL (using powercap), or PowerJoular</td><td style="text-align: center">x86, x86_64</td></tr>
 <tr><td style="text-align: center">Windows PC/Server</td><td style="text-align: center">Windows</td><td style="text-align: center">PowerJoular (RAPL through EMI, PawnIO or Hubblo’s driver)</td><td style="text-align: center">x86_64</td></tr>
+<tr><td style="text-align: center">FreeBSD PC/Server</td><td style="text-align: center">FreeBSD</td><td style="text-align: center">PowerJoular (RAPL through cpuctl)</td><td style="text-align: center">x86_64</td></tr>
 <tr><td style="text-align: center">Mac</td><td style="text-align: center">macOS</td><td style="text-align: center">PowerJoular (powermetrics)</td><td style="text-align: center">Apple Silicon (ARM), Intel (x86_64)</td></tr>
 <tr><td style="text-align: center">Raspberry Pi</td><td style="text-align: center">Linux</td><td style="text-align: center">PowerJoular (our regression models)</td><td style="text-align: center">ARM</td></tr>
 <tr><td style="text-align: center">Asus Tinker Board</td><td style="text-align: center">Linux</td><td style="text-align: center">PowerJoular (our regression models)</td><td style="text-align: center">ARM</td></tr>
-<tr><td style="text-align: center">Virtual Machine</td><td style="text-align: center">Supported guests (Windows, Linux, macOS), any host</td><td style="text-align: center">Host’s architecture (RAPL, regression models, others)</td><td style="text-align: center">x86, x86_64, ARM</td></tr>
+<tr><td style="text-align: center">Virtual Machine</td><td style="text-align: center">Supported guests (Windows, Linux, macOS, FreeBSD), any host</td><td style="text-align: center">Host’s architecture (RAPL, regression models, others)</td><td style="text-align: center">x86, x86_64, ARM</td></tr>
 </tbody>
 </table>
 </div>
@@ -265,10 +266,10 @@ You can install it wherever you want, and give its full path to <code>-javaagent
 <p>Joular Code for Java gets the CPU power from one of three sources, depending on the platform or operating system:</p>
 <ul>
 <li>On Linux PC/Servers, it reads RAPL directly through powercap, on Intel or AMD CPUs (since Ryzen). The RAPL files are only readable by root on most distributions (Linux kernel 5.10 and newer): run the application as root, give its user read access to these files (for example with a udev rule), or run PowerJoular with <code>-r</code> as root and set <code>power-source-type=ringbuffer</code>.</li>
-<li>On Windows, macOS and Raspberry Pi devices (and on Linux, with <code>power-source-type=ringbuffer</code>), it reads the shared memory ring buffer of <a href="https://github.com/joular/powerjoular">PowerJoular</a>. Install PowerJoular (version 2.0.0 or later), and run it with the <code>-r</code> option alongside your application. On Windows, start PowerJoular before the application, and do not restart it while the application runs.</li>
+<li>On Windows, macOS, FreeBSD and Raspberry Pi devices (and on Linux, with <code>power-source-type=ringbuffer</code>), it reads the shared memory ring buffer of <a href="https://github.com/joular/powerjoular">PowerJoular</a>. Install PowerJoular (version 2.0.0 or later), and run it with the <code>-r</code> option alongside your application. On Windows, start PowerJoular before the application, and do not restart it while the application runs.</li>
 <li>In virtual machines, set <code>power-source-type=vm</code> and <code>vm-power-file</code>: it then reads the power consumption of the virtual machine (measured in the host) from a file shared between the host and the guest (see <a href="#virtual-machines">Virtual Machines</a>).</li>
 </ul>
-<p>PowerJoular needs <code>sudo</code> on macOS, and on Linux PC/Servers unless its user can read the RAPL files, and a terminal with administrative rights on Windows with the PawnIO driver.
+<p>PowerJoular needs <code>sudo</code> on macOS, on FreeBSD (with the <code>cpuctl</code> module loaded by <code>kldload cpuctl</code>), and on Linux PC/Servers unless its user can read the RAPL files, and a terminal with administrative rights on Windows with the PawnIO driver.
 The Java application needs none of these.</p>
 <p>A commented example of the configuration file, <code>joularcodejava.properties.example</code>, is available in the repository and with the releases.
 Copy it as <code>joularcodejava.properties</code> to the folder where you run the Java command, or give its path with <code>-Djoularcodejava.properties</code> (see <a href="#configuration-properties">Configuration Properties</a>).
@@ -282,7 +283,7 @@ Without a configuration file, the default values are used.</p>
 <pre><code>java -javaagent:joularcodejava-&lt;version&gt;.jar -jar yourProgram.jar
 </code></pre>
 <p>On Linux PC/Servers, Joular Code for Java reads the CPU power from RAPL directly, which needs root, or read access to the RAPL files (see <a href="#installation">Installation</a>).</p>
-<p>Everywhere else (Windows, macOS, Raspberry Pi), start <a href="https://github.com/joular/powerjoular">PowerJoular</a> with the <code>-r</code> option, so it writes its power data to the shared memory ring buffer Joular Code for Java reads (with <code>sudo</code> on macOS, and from a terminal with administrative rights on Windows with the PawnIO driver):</p>
+<p>Everywhere else (Windows, macOS, FreeBSD, Raspberry Pi), start <a href="https://github.com/joular/powerjoular">PowerJoular</a> with the <code>-r</code> option, so it writes its power data to the shared memory ring buffer Joular Code for Java reads (with <code>sudo</code> on macOS, with <code>sudo</code> and the <code>cpuctl</code> module on FreeBSD, and from a terminal with administrative rights on Windows with the PawnIO driver):</p>
 <pre><code>powerjoular -r
 </code></pre>
 <p>On Windows, start PowerJoular before the application, and do not restart it while the application runs.
@@ -327,7 +328,7 @@ When the agent is attached to a running JVM, both are those of that JVM: its own
 <p>The following properties are available:</p>
 <ul>
 <li><code>power-source-type</code>: where the CPU power comes from: <code>auto</code>, <code>rapl</code>, <code>ringbuffer</code> or <code>vm</code> (default: <code>auto</code>). See <a href="#power-sources">Power Sources</a>.</li>
-<li><code>powerjoular-ringbuffer-path</code>: the path to the PowerJoular ring buffer (default: <code>/dev/shm/powerjoular</code> on Linux, <code>/tmp/powerjoular</code> on macOS, <code>%PROGRAMDATA%\powerjoular</code> on Windows).</li>
+<li><code>powerjoular-ringbuffer-path</code>: the path to the PowerJoular ring buffer (default: <code>/dev/shm/powerjoular</code> on Linux, <code>/tmp/powerjoular</code> on macOS and FreeBSD, <code>%PROGRAMDATA%\powerjoular</code> on Windows).</li>
 <li><code>vm-power-file</code>: the path for the power consumption of the virtual machine. Inside a virtual machine, indicate the file containing the power consumption of the VM (which is usually a file in the host that is shared with the guest). It must be set when <code>power-source-type</code> is <code>vm</code> (default: empty). See <a href="#virtual-machines">Virtual Machines</a>.</li>
 <li><code>vm-power-format</code>: power format of the shared VM power file: <code>watts</code> (a file containing one value, the power consumption of the VM), or <code>powerjoular</code> (the row <a href="https://github.com/joular/powerjoular">PowerJoular</a> writes with <code>-o</code> in the host, containing 3 columns: timestamp, CPU utilization of the VM and CPU power of the VM) (default: <code>powerjoular</code>).</li>
 <li><code>stack-monitoring-sample-rate</code>: the sample rate (in milliseconds) for the agent to monitor methods usage by calling the JVM stack, from 1 to 1000 (default: <code>10</code>). A higher value means less accurate energy data, and a lower value means a higher overhead of the agent. Below 5 milliseconds, a warning is shown, as sampling can noticeably slow the application down. A value that is not a number from 1 to 1000 is replaced by the default, with a warning.</li>
@@ -376,10 +377,11 @@ The sub-domains (cores, uncore, DRAM) and the <code>psys</code> domain, which co
 </code></pre>
 <h2 id="powerjoular-ring-buffer-ringbuffer"><a class="header" href="#powerjoular-ring-buffer-ringbuffer">PowerJoular ring buffer (<code>ringbuffer</code>)</a></h2>
 <p>Joular Code for Java reads the shared memory area that <a href="https://github.com/joular/powerjoular">PowerJoular</a> (version 2.0.0 or later) writes with <code>-r</code>.
-PowerJoular measures the hardware through <a href="https://github.com/joular/joularcore">Joular Core</a>: RAPL on Linux and Windows, <code>powermetrics</code> on Macs, and our regression power models on Raspberry Pi.
+PowerJoular measures the hardware through <a href="https://github.com/joular/joularcore">Joular Core</a>: RAPL on Linux, Windows and FreeBSD, <code>powermetrics</code> on Macs, and our regression power models on Raspberry Pi.
 It runs as a process of its own, so the privileges needed to measure the hardware stay out of the Java application:</p>
 <ul>
 <li>On Linux PC/Servers and on macOS, run PowerJoular with <code>sudo</code>.</li>
+<li>On FreeBSD, load the <code>cpuctl</code> module (<code>kldload cpuctl</code>), then run PowerJoular with <code>sudo</code>.</li>
 <li>On Windows, PowerJoular needs no special rights with the Energy Meter Interface or Hubblo’s RAPL driver, but needs a terminal with administrative rights with the PawnIO driver.</li>
 <li>On Raspberry Pi, no special rights are needed.</li>
 </ul>
@@ -389,6 +391,7 @@ It runs as a process of its own, so the privileges needed to measure the hardwar
 <ul>
 <li>Linux: <code>/dev/shm/powerjoular</code></li>
 <li>macOS: <code>/tmp/powerjoular</code></li>
+<li>FreeBSD: <code>/tmp/powerjoular</code></li>
 <li>Windows: <code>%PROGRAMDATA%\powerjoular</code></li>
 </ul>
 <pre><code class="language-properties">power-source-type=ringbuffer

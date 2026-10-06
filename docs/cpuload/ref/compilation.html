@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-ef1855d1.js";
+            window.path_to_searchindex_js = "../searchindex-89e24e1d.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-8aae2392.js"></script>
@@ -176,6 +176,7 @@
                     <main>
                         <h1 id="compilation"><a class="header" href="#compilation">Compilation</a></h1>
 <p>CPU Load is written in Ada and is built with GPRBuild, or with Alire. A modern GNAT compiler is the only requirement.</p>
+<p>On FreeBSD, <code>pkg install gprbuild</code> brings GPRBuild and GNAT, whose folder <code>/usr/local/gnat12/bin</code> has to be added to <code>PATH</code>.</p>
 <h2 id="default-build"><a class="header" href="#default-build">Default Build</a></h2>
 <p>With <a href="https://alire.ada.dev">Alire</a>:</p>
 <pre><code class="language-bash">alr build
@@ -185,8 +186,8 @@
 </code></pre>
 <p>The build produces a static library by default, <code>libcpuload.a</code> in <code>lib/static/</code>, for Ada programs.</p>
 <h2 id="choosing-the-os"><a class="header" href="#choosing-the-os">Choosing the OS</a></h2>
-<p>The build detects the OS on its own: Linux, macOS and Windows are each recognised from the target GPRBuild reports, so nothing has to be passed.</p>
-<p><code>-XPJ_OS</code> still says which OS to build for (<code>linux</code>, <code>macos</code> or <code>windows</code>) when it is not the one of the machine building it:</p>
+<p>The build detects the OS on its own: Linux, macOS, Windows and FreeBSD are each recognised from the target GPRBuild reports, so nothing has to be passed.</p>
+<p><code>-XPJ_OS</code> still says which OS to build for (<code>linux</code>, <code>macos</code>, <code>windows</code> or <code>freebsd</code>) when it is not the one of the machine building it:</p>
 <pre><code class="language-bash">gprbuild -P cpuload.gpr -XPJ_OS=windows
 </code></pre>
 <p>A library built for another OS reads no counters at all: the machine reads 0%, and processes and applications read negative.</p>
@@ -207,7 +208,7 @@
 </table>
 </div>
 <p>Each type is built in its own folder: <code>lib/static/</code>, <code>lib/relocatable/</code> or <code>lib/static-pic/</code>.</p>
-<p>The <code>relocatable</code> library is stand-alone (it starts itself up when loaded) and, on Linux and Windows, encapsulated: it carries the Ada runtime too, so it is one self-contained file. On Linux, it is versioned as <code>libcpuload.so.0</code>.</p>
+<p>The <code>relocatable</code> library is stand-alone (it starts itself up when loaded) and, on Linux, Windows and FreeBSD, encapsulated: it carries the Ada runtime too, so it is one self-contained file. On Linux and FreeBSD, it is versioned as <code>libcpuload.so.0</code>.</p>
 <p>On macOS it cannot be encapsulated, so the Ada runtime stays a file of its own: the library records the folder of the runtime of the compiler that built it, and loads it from there with nothing to set (no <code>DYLD_LIBRARY_PATH</code>, so it also works under <code>sudo</code> and from the system’s Python).</p>
 <h2 id="building-the-examples"><a class="header" href="#building-the-examples">Building the Examples</a></h2>
 <p>The Ada example uses the static library:</p>
@@ -223,7 +224,7 @@
 <p>Then compile the C program:</p>
 <pre><code class="language-bash">gcc example/c/main.c -Iinclude -Llib/relocatable -lcpuload -Wl,-rpath,"$PWD/lib/relocatable" -o example/c/example_c
 </code></pre>
-<p><code>-I</code> is the folder holding <code>cpuload.h</code>, <code>-L</code> and <code>-l</code> the library to link with, and <code>-rpath</code> the folder where the program looks for the library when it runs. Without <code>-rpath</code>, the program still compiles but stops on start because it cannot find the library, unless you set <code>LD_LIBRARY_PATH</code> (Linux) or <code>DYLD_LIBRARY_PATH</code> (macOS) yourself. Windows has no <code>-rpath</code>: put a copy of the DLL next to the program instead (which is what the Makefile does).</p>
+<p><code>-I</code> is the folder holding <code>cpuload.h</code>, <code>-L</code> and <code>-l</code> the library to link with, and <code>-rpath</code> the folder where the program looks for the library when it runs. Without <code>-rpath</code>, the program still compiles but stops on start because it cannot find the library, unless you set <code>LD_LIBRARY_PATH</code> (Linux and FreeBSD) or <code>DYLD_LIBRARY_PATH</code> (macOS) yourself. Windows has no <code>-rpath</code>: put a copy of the DLL next to the program instead (which is what the Makefile does).</p>
 <p>The Python example only needs the shared library, which its Makefile builds:</p>
 <pre><code class="language-bash">make -C example/python run APP=firefox
 </code></pre>

@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-ef1855d1.js";
+            window.path_to_searchindex_js = "../searchindex-89e24e1d.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-8aae2392.js"></script>
@@ -194,7 +194,7 @@ A core here is a CPU as the OS counts them, so a hardware thread on a processor 
 </ul>
 <p>A total of 0 on the very first sample is worth checking: it is what a library built for another OS gives (see <a href="./compilation.html">Compilation</a>), and without the check a program would print 0% forever and look idle. The example programs do this check.</p>
 <h2 id="how-often-to-sample"><a class="header" href="#how-often-to-sample">How Often to Sample</a></h2>
-<p>Sample about a second apart: Linux counts a process in 10 ms units and Windows in about 15 ms, too coarse for shorter waits. macOS counts a process in nanoseconds, and reads it well below a second, though the machine itself is still counted in 10 ms ticks.</p>
+<p>Sample about a second apart: Linux counts a process in 10 ms units, Windows in about 15 ms, and FreeBSD the machine in ticks of about 8 ms, too coarse for shorter waits. macOS counts a process in nanoseconds, and reads it well below a second, though the machine itself is still counted in 10 ms ticks.</p>
 <p>On macOS, the counters of the machine are 32 bits, counting 100 times per second for each busy core: on a 10 core machine kept busy, they can wrap after about 50 days. Only the load measured across the wrap shows 0%.</p>
 
                     </main>

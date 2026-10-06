@@ -1,6 +1,6 @@
 # Supported Platforms
 
-Joular Core runs on Linux, Windows and macOS, on PCs, servers, Macs and single-board computers, and reads Nvidia GPUs on BSD systems. The tables below summarise what is supported on each platform and architecture.
+Joular Core runs on Linux, Windows, macOS and FreeBSD, on PCs, servers, Macs and single-board computers. The tables below summarise what is supported on each platform and architecture.
 
 ## Operating Systems and Architectures
 
@@ -11,6 +11,7 @@ Joular Core runs on Linux, Windows and macOS, on PCs, servers, Macs and single-b
 | Linux (PC / servers)  | ✓      | ✓   |               |     |         |
 | Windows               | ✓      |     |               |     |         |
 | macOS                 | ✓      |     | ✓             |     |         |
+| FreeBSD               | ✓      |     |               |     |         |
 | SBC (Raspberry Pi, Asus Tinker Board) | |  |            | ✓   | ✓       |
 
 ### GPU
@@ -20,7 +21,7 @@ Joular Core runs on Linux, Windows and macOS, on PCs, servers, Macs and single-b
 | Linux (PC / servers) | ✓      | ✓   |           |
 | Windows              | ✓      | ✓   |           |
 | macOS                |        |     | ✓         |
-| BSD                  | ✓      |     |           |
+| FreeBSD              | ✓      |     |           |
 | SBC (Raspberry Pi)   |        |     |           |
 
 ## Platform Details
@@ -33,7 +34,7 @@ Joular Core runs on Linux, Windows and macOS, on PCs, servers, Macs and single-b
 | macOS (Intel) | macOS | `powermetrics` (CPU only) | Power |
 | Raspberry Pi | Linux | Regression power models | Power |
 | Asus Tinker Board (S) | Linux | Regression power models | Power |
-| BSD | FreeBSD, NetBSD, DragonFly BSD, OpenBSD | Nvidia through NVML, where Nvidia provides its driver (FreeBSD); no CPU support yet | Power |
+| FreeBSD PC / Server | FreeBSD | RAPL through the `cpuctl` driver, Nvidia through NVML | Energy (CPU), power (GPU) |
 
 Energy is the joules consumed since the previous reading, and power is the watts being drawn. See [Reading the Measurements](../ref/measurements.md) for the details.
 
@@ -67,15 +68,15 @@ CPU power, and GPU power on Apple Silicon, are read from Apple's `powermetrics` 
 **Raspberry Pi and SBC**  
 Power is calculated from CPU utilization using polynomial regression models that were measured against each supported board at various load levels. The board is detected from `/proc/device-tree/model`, and the CPU utilization is read from `/proc/stat`. No special permissions are needed. On a board with no power model, the CPU is reported as not available.
 
-**BSD**  
-CPU support is planned.
+**FreeBSD (x86_64)**  
+CPU energy is read from the same RAPL package counter, from the registers of the first processor, through the [cpuctl(4)](https://man.freebsd.org/cgi/man.cgi?query=cpuctl&sektion=4) driver (`/dev/cpuctl0`), for Intel and AMD processors. The driver is a module to load first, and its device is only readable by root and the `kmem` group (see [Installation](./installation.md)). If it cannot be read, the CPU is reported as not available.
 
 **Virtual Machines**  
 Inside a virtual machine, the hardware counters are usually not reachable, so the CPU is reported as not available. [PowerJoular](https://github.com/joular/powerjoular) can read the power of a virtual machine from a file the host writes.
 
 ## GPU Power Monitoring Details
 
-**Nvidia (Linux, Windows and BSD)**  
+**Nvidia (Linux, Windows and FreeBSD)**  
 GPU power is read through NVML, the library installed with the Nvidia driver, and loaded by Joular Core when the GPU is opened. The first card listed is the one read. If the driver is not installed or that card does not report its power, the GPU is reported as not available. On Linux and Windows, Nvidia is tried first, then AMD, and only one GPU is read: on a machine with both, the Nvidia card is the one measured.
 
 **AMD (Linux)**  

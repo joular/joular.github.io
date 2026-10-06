@@ -12,16 +12,16 @@ alr with joularcore
 
 Alire fetches the library and builds it along with your program. Then add `with Joular_Core;` to your code (see [Quick Usage](./quick_usage.md)).
 
-Alire offers Joular Core on Linux, Windows and macOS. On BSD, compile it from source with GPRBuild.
+Alire offers Joular Core on Linux, Windows, macOS and FreeBSD.
 
 ## From Source
 
 Clone the [GitHub repository](https://github.com/joular/joularcore) and build it with GNAT and GPRBuild, or with Alire. The build gives:
 
 - a static library (`libjoularcore.a`), to link into an Ada program, which is the default
-- a shared library (`libjoularcore.so` on Linux, `libjoularcore.dll` on Windows, `libjoularcore.dylib` on macOS), which carries the C interface for programs in C, C++, Java, Python, Rust, etc.
+- a shared library (`libjoularcore.so` on Linux and FreeBSD, `libjoularcore.dll` on Windows, `libjoularcore.dylib` on macOS), which carries the C interface for programs in C, C++, Java, Python, Rust, etc.
 
-On Linux and Windows, the shared library carries the Ada runtime too, so it is the only file to ship with your program (on Linux, `libjoularcore.so.0`, the name programs look for). On macOS, the Ada runtime stays a file of its own, which the library loads from the folder of the compiler that built it.
+On Linux, Windows and FreeBSD, the shared library carries the Ada runtime too, so it is the only file to ship with your program (on Linux and FreeBSD, `libjoularcore.so.0`, the name programs look for). On macOS, the Ada runtime stays a file of its own, which the library loads from the folder of the compiler that built it.
 
 See [Compilation](../ref/compilation.md) for the build commands and options.
 
@@ -51,6 +51,12 @@ GPU monitoring needs the Nvidia driver for Nvidia cards (NVML is installed with 
 ### macOS
 
 No additional software is required. Power data is read via `powermetrics`, which ships with macOS. Because `powermetrics` only runs as the superuser, run your program with `sudo`. Without it, both the CPU and the GPU are reported as not available.
+
+### FreeBSD
+
+CPU energy is read from the RAPL registers through the `cpuctl(4)` driver, which is a module not in the GENERIC kernel: load it with `kldload cpuctl` (or `cpuctl_load="YES"` in `/boot/loader.conf`), and run your program as root, or as a member of the `kmem` group (which `/dev/cpuctl0` is part of).
+
+GPU monitoring needs the Nvidia driver for Nvidia cards (NVML is installed with it), and no special privileges.
 
 ### Raspberry Pi and SBC
 

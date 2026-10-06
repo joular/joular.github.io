@@ -51,6 +51,14 @@ Under Rosetta, a process is still counted in the units of Apple Silicon (24 MHz)
 
 **An application.** `EnumProcesses` lists the processes (with room for twice as many each time the list fills up, up to 65536), and `QueryFullProcessImageNameW` gives the path of each one's program, through the same `OpenProcess`: the processes of other users cannot be named, so they are left out. A trailing `.exe` is ignored on both sides of the comparison.
 
+## FreeBSD
+
+**The machine.** `kern.cp_time`, read through `sysctl`, gives the user, nice, system, interrupt and idle ticks of all the cores together, counted by the statistics clock (`stathz` of `kern.clockrate`, around 128 per second). `Busy` is all but the idle ticks.
+
+**A process.** `kern.proc.pid` gives the `kinfo_proc` of the process, whose `ki_runtime` is its CPU time, already in microseconds. A process in state `SZOMB` (zombie) has ended, and is not read. Above the highest process number, FreeBSD takes the number for a thread and answers with its process, so the answer is checked to be about the process asked for.
+
+**An application.** `kern.proc.proc` lists every process once (`kern.proc.all` lists every thread), and `kern.proc.pathname` gives the full path of each one's program. When there is none (a kernel process runs none, and a program replaced while it runs has no path), the command name in the `kinfo_proc` is used instead.
+
 ## Code Layout
 
 | Path | Purpose |
@@ -58,7 +66,7 @@ Under Rosetta, a process is still counted in the units of Apple Silicon (24 MHz)
 | `src/cpu_load.ads`, `src/cpu_load.adb` | The interface (`Sample`, `Take`, `System_Usage`, `Process_Usage`, `Version`), and what an application is, the same on every OS |
 | `src/cpu_load-platform.ads` | The four functions each OS provides |
 | `src/cpu_load-c_api.ads`, `src/cpu_load-c_api.adb` | The C interface, matching `include/cpuload.h` |
-| `src/linux/`, `src/macos/`, `src/windows/` | One body of `CPU_Load.Platform` per OS (`src/macos` also holds the specs file recording where the shared library finds the Ada runtime) |
+| `src/linux/`, `src/macos/`, `src/windows/`, `src/freebsd/` | One body of `CPU_Load.Platform` per OS (`src/macos` also holds the specs file recording where the shared library finds the Ada runtime) |
 | `include/cpuload.h` | The C declarations |
 | `example/` | Example programs in Ada, C and Python |
 
@@ -73,6 +81,6 @@ Each OS has its own body of `src/cpu_load-platform.ads`, which has four function
 - `Runs`: whether a process runs the program an application is named by
 - `For_Each_Process`: every process running
 
-One body per OS lives in `src/linux`, `src/macos` and `src/windows`, and `cpuload.gpr` picks the folder for the OS being built from `PJ_OS`.
+One body per OS lives in `src/linux`, `src/macos`, `src/windows` and `src/freebsd`, and `cpuload.gpr` picks the folder for the OS being built from `PJ_OS`.
 
 To support a new OS, write a body of `CPU_Load.Platform` for it, then add the OS and its folder to `PJ_OS` in `cpuload.gpr`, and to `alire.toml`.

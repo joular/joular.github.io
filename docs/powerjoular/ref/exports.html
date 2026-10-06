@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-3140a034.js";
+            window.path_to_searchindex_js = "../searchindex-26fb3fd6.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-b01ac823.js"></script>
@@ -220,6 +220,7 @@ When running PowerJoular as root, write the CSV files to a folder only root can 
 <tr><td>Linux</td><td><code>/dev/shm/powerjoular</code></td></tr>
 <tr><td>Windows</td><td><code>%PROGRAMDATA%\powerjoular</code>, i.e. <code>C:\ProgramData\powerjoular</code></td></tr>
 <tr><td>macOS</td><td><code>/tmp/powerjoular</code></td></tr>
+<tr><td>FreeBSD</td><td><code>/tmp/powerjoular</code></td></tr>
 </tbody>
 </table>
 </div>
@@ -242,7 +243,7 @@ When running PowerJoular as root, write the CSV files to a folder only root can 
 <p>A measurement goes in the entry the counter points at (<code>counter mod 5</code>), and the counter is raised afterwards.
 A reader follows the counter to know when a new measurement has landed, and the timestamps to know how old each entry is.</p>
 <p>Only one PowerJoular should write to the ring buffer at the same time.
-On Linux and macOS, a second run using <code>-r</code> replaces the file, and the first one keeps writing to the old file, which only the readers that mapped it before still see.
+On Linux, macOS and FreeBSD, a second run using <code>-r</code> replaces the file, and the first one keeps writing to the old file, which only the readers that mapped it before still see.
 On Windows, the second run cannot replace the file the first one holds open, and carries on without the ring buffer.</p>
 <p>The ring buffer is created every time PowerJoular starts: a file left at that path, by an earlier run or by anyone else, is deleted first, so PowerJoular never writes into a file it did not create.
 It is readable by everyone and writable only by the user running PowerJoular.

@@ -22,7 +22,7 @@ gprbuild -P your_project.gpr -aP../joularcore
 
 ## C, C++ and Other Languages
 
-Any language with a C FFI can use the shared library (`libjoularcore.so` on Linux, `libjoularcore.dll` on Windows, `libjoularcore.dylib` on macOS) through the C interface in [include/joularcore.h](https://github.com/joular/joularcore/blob/main/include/joularcore.h): C and C++ directly, Python through ctypes, Java through FFM or JNA, Rust through `libloading` or FFI declarations, etc.
+Any language with a C FFI can use the shared library (`libjoularcore.so` on Linux and FreeBSD, `libjoularcore.dll` on Windows, `libjoularcore.dylib` on macOS) through the C interface in [include/joularcore.h](https://github.com/joular/joularcore/blob/main/include/joularcore.h): C and C++ directly, Python through ctypes, Java through FFM or JNA, Rust through `libloading` or FFI declarations, etc.
 
 The two structures of the C interface have the same layout on every target, with no padding: a `double` followed by two `int` for one measurement, and the CPU measurement followed by the GPU one for a reading.
 

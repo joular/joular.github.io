@@ -33,9 +33,10 @@ power-source-type=rapl
 ## PowerJoular ring buffer (`ringbuffer`)
 
 Joular Code for Java reads the shared memory area that [PowerJoular](https://github.com/joular/powerjoular) (version 2.0.0 or later) writes with `-r`.
-PowerJoular measures the hardware through [Joular Core](https://github.com/joular/joularcore): RAPL on Linux and Windows, `powermetrics` on Macs, and our regression power models on Raspberry Pi.
+PowerJoular measures the hardware through [Joular Core](https://github.com/joular/joularcore): RAPL on Linux, Windows and FreeBSD, `powermetrics` on Macs, and our regression power models on Raspberry Pi.
 It runs as a process of its own, so the privileges needed to measure the hardware stay out of the Java application:
 - On Linux PC/Servers and on macOS, run PowerJoular with `sudo`.
+- On FreeBSD, load the `cpuctl` module (`kldload cpuctl`), then run PowerJoular with `sudo`.
 - On Windows, PowerJoular needs no special rights with the Energy Meter Interface or Hubblo's RAPL driver, but needs a terminal with administrative rights with the PawnIO driver.
 - On Raspberry Pi, no special rights are needed.
 
@@ -46,6 +47,7 @@ PowerJoular may be started before or after the application, and restarted while 
 The default paths of the ring buffer are:
 - Linux: `/dev/shm/powerjoular`
 - macOS: `/tmp/powerjoular`
+- FreeBSD: `/tmp/powerjoular`
 - Windows: `%PROGRAMDATA%\powerjoular`
 
 ```properties

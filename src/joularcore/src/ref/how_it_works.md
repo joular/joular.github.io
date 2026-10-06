@@ -21,7 +21,8 @@ The library has two sources, the CPU and the GPU, each measured by its own monit
         ├── RAPL (Linux)        ├── NVML (Nvidia)
         ├── Board models (SBC)  ├── hwmon sysfs (AMD, Linux)
         ├── RAPL (Windows)      ├── ADLX (AMD, Windows)
-        └── powermetrics        └── powermetrics
+        ├── RAPL (FreeBSD)      └── powermetrics
+        └── powermetrics
 ```
 
 Each source is opened, read and closed on its own: a source that fails while being opened is closed again and reported as not available, and a source that fails while being read reports zero. Neither stops the other source.
@@ -64,17 +65,19 @@ On Apple Silicon, `powermetrics` reports the CPU and the GPU each on a line. On 
 
 `powermetrics` only runs as root, so Joular Core checks that before starting it. If it stops answering, its sources read zero, and it is started again on a reading about ten seconds later.
 
-## BSD
+## FreeBSD
 
-Only Nvidia GPUs are supported for now, through NVML. CPU support is planned.
+**CPU.** The RAPL package counter of the first processor is read from its registers, through the `cpuctl(4)` driver (`/dev/cpuctl0`). As on Windows, Joular Core asks the processor for its vendor with the CPUID instruction, to know which registers hold the energy unit and the package counter on Intel and AMD, and refuses Silvermont and Airmont Atoms.
 
-## Nvidia GPUs on Linux, Windows and BSD: NVML
+**GPU.** The GPU monitor reads Nvidia cards through NVML.
 
-NVML is the library installed with the Nvidia driver (`libnvidia-ml.so.1` on Linux and BSD, `nvml.dll` on Windows, in the system folder, or in the Nvidia folder of Program Files for older drivers). Joular Core loads it when the GPU is opened, rather than linking to it, so the library works the same on a machine with no Nvidia driver. It reads the power of the first card listed. The same applies to ADLX on Windows (`amdadlx64.dll`, or `amdadlx32.dll` for a 32 bits build).
+## Nvidia GPUs on Linux, Windows and FreeBSD: NVML
+
+NVML is the library installed with the Nvidia driver (`libnvidia-ml.so.1` on Linux and FreeBSD, `nvml.dll` on Windows, in the system folder, or in the Nvidia folder of Program Files for older drivers). Joular Core loads it when the GPU is opened, rather than linking to it, so the library works the same on a machine with no Nvidia driver. It reads the power of the first card listed. The same applies to ADLX on Windows (`amdadlx64.dll`, or `amdadlx32.dll` for a 32 bits build).
 
 ## Energy Counters
 
-The RAPL counters of Linux, and of Windows when read through a driver, only count up, and wrap back to zero once full. Joular Core keeps the previous value of each counter, and turns two readings into the energy consumed between them:
+The RAPL counters of Linux, of Windows when read through a driver, and of FreeBSD, only count up, and wrap back to zero once full. Joular Core keeps the previous value of each counter, and turns two readings into the energy consumed between them:
 
 - When the new value is lower, the counter wrapped, so the range it wraps at is added.
 - A drop that does not look like a wrap (one that would mean more than half the range was used between two readings) is taken as a counter reset, for example after the machine was suspended, and gives zero.
@@ -89,13 +92,14 @@ Only one wrap can be corrected between two readings, so read more often than the
 | `src/joular_core.ads` | The Ada interface: `Open`, `Read`, `Close`, `Version` |
 | `src/joular_core-c_api.ads` | The C interface, matching `include/joularcore.h` |
 | `src/joular_core-cpu_monitor.ads`, `src/joular_core-gpu_monitor.ads` | The two monitors, with one body per OS |
-| `src/joular_core-energy_counters.adb` | The energy between two readings of a counter that wraps (RAPL on Linux and Windows) |
-| `src/joular_core-gpu_nvidia_nvml.adb` | Nvidia GPUs through NVML, on Linux, Windows and BSD |
+| `src/joular_core-energy_counters.adb` | The energy between two readings of a counter that wraps (RAPL on Linux, Windows and FreeBSD) |
+| `src/joular_core-gpu_nvidia_nvml.adb` | Nvidia GPUs through NVML, on Linux, Windows and FreeBSD |
+| `src/joular_core-processor.adb` | The CPUID vendor check, to read the RAPL registers on Windows and FreeBSD |
 | `src/linux/` | RAPL through powercap, the power models of single-board computers, AMD GPUs through hwmon |
-| `src/windows/` | RAPL through EMI, PawnIO and Hubblo's driver, the CPUID vendor check, AMD GPUs through ADLX, loading a shared library and finding NVML, and the Win32 bindings they share |
+| `src/windows/` | RAPL through EMI, PawnIO and Hubblo's driver, AMD GPUs through ADLX, loading a shared library and finding NVML, and the Win32 bindings they share |
 | `src/macos/` | `powermetrics`, and the specs file recording where the shared library finds the Ada runtime |
-| `src/bsd/` | Nvidia GPUs only |
-| `src/posix/` | What Linux, macOS and the BSDs do the same way (loading a shared library) |
+| `src/freebsd/` | RAPL through `cpuctl` |
+| `src/posix/` | What Linux, macOS and FreeBSD do the same way (loading a shared library) |
 | `include/joularcore.h` | The C declarations |
 | `example/` | Example programs in Ada, C and Python |
 | `tools/` | The PawnIO modules, and the script turning them into an Ada package |

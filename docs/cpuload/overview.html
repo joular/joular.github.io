@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-ef1855d1.js";
+            window.path_to_searchindex_js = "searchindex-89e24e1d.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-8aae2392.js"></script>
@@ -184,13 +184,13 @@ It gives one simple interface: take a sample, wait, take another, and compare th
 <h2 id="key-features"><a class="header" href="#key-features">Key Features</a></h2>
 <ul>
 <li>Measure the CPU load of the whole system, of one process by its ID, or of an application by its name (every process of it)</li>
-<li>Measure on Linux, Windows and macOS (Apple Silicon and Intel Macs)</li>
+<li>Measure on Linux, Windows, macOS (Apple Silicon and Intel Macs) and FreeBSD</li>
 <li>Match an application with the program its processes actually run, so <code>firefox</code> finds every process of Firefox</li>
 <li>Give every load as a share of the whole machine, from 0.0 to 1.0</li>
 <li>Tell apart a process that could not be read (a negative load) from one that used no CPU time (0.0)</li>
 <li>Keep no state: a sample is a plain record, so it can be taken in one thread and compared in another</li>
 <li>Read the counters with no particular rights (except for the processes of other users on macOS and Windows)</li>
-<li>Static library for Ada programs, and a shared library with a C interface for other languages (one self-contained file on Linux and Windows)</li>
+<li>Static library for Ada programs, and a shared library with a C interface for other languages (one self-contained file on Linux, Windows and FreeBSD)</li>
 </ul>
 <h2 id="license"><a class="header" href="#license">License</a></h2>
 <p>CPU Load is licensed under the GNU LGPL 3 license only (LGPL-3.0-only).</p>

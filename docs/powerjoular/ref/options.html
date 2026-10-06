@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-3140a034.js";
+            window.path_to_searchindex_js = "../searchindex-26fb3fd6.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-b01ac823.js"></script>
@@ -177,7 +177,8 @@
                         <h1 id="command-line-options"><a class="header" href="#command-line-options">Command Line Options</a></h1>
 <p>To use PowerJoular, just run the command <code>powerjoular</code>.
 On Linux PC/servers, PowerJoular uses Intel’s RAPL through the Linux powercap sysfs, and therefore requires root/sudo access on the latest Linux kernels (5.10 and newer): <code>sudo powerjoular</code>.
-On macOS, <code>powermetrics</code> also requires root/sudo access: <code>sudo powerjoular</code>.</p>
+On macOS, <code>powermetrics</code> also requires root/sudo access: <code>sudo powerjoular</code>.
+On FreeBSD, reading RAPL needs the <code>cpuctl</code> module (<code>kldload cpuctl</code>) and root/sudo access: <code>sudo powerjoular</code>.</p>
 <p>By default, the software will show the total power consumption, and the power of the CPU and of the GPU (when there is one), on the terminal, every second, until Ctrl+C.</p>
 <p>The following options are available:</p>
 <ul>

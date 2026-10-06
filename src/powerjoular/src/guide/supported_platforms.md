@@ -6,7 +6,7 @@ PowerJoular monitors the following platforms:
 - Raspberry Pi devices (multiple models) and Asus Tinker Board.
 - Inside virtual machines in all supported host platforms.
 
-PowerJoular works on Linux, Windows and macOS.
+PowerJoular works on Linux, Windows, macOS and FreeBSD.
 
 PowerJoular does the energy and CPU usage measuring through two Ada libraries we developed:
 - [Joular Core](https://github.com/joular/joularcore): for CPU and GPU energy and power consumption.
@@ -24,12 +24,14 @@ On Windows PC/Servers, PowerJoular reads the same RAPL package counter in one of
 
 Setting the ```JOULARCORE_WINDOWS_RAPL``` environment variable to ```emi```, ```pawnio``` or ```hubblo``` picks one instead of trying them in turn. Nothing has to be configured otherwise.
 
+On FreeBSD PC/Servers, PowerJoular reads the same RAPL package counter from the registers of the processor, through the [cpuctl(4)](https://man.freebsd.org/cgi/man.cgi?query=cpuctl&sektion=4) driver.
+
 On macOS, PowerJoular uses ```powermetrics```, which is installed with macOS and reports the power drawn over each cycle.
 Apple Silicon Macs give their CPU and the GPU built into the same chip.
 Intel Macs give the CPU only (the whole chip: cores, integrated graphics and system agent).
 
 For the GPU, PowerJoular supports:
-- Nvidia graphic cards on Linux and Windows, through NVML, which is installed with the Nvidia driver.
+- Nvidia graphic cards on Linux, Windows and FreeBSD, through NVML, which is installed with the Nvidia driver.
 - AMD graphic cards on Linux, through the hwmon sysfs of the amdgpu driver.
 - AMD graphic cards on Windows, through ADLX, which is installed with the AMD driver.
 - The GPU of Apple Silicon Macs, through ```powermetrics```.
@@ -65,8 +67,9 @@ The models listed for 32 bits OS are also used on a 64 bits OS.
 |        Asus Tinker Board       |        Linux       |             Our regression models             |             ARM            |
 |     Linux PC/Server    |        Linux        |             RAPL (using powercap), Nvidia NVML, AMD hwmon sysfs            |             x86, x86_64            |
 |     Windows PC/Server    |        Windows        |             RAPL (using EMI, PawnIO or Hubblo's driver), Nvidia NVML, AMD ADLX            |             x86_64            |
+|     FreeBSD PC/Server    |        FreeBSD        |             RAPL (using cpuctl), Nvidia NVML            |             x86_64            |
 |     Mac    |        macOS        |             powermetrics            |             Apple Silicon (ARM), Intel (x86_64)            |
-|     Virtual Machine    |        Linux, Windows or macOS guest, any host       |             Host's architecture (RAPL, regression models, others)            |             x86, x86_64, ARM            |
+|     Virtual Machine    |        Linux, Windows, macOS or FreeBSD guest, any host       |             Host's architecture (RAPL, regression models, others)            |             x86, x86_64, ARM            |
 
 ## Required privileges
 
@@ -75,4 +78,5 @@ Without the privileges below, and with no graphic card to read, PowerJoular find
 - **Linux, PC or server**: reading RAPL files needs elevated privileges on the recent kernels (5.10 and newer), so run ```sudo powerjoular```, or give read rights to the files. See [this issue](https://github.com/joular/powerjoular/issues/1).
 - **Windows**: with the Energy Meter Interface (EMI), no special privileges or driver are needed. Otherwise, a RAPL driver is needed: [PawnIO](https://pawnio.eu), which needs PowerJoular to run from a terminal with administrative rights, or [Hubblo's RAPL driver](https://github.com/hubblo-org/windows-rapl-driver), which does not. The easiest way to get a signed version of Hubblo's driver is through the [Scaphandre installer](https://github.com/hubblo-org/scaphandre/releases). Reading the CPU time of a process belonging to another user also needs a terminal with administrative rights, so ```-p``` and ```-a``` on someone else's process need it too.
 - **macOS**: ```powermetrics``` only runs as the superuser, so run ```sudo powerjoular```. Without it, PowerJoular finds no power source and stops. Reading the CPU time of a process belonging to another user also needs root, so ```-p``` and ```-a``` on someone else's process need ```sudo``` too.
-- **Raspberry Pi, and GPU readings on Linux and Windows**: no special privileges needed.
+- **FreeBSD**: the RAPL registers are read through the ```cpuctl(4)``` driver, a module not in the GENERIC kernel: load it with ```kldload cpuctl``` (or ```cpuctl_load="YES"``` in ```/boot/loader.conf```), then run ```sudo powerjoular```, or run it as a member of the ```kmem``` group.
+- **Raspberry Pi, and GPU readings on Linux, Windows and FreeBSD**: no special privileges needed.

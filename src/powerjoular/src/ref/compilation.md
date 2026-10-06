@@ -5,6 +5,7 @@ PowerJoular is written with Ada, and requires a modern Ada compiler, such as GNA
 PowerJoular depends on the following libraries and tools for certain of its functions, but can function without them:
 - Linux powercap with RAPL support: for monitoring power consumption of Intel and AMD processors
 - The Energy Meter Interface, PawnIO or Hubblo's RAPL driver: for monitoring power consumption of Intel and AMD processors on Windows
+- The ```cpuctl``` driver (```kldload cpuctl```): for monitoring power consumption of Intel and AMD processors on FreeBSD
 - ```powermetrics``` (installed with macOS): for monitoring power consumption of Macs
 - NVML (installed with the Nvidia driver): for monitoring power consumption of Nvidia graphic cards
 - The amdgpu driver (its hwmon sysfs files): for monitoring power consumption of AMD graphic cards on Linux
@@ -24,6 +25,8 @@ sudo apt install gnat gprbuild
 
 For other distributions, use their package manager to download the compiler, or check [this article for easy instruction for various distributions](https://www.noureddine.org/articles/ada-on-windows-and-linux-an-installation-guide), including RHEL and its clones which does not ship with Ada support in GCC.
 
+On FreeBSD, ```pkg install gprbuild``` brings GPRBuild and GNAT, whose folder ```/usr/local/gnat12/bin``` has to be added to ```PATH```.
+
 On Windows and macOS, the easiest way is to install [Alire](https://alire.ada.dev/), which also downloads the GNAT compiler and GPRBuild.
 
 ### Compilation with the GNAT compiler and GPRBuild
@@ -36,8 +39,8 @@ gprbuild -P powerjoular.gpr -aP../joularcore -aP../cpuload -p
 
 The PowerJoular binary will be created in the ```bin/``` folder.
 
-Linux, macOS and Windows are each detected on their own, from the target GPRBuild identifies.
-To build for another OS than the one you are on, use a cross compiler for that OS (given to GPRBuild with ```--target```), and set ```PJ_OS``` to ```linux```, ```macos``` or ```windows```:
+Linux, macOS, Windows and FreeBSD are each detected on their own, from the target GPRBuild identifies.
+To build for another OS than the one you are on, use a cross compiler for that OS (given to GPRBuild with ```--target```), and set ```PJ_OS``` to ```linux```, ```macos```, ```windows``` or ```freebsd```:
 
 ```
 gprbuild -P powerjoular.gpr -aP../joularcore -aP../cpuload -XPJ_OS=windows -p
@@ -73,7 +76,7 @@ To leave nothing at all outside the binary, including the C library, build with 
 gprbuild -P powerjoular.gpr -aP../joularcore -aP../cpuload -XPOWERJOULAR_LINKING=full -p
 ```
 
-On Linux, a fully static binary cannot reliably load a library while it runs, so the Nvidia graphic card readings, which load NVML while running, can't be counted on with this option.
+On Linux and FreeBSD, a fully static binary cannot reliably load a library while it runs, so the Nvidia graphic card readings, which load NVML while running, can't be counted on with this option.
 The processor readings are not affected, and PowerJoular carries on without the GPU rather than failing.
 
 On macOS, Apple ships no static C library, so this option does nothing: the binary is built the same way it is by default.

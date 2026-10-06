@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-d7d8b02a.js";
+            window.path_to_searchindex_js = "../searchindex-3a24fa9e.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-421028e5.js"></script>
@@ -177,13 +177,13 @@
                         <h1 id="supported-platforms"><a class="header" href="#supported-platforms">Supported Platforms</a></h1>
 <p>Joular Code for Java supports the following platforms and operating systems:</p>
 <ul>
-<li>PC/Servers using a RAPL supported Intel processor (since Sandy Bridge) or a RAPL supported AMD processor (since Ryzen), on Linux and on Windows.</li>
+<li>PC/Servers using a RAPL supported Intel processor (since Sandy Bridge) or a RAPL supported AMD processor (since Ryzen), on Linux, on Windows and on FreeBSD.</li>
 <li>Macs, with Apple Silicon or Intel processors.</li>
 <li>Raspberry Pi devices and Asus Tinker Board, on Linux.</li>
 <li>Virtual machines (any supported guest on any host).</li>
 </ul>
 <p>On Linux PC/Servers, Joular Code for Java can read RAPL directly, with nothing else to install.
-On Windows, macOS and Raspberry Pi, it gets the CPU power from <a href="https://github.com/joular/powerjoular">PowerJoular</a> (version 2.0.0 or later), which runs alongside the monitored application and writes its power data to a shared memory ring buffer.
+On Windows, macOS, FreeBSD and Raspberry Pi, it gets the CPU power from <a href="https://github.com/joular/powerjoular">PowerJoular</a> (version 2.0.0 or later), which runs alongside the monitored application and writes its power data to a shared memory ring buffer.
 In a virtual machine, it reads the power that the host writes to a file shared with the guest.
 See <a href="../ref/power_sources.html">Power Sources</a> for the details.</p>
 <p>Only the power of the CPU is attributed to methods. The power of the GPU is not taken into account.</p>
@@ -216,10 +216,11 @@ However, the model is generated and trained on a specific revision (listed betwe
 <tbody>
 <tr><td style="text-align: center">Linux PC/Server</td><td style="text-align: center">Linux</td><td style="text-align: center">RAPL (using powercap), or PowerJoular</td><td style="text-align: center">x86, x86_64</td></tr>
 <tr><td style="text-align: center">Windows PC/Server</td><td style="text-align: center">Windows</td><td style="text-align: center">PowerJoular (RAPL through EMI, PawnIO or Hubblo’s driver)</td><td style="text-align: center">x86_64</td></tr>
+<tr><td style="text-align: center">FreeBSD PC/Server</td><td style="text-align: center">FreeBSD</td><td style="text-align: center">PowerJoular (RAPL through cpuctl)</td><td style="text-align: center">x86_64</td></tr>
 <tr><td style="text-align: center">Mac</td><td style="text-align: center">macOS</td><td style="text-align: center">PowerJoular (powermetrics)</td><td style="text-align: center">Apple Silicon (ARM), Intel (x86_64)</td></tr>
 <tr><td style="text-align: center">Raspberry Pi</td><td style="text-align: center">Linux</td><td style="text-align: center">PowerJoular (our regression models)</td><td style="text-align: center">ARM</td></tr>
 <tr><td style="text-align: center">Asus Tinker Board</td><td style="text-align: center">Linux</td><td style="text-align: center">PowerJoular (our regression models)</td><td style="text-align: center">ARM</td></tr>
-<tr><td style="text-align: center">Virtual Machine</td><td style="text-align: center">Supported guests (Windows, Linux, macOS), any host</td><td style="text-align: center">Host’s architecture (RAPL, regression models, others)</td><td style="text-align: center">x86, x86_64, ARM</td></tr>
+<tr><td style="text-align: center">Virtual Machine</td><td style="text-align: center">Supported guests (Windows, Linux, macOS, FreeBSD), any host</td><td style="text-align: center">Host’s architecture (RAPL, regression models, others)</td><td style="text-align: center">x86, x86_64, ARM</td></tr>
 </tbody>
 </table>
 </div>

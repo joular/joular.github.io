@@ -14,13 +14,13 @@ CPU Load is the library [PowerJoular](https://github.com/joular/powerjoular) use
 ## Key Features
 
 - Measure the CPU load of the whole system, of one process by its ID, or of an application by its name (every process of it)
-- Measure on Linux, Windows and macOS (Apple Silicon and Intel Macs)
+- Measure on Linux, Windows, macOS (Apple Silicon and Intel Macs) and FreeBSD
 - Match an application with the program its processes actually run, so `firefox` finds every process of Firefox
 - Give every load as a share of the whole machine, from 0.0 to 1.0
 - Tell apart a process that could not be read (a negative load) from one that used no CPU time (0.0)
 - Keep no state: a sample is a plain record, so it can be taken in one thread and compared in another
 - Read the counters with no particular rights (except for the processes of other users on macOS and Windows)
-- Static library for Ada programs, and a shared library with a C interface for other languages (one self-contained file on Linux and Windows)
+- Static library for Ada programs, and a shared library with a C interface for other languages (one self-contained file on Linux, Windows and FreeBSD)
 
 ## License
 

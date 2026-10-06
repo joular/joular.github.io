@@ -10,7 +10,7 @@ Joular Code for Java is a lightweight and efficient Java agent for monitoring th
 This project is part of [Joular Code](https://github.com/joular/joularcode), and is the successor of [JoularJX](https://github.com/joular/joularjx).
 
 It is a Java agent where you can simply hook it to the Java Virtual Machine when starting your Java program, or attach it to a program already running.
-To get power readings, it reads Intel and AMD RAPL directly (through powercap) on Linux, and uses the shared memory ring buffer of [PowerJoular](https://github.com/joular/powerjoular) on Windows, macOS and Raspberry Pi devices (and on Linux too, if you prefer). Inside a virtual machine, it reads the power the host writes to a file shared with the guest.
+To get power readings, it reads Intel and AMD RAPL directly (through powercap) on Linux, and uses the shared memory ring buffer of [PowerJoular](https://github.com/joular/powerjoular) on Windows, macOS, FreeBSD and Raspberry Pi devices (and on Linux too, if you prefer). Inside a virtual machine, it reads the power the host writes to a file shared with the guest.
 
 ## Features
 
@@ -21,7 +21,7 @@ To get power readings, it reads Intel and AMD RAPL directly (through powercap) o
 - Gets the CPU power from Linux RAPL directly, from PowerJoular's shared memory ring buffer, or from the host of a virtual machine
 - Generates CSV files with the power (watts) and the energy (joules) of each execution branch
 - Provides two sets of results: one for all methods (including the JDK ones), and one filtered and calculated for your application's methods
-- Works on Windows, macOS, Linux and Raspberry Pi
+- Works on Windows, macOS, Linux, FreeBSD and Raspberry Pi
 
 ## License
 

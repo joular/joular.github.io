@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-ef1855d1.js";
+            window.path_to_searchindex_js = "../searchindex-89e24e1d.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-8aae2392.js"></script>
@@ -186,9 +186,9 @@
 <pre><code class="language-bash">gprbuild -P your_project.gpr -aP../cpuload
 </code></pre>
 <h2 id="c-c-and-other-languages"><a class="header" href="#c-c-and-other-languages">C, C++ and Other Languages</a></h2>
-<p>Any language with a C FFI can use the shared library (<code>libcpuload.so</code> on Linux, <code>libcpuload.dll</code> on Windows, <code>libcpuload.dylib</code> on macOS) through the C interface in <a href="https://github.com/joular/cpuload/blob/HEAD/include/cpuload.h">include/cpuload.h</a>: C and C++ directly, Python through ctypes, Java through FFM or JNA, Rust through <code>libloading</code> or FFI declarations, etc.</p>
+<p>Any language with a C FFI can use the shared library (<code>libcpuload.so</code> on Linux and FreeBSD, <code>libcpuload.dll</code> on Windows, <code>libcpuload.dylib</code> on macOS) through the C interface in <a href="https://github.com/joular/cpuload/blob/HEAD/include/cpuload.h">include/cpuload.h</a>: C and C++ directly, Python through ctypes, Java through FFM or JNA, Rust through <code>libloading</code> or FFI declarations, etc.</p>
 <p>A sample is three 64-bit integers, <code>busy</code>, <code>total</code> and <code>used</code>, in this order, with the same layout on every target.</p>
-<p>On Linux and Windows, the shared library is one self-contained file, carrying the Ada runtime too, so it is the only file to ship with your program. On Windows, the program looks for the DLL next to it, so put a copy there.</p>
+<p>On Linux, Windows and FreeBSD, the shared library is one self-contained file, carrying the Ada runtime too, so it is the only file to ship with your program. On Windows, the program looks for the DLL next to it, so put a copy there.</p>
 <p>On macOS, the library loads the Ada runtime from the folder of the compiler that built it (see <a href="./compilation.html">Compilation</a>), so it runs on a Mac where that same compiler is installed in the same folder.</p>
 <h2 id="python"><a class="header" href="#python">Python</a></h2>
 <p>The <a href="../guide/quick_usage.html">Quick Usage</a> page shows how to call the library from Python with ctypes, and <a href="https://github.com/joular/cpuload/blob/HEAD/example/python/main.py">example/python/main.py</a> is a full example.</p>

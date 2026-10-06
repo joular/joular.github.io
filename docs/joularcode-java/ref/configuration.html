@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-d7d8b02a.js";
+            window.path_to_searchindex_js = "../searchindex-3a24fa9e.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-421028e5.js"></script>
@@ -188,7 +188,7 @@ When the agent is attached to a running JVM, both are those of that JVM: its own
 <p>The following properties are available:</p>
 <ul>
 <li><code>power-source-type</code>: where the CPU power comes from: <code>auto</code>, <code>rapl</code>, <code>ringbuffer</code> or <code>vm</code> (default: <code>auto</code>). See <a href="./power_sources.html">Power Sources</a>.</li>
-<li><code>powerjoular-ringbuffer-path</code>: the path to the PowerJoular ring buffer (default: <code>/dev/shm/powerjoular</code> on Linux, <code>/tmp/powerjoular</code> on macOS, <code>%PROGRAMDATA%\powerjoular</code> on Windows).</li>
+<li><code>powerjoular-ringbuffer-path</code>: the path to the PowerJoular ring buffer (default: <code>/dev/shm/powerjoular</code> on Linux, <code>/tmp/powerjoular</code> on macOS and FreeBSD, <code>%PROGRAMDATA%\powerjoular</code> on Windows).</li>
 <li><code>vm-power-file</code>: the path for the power consumption of the virtual machine. Inside a virtual machine, indicate the file containing the power consumption of the VM (which is usually a file in the host that is shared with the guest). It must be set when <code>power-source-type</code> is <code>vm</code> (default: empty). See <a href="./vm.html">Virtual Machines</a>.</li>
 <li><code>vm-power-format</code>: power format of the shared VM power file: <code>watts</code> (a file containing one value, the power consumption of the VM), or <code>powerjoular</code> (the row <a href="https://github.com/joular/powerjoular">PowerJoular</a> writes with <code>-o</code> in the host, containing 3 columns: timestamp, CPU utilization of the VM and CPU power of the VM) (default: <code>powerjoular</code>).</li>
 <li><code>stack-monitoring-sample-rate</code>: the sample rate (in milliseconds) for the agent to monitor methods usage by calling the JVM stack, from 1 to 1000 (default: <code>10</code>). A higher value means less accurate energy data, and a lower value means a higher overhead of the agent. Below 5 milliseconds, a warning is shown, as sampling can noticeably slow the application down. A value that is not a number from 1 to 1000 is replaced by the default, with a warning.</li>

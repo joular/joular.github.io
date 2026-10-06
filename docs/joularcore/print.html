@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-5527cac8.js";
+            window.path_to_searchindex_js = "searchindex-d1af38a3.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-fea6b9de.js"></script>
@@ -186,14 +186,14 @@ It detects automatically what the machine offers (which CPU, which GPU, and how 
 <p>Joular Core is the library <a href="https://github.com/joular/powerjoular">PowerJoular</a> uses to measure the hardware.</p>
 <h2 id="key-features"><a class="header" href="#key-features">Key Features</a></h2>
 <ul>
-<li>Measure the CPU and the GPU on Linux, Windows and macOS, and Nvidia GPUs on BSD</li>
-<li>Measure Intel and AMD processors through RAPL, on Linux and Windows</li>
+<li>Measure the CPU and the GPU on Linux, Windows, macOS and FreeBSD</li>
+<li>Measure Intel and AMD processors through RAPL, on Linux, Windows and FreeBSD</li>
 <li>Measure Apple Silicon and Intel Macs through powermetrics</li>
 <li>Measure Raspberry Pi and Asus Tinker Board through our research-based regression power models</li>
 <li>Measure Nvidia, AMD and Apple Silicon GPUs</li>
 <li>Detect automatically the hardware and how to read it, with nothing to configure</li>
 <li>Report a source that is not there or cannot be read as not available, while the other sources keep working</li>
-<li>Static library for Ada programs, and a shared library with a C interface for other languages (one self-contained file on Linux and Windows)</li>
+<li>Static library for Ada programs, and a shared library with a C interface for other languages (one self-contained file on Linux, Windows and FreeBSD)</li>
 </ul>
 <h2 id="license"><a class="header" href="#license">License</a></h2>
 <p>Joular Core is licensed under the GNU LGPL 3 license only (LGPL-3.0-only).</p>
@@ -201,7 +201,7 @@ It detects automatically what the machine offers (which CPU, which GPU, and how 
 <p>Author: <a href="https://www.noureddine.org/">Adel Noureddine</a></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="supported-platforms"><a class="header" href="#supported-platforms">Supported Platforms</a></h1>
-<p>Joular Core runs on Linux, Windows and macOS, on PCs, servers, Macs and single-board computers, and reads Nvidia GPUs on BSD systems. The tables below summarise what is supported on each platform and architecture.</p>
+<p>Joular Core runs on Linux, Windows, macOS and FreeBSD, on PCs, servers, Macs and single-board computers. The tables below summarise what is supported on each platform and architecture.</p>
 <h2 id="operating-systems-and-architectures"><a class="header" href="#operating-systems-and-architectures">Operating Systems and Architectures</a></h2>
 <h3 id="cpu"><a class="header" href="#cpu">CPU</a></h3>
 <div class="table-wrapper">
@@ -213,6 +213,7 @@ It detects automatically what the machine offers (which CPU, which GPU, and how 
 <tr><td>Linux (PC / servers)</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td></tr>
 <tr><td>Windows</td><td style="text-align: center">✓</td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td></tr>
 <tr><td>macOS</td><td style="text-align: center">✓</td><td style="text-align: center"></td><td style="text-align: center">✓</td><td style="text-align: center"></td><td style="text-align: center"></td></tr>
+<tr><td>FreeBSD</td><td style="text-align: center">✓</td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td></tr>
 <tr><td>SBC (Raspberry Pi, Asus Tinker Board)</td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center">✓</td><td style="text-align: center">✓</td></tr>
 </tbody>
 </table>
@@ -227,7 +228,7 @@ It detects automatically what the machine offers (which CPU, which GPU, and how 
 <tr><td>Linux (PC / servers)</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td><td style="text-align: center"></td></tr>
 <tr><td>Windows</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td><td style="text-align: center"></td></tr>
 <tr><td>macOS</td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center">✓</td></tr>
-<tr><td>BSD</td><td style="text-align: center">✓</td><td style="text-align: center"></td><td style="text-align: center"></td></tr>
+<tr><td>FreeBSD</td><td style="text-align: center">✓</td><td style="text-align: center"></td><td style="text-align: center"></td></tr>
 <tr><td>SBC (Raspberry Pi)</td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td></tr>
 </tbody>
 </table>
@@ -245,7 +246,7 @@ It detects automatically what the machine offers (which CPU, which GPU, and how 
 <tr><td>macOS (Intel)</td><td>macOS</td><td><code>powermetrics</code> (CPU only)</td><td>Power</td></tr>
 <tr><td>Raspberry Pi</td><td>Linux</td><td>Regression power models</td><td>Power</td></tr>
 <tr><td>Asus Tinker Board (S)</td><td>Linux</td><td>Regression power models</td><td>Power</td></tr>
-<tr><td>BSD</td><td>FreeBSD, NetBSD, DragonFly BSD, OpenBSD</td><td>Nvidia through NVML, where Nvidia provides its driver (FreeBSD); no CPU support yet</td><td>Power</td></tr>
+<tr><td>FreeBSD PC / Server</td><td>FreeBSD</td><td>RAPL through the <code>cpuctl</code> driver, Nvidia through NVML</td><td>Energy (CPU), power (GPU)</td></tr>
 </tbody>
 </table>
 </div>
@@ -270,10 +271,10 @@ It detects automatically what the machine offers (which CPU, which GPU, and how 
 <p>The first one that answers is kept. Setting the <code>JOULARCORE_WINDOWS_RAPL</code> environment variable to <code>emi</code>, <code>pawnio</code> or <code>hubblo</code> picks one instead (see <a href="#library-interface">Library Interface</a>).</p>
 <p><strong>macOS</strong><br>CPU power, and GPU power on Apple Silicon, are read from Apple’s <code>powermetrics</code> tool, which ships with macOS. It covers both Apple Silicon and Intel Macs, and only runs as root. On Intel Macs, the CPU power is the whole chip (cores, integrated graphics and system agent), and there is no GPU power.</p>
 <p><strong>Raspberry Pi and SBC</strong><br>Power is calculated from CPU utilization using polynomial regression models that were measured against each supported board at various load levels. The board is detected from <code>/proc/device-tree/model</code>, and the CPU utilization is read from <code>/proc/stat</code>. No special permissions are needed. On a board with no power model, the CPU is reported as not available.</p>
-<p><strong>BSD</strong><br>CPU support is planned.</p>
+<p><strong>FreeBSD (x86_64)</strong><br>CPU energy is read from the same RAPL package counter, from the registers of the first processor, through the <a href="https://man.freebsd.org/cgi/man.cgi?query=cpuctl&amp;sektion=4">cpuctl(4)</a> driver (<code>/dev/cpuctl0</code>), for Intel and AMD processors. The driver is a module to load first, and its device is only readable by root and the <code>kmem</code> group (see <a href="#installation">Installation</a>). If it cannot be read, the CPU is reported as not available.</p>
 <p><strong>Virtual Machines</strong><br>Inside a virtual machine, the hardware counters are usually not reachable, so the CPU is reported as not available. <a href="https://github.com/joular/powerjoular">PowerJoular</a> can read the power of a virtual machine from a file the host writes.</p>
 <h2 id="gpu-power-monitoring-details"><a class="header" href="#gpu-power-monitoring-details">GPU Power Monitoring Details</a></h2>
-<p><strong>Nvidia (Linux, Windows and BSD)</strong><br>GPU power is read through NVML, the library installed with the Nvidia driver, and loaded by Joular Core when the GPU is opened. The first card listed is the one read. If the driver is not installed or that card does not report its power, the GPU is reported as not available. On Linux and Windows, Nvidia is tried first, then AMD, and only one GPU is read: on a machine with both, the Nvidia card is the one measured.</p>
+<p><strong>Nvidia (Linux, Windows and FreeBSD)</strong><br>GPU power is read through NVML, the library installed with the Nvidia driver, and loaded by Joular Core when the GPU is opened. The first card listed is the one read. If the driver is not installed or that card does not report its power, the GPU is reported as not available. On Linux and Windows, Nvidia is tried first, then AMD, and only one GPU is read: on a machine with both, the Nvidia card is the one measured.</p>
 <p><strong>AMD (Linux)</strong><br>GPU power is read from the hwmon sysfs of the amdgpu kernel driver (<code>/sys/class/hwmon</code>), with nothing to install. The first amdgpu sensor with a readable power file is the one read.</p>
 <p><strong>AMD (Windows)</strong><br>GPU power is read through ADLX, the library installed with the AMD driver. The first card listed is the one read.</p>
 <p><strong>Apple Silicon</strong><br>GPU power comes from the same <code>powermetrics</code> sample as the CPU power.</p>
@@ -286,14 +287,14 @@ It detects automatically what the machine offers (which CPU, which GPU, and how 
 <pre><code class="language-bash">alr with joularcore
 </code></pre>
 <p>Alire fetches the library and builds it along with your program. Then add <code>with Joular_Core;</code> to your code (see <a href="#quick-usage">Quick Usage</a>).</p>
-<p>Alire offers Joular Core on Linux, Windows and macOS. On BSD, compile it from source with GPRBuild.</p>
+<p>Alire offers Joular Core on Linux, Windows, macOS and FreeBSD.</p>
 <h2 id="from-source"><a class="header" href="#from-source">From Source</a></h2>
 <p>Clone the <a href="https://github.com/joular/joularcore">GitHub repository</a> and build it with GNAT and GPRBuild, or with Alire. The build gives:</p>
 <ul>
 <li>a static library (<code>libjoularcore.a</code>), to link into an Ada program, which is the default</li>
-<li>a shared library (<code>libjoularcore.so</code> on Linux, <code>libjoularcore.dll</code> on Windows, <code>libjoularcore.dylib</code> on macOS), which carries the C interface for programs in C, C++, Java, Python, Rust, etc.</li>
+<li>a shared library (<code>libjoularcore.so</code> on Linux and FreeBSD, <code>libjoularcore.dll</code> on Windows, <code>libjoularcore.dylib</code> on macOS), which carries the C interface for programs in C, C++, Java, Python, Rust, etc.</li>
 </ul>
-<p>On Linux and Windows, the shared library carries the Ada runtime too, so it is the only file to ship with your program (on Linux, <code>libjoularcore.so.0</code>, the name programs look for). On macOS, the Ada runtime stays a file of its own, which the library loads from the folder of the compiler that built it.</p>
+<p>On Linux, Windows and FreeBSD, the shared library carries the Ada runtime too, so it is the only file to ship with your program (on Linux and FreeBSD, <code>libjoularcore.so.0</code>, the name programs look for). On macOS, the Ada runtime stays a file of its own, which the library loads from the folder of the compiler that built it.</p>
 <p>See <a href="#compilation">Compilation</a> for the build commands and options.</p>
 <h2 id="platform-specific-requirements"><a class="header" href="#platform-specific-requirements">Platform-specific Requirements</a></h2>
 <p>Joular Core is a library, so the privileges below are needed for the <em>program using it</em>.</p>
@@ -314,6 +315,9 @@ It detects automatically what the machine offers (which CPU, which GPU, and how 
 <p>GPU monitoring needs the Nvidia driver for Nvidia cards (NVML is installed with it), or the AMD driver for AMD cards (ADLX is installed with it).</p>
 <h3 id="macos"><a class="header" href="#macos">macOS</a></h3>
 <p>No additional software is required. Power data is read via <code>powermetrics</code>, which ships with macOS. Because <code>powermetrics</code> only runs as the superuser, run your program with <code>sudo</code>. Without it, both the CPU and the GPU are reported as not available.</p>
+<h3 id="freebsd"><a class="header" href="#freebsd">FreeBSD</a></h3>
+<p>CPU energy is read from the RAPL registers through the <code>cpuctl(4)</code> driver, which is a module not in the GENERIC kernel: load it with <code>kldload cpuctl</code> (or <code>cpuctl_load="YES"</code> in <code>/boot/loader.conf</code>), and run your program as root, or as a member of the <code>kmem</code> group (which <code>/dev/cpuctl0</code> is part of).</p>
+<p>GPU monitoring needs the Nvidia driver for Nvidia cards (NVML is installed with it), and no special privileges.</p>
 <h3 id="raspberry-pi-and-sbc"><a class="header" href="#raspberry-pi-and-sbc">Raspberry Pi and SBC</a></h3>
 <p>No dependencies and no <code>sudo</code> required. Boards with no power model report the CPU as not available.</p>
 <div style="break-before: page; page-break-before: always;"></div>
@@ -398,6 +402,7 @@ lib.joularcore_close()
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="compilation"><a class="header" href="#compilation">Compilation</a></h1>
 <p>Joular Core is written in Ada and is built with GPRBuild, or with Alire. A modern GNAT compiler is the only requirement.</p>
+<p>On FreeBSD, <code>pkg install gprbuild</code> brings GPRBuild and GNAT, whose folder <code>/usr/local/gnat12/bin</code> has to be added to <code>PATH</code>.</p>
 <h2 id="default-build"><a class="header" href="#default-build">Default Build</a></h2>
 <p>With <a href="https://alire.ada.dev">Alire</a>:</p>
 <pre><code class="language-bash">alr build
@@ -407,12 +412,11 @@ lib.joularcore_close()
 </code></pre>
 <p>The build produces a static library by default, <code>libjoularcore.a</code> in <code>lib/static/</code>, for Ada programs.</p>
 <h2 id="choosing-the-os"><a class="header" href="#choosing-the-os">Choosing the OS</a></h2>
-<p>The build detects the OS on its own to compile the appropriate version: Linux, Windows, macOS, and BSD systems are each recognised from the target GPRBuild reports.</p>
-<p><code>-XPJ_OS</code> overrides it when the version to build is not the one of the machine building it, with <code>linux</code>, <code>windows</code>, <code>macos</code> or <code>bsd</code>:</p>
+<p>The build detects the OS on its own to compile the appropriate version: Linux, Windows, macOS and FreeBSD are each recognised from the target GPRBuild reports.</p>
+<p><code>-XPJ_OS</code> overrides it when the version to build is not the one of the machine building it, with <code>linux</code>, <code>windows</code>, <code>macos</code> or <code>freebsd</code>:</p>
 <pre><code class="language-bash">gprbuild -P joularcore.gpr -XPJ_OS=windows
 </code></pre>
-<p>OpenBSD has no target name of its own in GPRBuild, so build there with <code>-XPJ_OS=bsd</code>. On BSD, build with GPRBuild: the Alire crate is only available on Linux, Windows and macOS.</p>
-<p>On Windows, reading the RAPL registers through a driver needs the CPUID instruction of 64 bits x86 processors, to know whether they are the Intel or the AMD ones. Whether the processor is one is detected from the target too, and <code>-XPJ_X86=True</code> or <code>-XPJ_X86=False</code> overrides it. With <code>False</code>, only the Energy Meter Interface is used.</p>
+<p>On Windows and FreeBSD, reading the RAPL registers through a driver needs the CPUID instruction of 64 bits x86 processors, to know whether they are the Intel or the AMD ones. Whether the processor is one is detected from the target too, and <code>-XPJ_X86=True</code> or <code>-XPJ_X86=False</code> overrides it. With <code>False</code>, only the Energy Meter Interface is used on Windows, and the CPU is not read on FreeBSD.</p>
 <h2 id="library-types"><a class="header" href="#library-types">Library Types</a></h2>
 <p>For other library types, set <code>-XJOULARCORE_LIBRARY_TYPE</code> (when it is not set, the generic <code>LIBRARY_TYPE</code> is used if set, and <code>static</code> otherwise):</p>
 <pre><code class="language-bash">gprbuild -P joularcore.gpr -XJOULARCORE_LIBRARY_TYPE=relocatable
@@ -430,7 +434,7 @@ lib.joularcore_close()
 </table>
 </div>
 <p>Each type is built in its own folder: <code>lib/static/</code>, <code>lib/relocatable/</code> or <code>lib/static-pic/</code>.</p>
-<p>The <code>relocatable</code> library is stand-alone (it starts itself up when loaded) and, on every OS but macOS, encapsulated: it carries the Ada runtime too, so it is one self-contained file. On Linux and BSD, it is versioned as <code>libjoularcore.so.0</code>.</p>
+<p>The <code>relocatable</code> library is stand-alone (it starts itself up when loaded) and, on every OS but macOS, encapsulated: it carries the Ada runtime too, so it is one self-contained file. On Linux and FreeBSD, it is versioned as <code>libjoularcore.so.0</code>.</p>
 <p>On macOS it cannot be encapsulated, so the Ada runtime stays a file of its own: the library records the folder of the runtime of the compiler that built it, and loads it from there with nothing to set (no <code>DYLD_LIBRARY_PATH</code>, so it also works under <code>sudo</code> and from <code>/usr/bin/java</code> or the system’s Python).</p>
 <h2 id="building-the-examples"><a class="header" href="#building-the-examples">Building the Examples</a></h2>
 <p>The Ada example uses the static library:</p>
@@ -446,7 +450,7 @@ lib.joularcore_close()
 <p>Then compile the C program:</p>
 <pre><code class="language-bash">gcc example/c/main.c -Iinclude -Llib/relocatable -ljoularcore -Wl,-rpath,"$PWD/lib/relocatable" -o example/c/example_c
 </code></pre>
-<p><code>-I</code> is the folder holding <code>joularcore.h</code>, <code>-L</code> and <code>-l</code> the library to link with, and <code>-rpath</code> the folder where the program looks for the library when it runs. Without <code>-rpath</code>, the program still compiles but stops on start because it cannot find the library, unless you set <code>LD_LIBRARY_PATH</code> (Linux) or <code>DYLD_LIBRARY_PATH</code> (macOS) yourself. Windows has no <code>-rpath</code>: put a copy of the DLL next to the program instead.</p>
+<p><code>-I</code> is the folder holding <code>joularcore.h</code>, <code>-L</code> and <code>-l</code> the library to link with, and <code>-rpath</code> the folder where the program looks for the library when it runs. Without <code>-rpath</code>, the program still compiles but stops on start because it cannot find the library, unless you set <code>LD_LIBRARY_PATH</code> (Linux and FreeBSD) or <code>DYLD_LIBRARY_PATH</code> (macOS) yourself. Windows has no <code>-rpath</code>: put a copy of the DLL next to the program instead.</p>
 <p>The Python example only needs the shared library, which its Makefile builds:</p>
 <pre><code class="language-bash">make -C example/python run
 </code></pre>
@@ -544,7 +548,7 @@ set JOULARCORE_WINDOWS_RAPL=hubblo
 <p>Each reading gives one measurement for the CPU and one for the GPU. A measurement says whether the source is available, its value, and its unit.</p>
 <h2 id="energy-and-power"><a class="header" href="#energy-and-power">Energy and Power</a></h2>
 <ul>
-<li>Some hardware reports <strong>energy</strong>: the joules consumed since the previous reading (RAPL on Linux and Windows). The first reading counts from <code>Open</code>.</li>
+<li>Some hardware reports <strong>energy</strong>: the joules consumed since the previous reading (RAPL on Linux, Windows and FreeBSD). The first reading counts from <code>Open</code>.</li>
 <li>Others report <strong>power</strong>: the watts being drawn when read (GPUs), or averaged since the previous reading (Raspberry Pi and Asus Tinker Board models).</li>
 <li>On macOS, the value is the <strong>average power since the previous reading</strong>: Joular Core asks <code>powermetrics</code> for a sample at each reading. Opening the sources waits for the first sample of <code>powermetrics</code> (up to about three seconds).</li>
 </ul>
@@ -564,6 +568,7 @@ set JOULARCORE_WINDOWS_RAPL=hubblo
 <tbody>
 <tr><td>RAPL on Linux</td><td><strong>One</strong> package of powercap, the first one whose name begins with <code>package</code></td></tr>
 <tr><td>RAPL on Windows</td><td>The package domain of the first socket</td></tr>
+<tr><td>RAPL on FreeBSD</td><td>The package domain of the first processor, <code>/dev/cpuctl0</code></td></tr>
 <tr><td>Raspberry Pi and Asus Tinker Board</td><td>A model-based estimate: a regression on CPU load, evaluated over the interval between two readings. It is not a reading of the board’s actual draw</td></tr>
 <tr><td>Nvidia (NVML)</td><td>What the card reports for the whole GPU board. Depending on the architecture and driver, this is an average over about a second rather than an instant value</td></tr>
 <tr><td>AMD on Linux (hwmon)</td><td>What the amdgpu driver reports (<code>power1_average</code>, or <code>power1_input</code>), which the kernel documents as the power used by the SoC, the GPU chip. On an APU that chip includes the CPU cores, so work done on the CPU raises what this library calls the GPU, and adding CPU and GPU together counts some of it twice</td></tr>
@@ -589,7 +594,7 @@ set JOULARCORE_WINDOWS_RAPL=hubblo
 <pre><code class="language-bash">gprbuild -P your_project.gpr -aP../joularcore
 </code></pre>
 <h2 id="c-c-and-other-languages"><a class="header" href="#c-c-and-other-languages">C, C++ and Other Languages</a></h2>
-<p>Any language with a C FFI can use the shared library (<code>libjoularcore.so</code> on Linux, <code>libjoularcore.dll</code> on Windows, <code>libjoularcore.dylib</code> on macOS) through the C interface in <a href="https://github.com/joular/joularcore/blob/main/include/joularcore.h">include/joularcore.h</a>: C and C++ directly, Python through ctypes, Java through FFM or JNA, Rust through <code>libloading</code> or FFI declarations, etc.</p>
+<p>Any language with a C FFI can use the shared library (<code>libjoularcore.so</code> on Linux and FreeBSD, <code>libjoularcore.dll</code> on Windows, <code>libjoularcore.dylib</code> on macOS) through the C interface in <a href="https://github.com/joular/joularcore/blob/main/include/joularcore.h">include/joularcore.h</a>: C and C++ directly, Python through ctypes, Java through FFM or JNA, Rust through <code>libloading</code> or FFI declarations, etc.</p>
 <p>The two structures of the C interface have the same layout on every target, with no padding: a <code>double</code> followed by two <code>int</code> for one measurement, and the CPU measurement followed by the GPU one for a reading.</p>
 <p>On every OS but macOS, the shared library is one self-contained file, carrying the Ada runtime too, so it is the only file to ship with your program. On Windows, the program looks for the DLL next to it, so put a copy there.</p>
 <p>On macOS, the library loads the Ada runtime from the folder of the compiler that built it (see <a href="#compilation">Compilation</a>), so it only runs on a Mac where that same compiler is installed in the same folder.</p>
@@ -620,7 +625,8 @@ set JOULARCORE_WINDOWS_RAPL=hubblo
         ├── RAPL (Linux)        ├── NVML (Nvidia)
         ├── Board models (SBC)  ├── hwmon sysfs (AMD, Linux)
         ├── RAPL (Windows)      ├── ADLX (AMD, Windows)
-        └── powermetrics        └── powermetrics
+        ├── RAPL (FreeBSD)      └── powermetrics
+        └── powermetrics
 </code></pre>
 <p>Each source is opened, read and closed on its own: a source that fails while being opened is closed again and reported as not available, and a source that fails while being read reports zero. Neither stops the other source.</p>
 <h2 id="linux"><a class="header" href="#linux">Linux</a></h2>
@@ -645,12 +651,13 @@ set JOULARCORE_WINDOWS_RAPL=hubblo
 <p>Each reading asks <code>powermetrics</code> for a sample (with the <code>SIGINFO</code> signal), so a reading is the average power since the previous one. <code>powermetrics</code> still takes a sample of its own every ten minutes (this is what makes it stop once the program using the library is gone), so readings should be closer than that. The CPU and the GPU are read one after the other, and readings within 0.1 seconds share one sample, so both values come from the same sample.</p>
 <p>On Apple Silicon, <code>powermetrics</code> reports the CPU and the GPU each on a line. On Intel Macs, it reports the whole chip on one line, and no GPU.</p>
 <p><code>powermetrics</code> only runs as root, so Joular Core checks that before starting it. If it stops answering, its sources read zero, and it is started again on a reading about ten seconds later.</p>
-<h2 id="bsd"><a class="header" href="#bsd">BSD</a></h2>
-<p>Only Nvidia GPUs are supported for now, through NVML. CPU support is planned.</p>
-<h2 id="nvidia-gpus-on-linux-windows-and-bsd-nvml"><a class="header" href="#nvidia-gpus-on-linux-windows-and-bsd-nvml">Nvidia GPUs on Linux, Windows and BSD: NVML</a></h2>
-<p>NVML is the library installed with the Nvidia driver (<code>libnvidia-ml.so.1</code> on Linux and BSD, <code>nvml.dll</code> on Windows, in the system folder, or in the Nvidia folder of Program Files for older drivers). Joular Core loads it when the GPU is opened, rather than linking to it, so the library works the same on a machine with no Nvidia driver. It reads the power of the first card listed. The same applies to ADLX on Windows (<code>amdadlx64.dll</code>, or <code>amdadlx32.dll</code> for a 32 bits build).</p>
+<h2 id="freebsd-1"><a class="header" href="#freebsd-1">FreeBSD</a></h2>
+<p><strong>CPU.</strong> The RAPL package counter of the first processor is read from its registers, through the <code>cpuctl(4)</code> driver (<code>/dev/cpuctl0</code>). As on Windows, Joular Core asks the processor for its vendor with the CPUID instruction, to know which registers hold the energy unit and the package counter on Intel and AMD, and refuses Silvermont and Airmont Atoms.</p>
+<p><strong>GPU.</strong> The GPU monitor reads Nvidia cards through NVML.</p>
+<h2 id="nvidia-gpus-on-linux-windows-and-freebsd-nvml"><a class="header" href="#nvidia-gpus-on-linux-windows-and-freebsd-nvml">Nvidia GPUs on Linux, Windows and FreeBSD: NVML</a></h2>
+<p>NVML is the library installed with the Nvidia driver (<code>libnvidia-ml.so.1</code> on Linux and FreeBSD, <code>nvml.dll</code> on Windows, in the system folder, or in the Nvidia folder of Program Files for older drivers). Joular Core loads it when the GPU is opened, rather than linking to it, so the library works the same on a machine with no Nvidia driver. It reads the power of the first card listed. The same applies to ADLX on Windows (<code>amdadlx64.dll</code>, or <code>amdadlx32.dll</code> for a 32 bits build).</p>
 <h2 id="energy-counters"><a class="header" href="#energy-counters">Energy Counters</a></h2>
-<p>The RAPL counters of Linux, and of Windows when read through a driver, only count up, and wrap back to zero once full. Joular Core keeps the previous value of each counter, and turns two readings into the energy consumed between them:</p>
+<p>The RAPL counters of Linux, of Windows when read through a driver, and of FreeBSD, only count up, and wrap back to zero once full. Joular Core keeps the previous value of each counter, and turns two readings into the energy consumed between them:</p>
 <ul>
 <li>When the new value is lower, the counter wrapped, so the range it wraps at is added.</li>
 <li>A drop that does not look like a wrap (one that would mean more than half the range was used between two readings) is taken as a counter reset, for example after the machine was suspended, and gives zero.</li>
@@ -667,13 +674,14 @@ set JOULARCORE_WINDOWS_RAPL=hubblo
 <tr><td><code>src/joular_core.ads</code></td><td>The Ada interface: <code>Open</code>, <code>Read</code>, <code>Close</code>, <code>Version</code></td></tr>
 <tr><td><code>src/joular_core-c_api.ads</code></td><td>The C interface, matching <code>include/joularcore.h</code></td></tr>
 <tr><td><code>src/joular_core-cpu_monitor.ads</code>, <code>src/joular_core-gpu_monitor.ads</code></td><td>The two monitors, with one body per OS</td></tr>
-<tr><td><code>src/joular_core-energy_counters.adb</code></td><td>The energy between two readings of a counter that wraps (RAPL on Linux and Windows)</td></tr>
-<tr><td><code>src/joular_core-gpu_nvidia_nvml.adb</code></td><td>Nvidia GPUs through NVML, on Linux, Windows and BSD</td></tr>
+<tr><td><code>src/joular_core-energy_counters.adb</code></td><td>The energy between two readings of a counter that wraps (RAPL on Linux, Windows and FreeBSD)</td></tr>
+<tr><td><code>src/joular_core-gpu_nvidia_nvml.adb</code></td><td>Nvidia GPUs through NVML, on Linux, Windows and FreeBSD</td></tr>
+<tr><td><code>src/joular_core-processor.adb</code></td><td>The CPUID vendor check, to read the RAPL registers on Windows and FreeBSD</td></tr>
 <tr><td><code>src/linux/</code></td><td>RAPL through powercap, the power models of single-board computers, AMD GPUs through hwmon</td></tr>
-<tr><td><code>src/windows/</code></td><td>RAPL through EMI, PawnIO and Hubblo’s driver, the CPUID vendor check, AMD GPUs through ADLX, loading a shared library and finding NVML, and the Win32 bindings they share</td></tr>
+<tr><td><code>src/windows/</code></td><td>RAPL through EMI, PawnIO and Hubblo’s driver, AMD GPUs through ADLX, loading a shared library and finding NVML, and the Win32 bindings they share</td></tr>
 <tr><td><code>src/macos/</code></td><td><code>powermetrics</code>, and the specs file recording where the shared library finds the Ada runtime</td></tr>
-<tr><td><code>src/bsd/</code></td><td>Nvidia GPUs only</td></tr>
-<tr><td><code>src/posix/</code></td><td>What Linux, macOS and the BSDs do the same way (loading a shared library)</td></tr>
+<tr><td><code>src/freebsd/</code></td><td>RAPL through <code>cpuctl</code></td></tr>
+<tr><td><code>src/posix/</code></td><td>What Linux, macOS and FreeBSD do the same way (loading a shared library)</td></tr>
 <tr><td><code>include/joularcore.h</code></td><td>The C declarations</td></tr>
 <tr><td><code>example/</code></td><td>Example programs in Ada, C and Python</td></tr>
 <tr><td><code>tools/</code></td><td>The PawnIO modules, and the script turning them into an Ada package</td></tr>

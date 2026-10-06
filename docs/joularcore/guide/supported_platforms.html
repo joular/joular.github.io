@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-5527cac8.js";
+            window.path_to_searchindex_js = "../searchindex-d1af38a3.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-fea6b9de.js"></script>
@@ -175,7 +175,7 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="supported-platforms"><a class="header" href="#supported-platforms">Supported Platforms</a></h1>
-<p>Joular Core runs on Linux, Windows and macOS, on PCs, servers, Macs and single-board computers, and reads Nvidia GPUs on BSD systems. The tables below summarise what is supported on each platform and architecture.</p>
+<p>Joular Core runs on Linux, Windows, macOS and FreeBSD, on PCs, servers, Macs and single-board computers. The tables below summarise what is supported on each platform and architecture.</p>
 <h2 id="operating-systems-and-architectures"><a class="header" href="#operating-systems-and-architectures">Operating Systems and Architectures</a></h2>
 <h3 id="cpu"><a class="header" href="#cpu">CPU</a></h3>
 <div class="table-wrapper">
@@ -187,6 +187,7 @@
 <tr><td>Linux (PC / servers)</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td></tr>
 <tr><td>Windows</td><td style="text-align: center">✓</td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td></tr>
 <tr><td>macOS</td><td style="text-align: center">✓</td><td style="text-align: center"></td><td style="text-align: center">✓</td><td style="text-align: center"></td><td style="text-align: center"></td></tr>
+<tr><td>FreeBSD</td><td style="text-align: center">✓</td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td></tr>
 <tr><td>SBC (Raspberry Pi, Asus Tinker Board)</td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center">✓</td><td style="text-align: center">✓</td></tr>
 </tbody>
 </table>
@@ -201,7 +202,7 @@
 <tr><td>Linux (PC / servers)</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td><td style="text-align: center"></td></tr>
 <tr><td>Windows</td><td style="text-align: center">✓</td><td style="text-align: center">✓</td><td style="text-align: center"></td></tr>
 <tr><td>macOS</td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center">✓</td></tr>
-<tr><td>BSD</td><td style="text-align: center">✓</td><td style="text-align: center"></td><td style="text-align: center"></td></tr>
+<tr><td>FreeBSD</td><td style="text-align: center">✓</td><td style="text-align: center"></td><td style="text-align: center"></td></tr>
 <tr><td>SBC (Raspberry Pi)</td><td style="text-align: center"></td><td style="text-align: center"></td><td style="text-align: center"></td></tr>
 </tbody>
 </table>
@@ -219,7 +220,7 @@
 <tr><td>macOS (Intel)</td><td>macOS</td><td><code>powermetrics</code> (CPU only)</td><td>Power</td></tr>
 <tr><td>Raspberry Pi</td><td>Linux</td><td>Regression power models</td><td>Power</td></tr>
 <tr><td>Asus Tinker Board (S)</td><td>Linux</td><td>Regression power models</td><td>Power</td></tr>
-<tr><td>BSD</td><td>FreeBSD, NetBSD, DragonFly BSD, OpenBSD</td><td>Nvidia through NVML, where Nvidia provides its driver (FreeBSD); no CPU support yet</td><td>Power</td></tr>
+<tr><td>FreeBSD PC / Server</td><td>FreeBSD</td><td>RAPL through the <code>cpuctl</code> driver, Nvidia through NVML</td><td>Energy (CPU), power (GPU)</td></tr>
 </tbody>
 </table>
 </div>
@@ -244,10 +245,10 @@
 <p>The first one that answers is kept. Setting the <code>JOULARCORE_WINDOWS_RAPL</code> environment variable to <code>emi</code>, <code>pawnio</code> or <code>hubblo</code> picks one instead (see <a href="../ref/interface.html">Library Interface</a>).</p>
 <p><strong>macOS</strong><br>CPU power, and GPU power on Apple Silicon, are read from Apple’s <code>powermetrics</code> tool, which ships with macOS. It covers both Apple Silicon and Intel Macs, and only runs as root. On Intel Macs, the CPU power is the whole chip (cores, integrated graphics and system agent), and there is no GPU power.</p>
 <p><strong>Raspberry Pi and SBC</strong><br>Power is calculated from CPU utilization using polynomial regression models that were measured against each supported board at various load levels. The board is detected from <code>/proc/device-tree/model</code>, and the CPU utilization is read from <code>/proc/stat</code>. No special permissions are needed. On a board with no power model, the CPU is reported as not available.</p>
-<p><strong>BSD</strong><br>CPU support is planned.</p>
+<p><strong>FreeBSD (x86_64)</strong><br>CPU energy is read from the same RAPL package counter, from the registers of the first processor, through the <a href="https://man.freebsd.org/cgi/man.cgi?query=cpuctl&amp;sektion=4">cpuctl(4)</a> driver (<code>/dev/cpuctl0</code>), for Intel and AMD processors. The driver is a module to load first, and its device is only readable by root and the <code>kmem</code> group (see <a href="./installation.html">Installation</a>). If it cannot be read, the CPU is reported as not available.</p>
 <p><strong>Virtual Machines</strong><br>Inside a virtual machine, the hardware counters are usually not reachable, so the CPU is reported as not available. <a href="https://github.com/joular/powerjoular">PowerJoular</a> can read the power of a virtual machine from a file the host writes.</p>
 <h2 id="gpu-power-monitoring-details"><a class="header" href="#gpu-power-monitoring-details">GPU Power Monitoring Details</a></h2>
-<p><strong>Nvidia (Linux, Windows and BSD)</strong><br>GPU power is read through NVML, the library installed with the Nvidia driver, and loaded by Joular Core when the GPU is opened. The first card listed is the one read. If the driver is not installed or that card does not report its power, the GPU is reported as not available. On Linux and Windows, Nvidia is tried first, then AMD, and only one GPU is read: on a machine with both, the Nvidia card is the one measured.</p>
+<p><strong>Nvidia (Linux, Windows and FreeBSD)</strong><br>GPU power is read through NVML, the library installed with the Nvidia driver, and loaded by Joular Core when the GPU is opened. The first card listed is the one read. If the driver is not installed or that card does not report its power, the GPU is reported as not available. On Linux and Windows, Nvidia is tried first, then AMD, and only one GPU is read: on a machine with both, the Nvidia card is the one measured.</p>
 <p><strong>AMD (Linux)</strong><br>GPU power is read from the hwmon sysfs of the amdgpu kernel driver (<code>/sys/class/hwmon</code>), with nothing to install. The first amdgpu sensor with a readable power file is the one read.</p>
 <p><strong>AMD (Windows)</strong><br>GPU power is read through ADLX, the library installed with the AMD driver. The first card listed is the one read.</p>
 <p><strong>Apple Silicon</strong><br>GPU power comes from the same <code>powermetrics</code> sample as the CPU power.</p>

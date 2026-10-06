@@ -67,6 +67,7 @@ A file that cannot be written to is reported once, and the monitoring goes on: P
 | Linux | ```/dev/shm/powerjoular``` |
 | Windows | ```%PROGRAMDATA%\powerjoular```, i.e. ```C:\ProgramData\powerjoular``` |
 | macOS | ```/tmp/powerjoular``` |
+| FreeBSD | ```/tmp/powerjoular``` |
 
 The area is 248 bytes, in the byte order of the machine: a counter of 8 bytes, then 5 entries of 48 bytes each.
 
@@ -83,7 +84,7 @@ A measurement goes in the entry the counter points at (```counter mod 5```), and
 A reader follows the counter to know when a new measurement has landed, and the timestamps to know how old each entry is.
 
 Only one PowerJoular should write to the ring buffer at the same time.
-On Linux and macOS, a second run using ```-r``` replaces the file, and the first one keeps writing to the old file, which only the readers that mapped it before still see.
+On Linux, macOS and FreeBSD, a second run using ```-r``` replaces the file, and the first one keeps writing to the old file, which only the readers that mapped it before still see.
 On Windows, the second run cannot replace the file the first one holds open, and carries on without the ring buffer.
 
 The ring buffer is created every time PowerJoular starts: a file left at that path, by an earlier run or by anyone else, is deleted first, so PowerJoular never writes into a file it did not create.

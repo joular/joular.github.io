@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3140a034.js";
+            window.path_to_searchindex_js = "searchindex-26fb3fd6.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-b01ac823.js"></script>
@@ -181,7 +181,7 @@
 <p>PowerJoular is a command line software to monitor, in real time, the power consumption of software and hardware components, across multiple platforms and virtual machines.</p>
 <p>PowerJoular is part of the <a href="https://www.noureddine.org/research/joular/"><img src="https://raw.githubusercontent.com/joular/.github/main/profile/joular.png" alt="Joular Project" width="64" /></a> project.</p>
 <p>PowerJoular can monitor the power consumption, in real time, of the CPU and the GPU in general, and also for a specific application (through its name or PID).
-It works on Linux, Windows and macOS, on multiple architectures (x86_64, ARM) and devices (computers, servers, Macs, Raspberry Pi, etc.).</p>
+It works on Linux, Windows, macOS and FreeBSD, on multiple architectures (x86_64, ARM) and devices (computers, servers, Macs, Raspberry Pi, etc.).</p>
 <p>The official website of PowerJoular is: <a href="https://www.noureddine.org/research/joular/powerjoular">https://www.noureddine.org/research/joular/powerjoular</a>.</p>
 <h2 id="features"><a class="header" href="#features">Features</a></h2>
 <ul>
@@ -196,7 +196,7 @@ It works on Linux, Windows and macOS, on multiple architectures (x86_64, ARM) an
 </ul>
 <h2 id="what-changed-in-version-2"><a class="header" href="#what-changed-in-version-2">What changed in version 2</a></h2>
 <p>Version 2 does the measuring using two Ada libraries we developed, <a href="https://github.com/joular/joularcore">Joular Core</a> and <a href="https://github.com/joular/cpuload">CPU Load</a>, instead of its own code.
-This also brings Windows and macOS support, and AMD graphic cards (Nvidia cards are now read through NVML instead of <code>nvidia-smi</code>).</p>
+This also brings Windows, macOS and FreeBSD support, and AMD graphic cards (Nvidia cards are now read through NVML instead of <code>nvidia-smi</code>).</p>
 <ul>
 <li><strong>New</strong>: <code>-r</code> writes the power data to a shared memory ring buffer.</li>
 <li><strong>Removed</strong>: <code>-k</code>, which measured a process from its threads. It was experimental, and the process readings no longer need it.</li>

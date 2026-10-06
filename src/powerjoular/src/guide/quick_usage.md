@@ -3,6 +3,7 @@
 To use PowerJoular, just run the command ```powerjoular``` (or ```powerjoular.exe``` on Windows).
 On Linux PC/servers, PowerJoular uses Intel's RAPL through the Linux powercap sysfs, and therefore requires root/sudo access on the latest Linux kernels (5.10 and newer): ```sudo powerjoular```.
 On macOS, ```powermetrics``` also requires root/sudo access: ```sudo powerjoular```.
+On FreeBSD, reading RAPL needs the ```cpuctl``` module (```kldload cpuctl```) and root/sudo access: ```sudo powerjoular```.
 On Windows and Raspberry Pi, no special access is needed, except with the PawnIO driver on Windows, which needs a terminal with administrative rights (see [Supported Platforms](./supported_platforms.html)).
 
 By default, the software will show the total power consumption, and the power of the CPU and of the GPU (when there is one), on the terminal, every second, until Ctrl+C:

@@ -32,6 +32,6 @@ A total of 0 on the very first sample is worth checking: it is what a library bu
 
 ## How Often to Sample
 
-Sample about a second apart: Linux counts a process in 10 ms units and Windows in about 15 ms, too coarse for shorter waits. macOS counts a process in nanoseconds, and reads it well below a second, though the machine itself is still counted in 10 ms ticks.
+Sample about a second apart: Linux counts a process in 10 ms units, Windows in about 15 ms, and FreeBSD the machine in ticks of about 8 ms, too coarse for shorter waits. macOS counts a process in nanoseconds, and reads it well below a second, though the machine itself is still counted in 10 ms ticks.
 
 On macOS, the counters of the machine are 32 bits, counting 100 times per second for each busy core: on a 10 core machine kept busy, they can wrap after about 50 days. Only the load measured across the wrap shows 0%.

@@ -17,14 +17,14 @@ Joular Core is the library [PowerJoular](https://github.com/joular/powerjoular) 
 
 ## Key Features
 
-- Measure the CPU and the GPU on Linux, Windows and macOS, and Nvidia GPUs on BSD
-- Measure Intel and AMD processors through RAPL, on Linux and Windows
+- Measure the CPU and the GPU on Linux, Windows, macOS and FreeBSD
+- Measure Intel and AMD processors through RAPL, on Linux, Windows and FreeBSD
 - Measure Apple Silicon and Intel Macs through powermetrics
 - Measure Raspberry Pi and Asus Tinker Board through our research-based regression power models
 - Measure Nvidia, AMD and Apple Silicon GPUs
 - Detect automatically the hardware and how to read it, with nothing to configure
 - Report a source that is not there or cannot be read as not available, while the other sources keep working
-- Static library for Ada programs, and a shared library with a C interface for other languages (one self-contained file on Linux and Windows)
+- Static library for Ada programs, and a shared library with a C interface for other languages (one self-contained file on Linux, Windows and FreeBSD)
 
 ## License
 

@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-5527cac8.js";
+            window.path_to_searchindex_js = "../searchindex-d1af38a3.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-fea6b9de.js"></script>
@@ -193,7 +193,8 @@
         ├── RAPL (Linux)        ├── NVML (Nvidia)
         ├── Board models (SBC)  ├── hwmon sysfs (AMD, Linux)
         ├── RAPL (Windows)      ├── ADLX (AMD, Windows)
-        └── powermetrics        └── powermetrics
+        ├── RAPL (FreeBSD)      └── powermetrics
+        └── powermetrics
 </code></pre>
 <p>Each source is opened, read and closed on its own: a source that fails while being opened is closed again and reported as not available, and a source that fails while being read reports zero. Neither stops the other source.</p>
 <h2 id="linux"><a class="header" href="#linux">Linux</a></h2>
@@ -218,12 +219,13 @@
 <p>Each reading asks <code>powermetrics</code> for a sample (with the <code>SIGINFO</code> signal), so a reading is the average power since the previous one. <code>powermetrics</code> still takes a sample of its own every ten minutes (this is what makes it stop once the program using the library is gone), so readings should be closer than that. The CPU and the GPU are read one after the other, and readings within 0.1 seconds share one sample, so both values come from the same sample.</p>
 <p>On Apple Silicon, <code>powermetrics</code> reports the CPU and the GPU each on a line. On Intel Macs, it reports the whole chip on one line, and no GPU.</p>
 <p><code>powermetrics</code> only runs as root, so Joular Core checks that before starting it. If it stops answering, its sources read zero, and it is started again on a reading about ten seconds later.</p>
-<h2 id="bsd"><a class="header" href="#bsd">BSD</a></h2>
-<p>Only Nvidia GPUs are supported for now, through NVML. CPU support is planned.</p>
-<h2 id="nvidia-gpus-on-linux-windows-and-bsd-nvml"><a class="header" href="#nvidia-gpus-on-linux-windows-and-bsd-nvml">Nvidia GPUs on Linux, Windows and BSD: NVML</a></h2>
-<p>NVML is the library installed with the Nvidia driver (<code>libnvidia-ml.so.1</code> on Linux and BSD, <code>nvml.dll</code> on Windows, in the system folder, or in the Nvidia folder of Program Files for older drivers). Joular Core loads it when the GPU is opened, rather than linking to it, so the library works the same on a machine with no Nvidia driver. It reads the power of the first card listed. The same applies to ADLX on Windows (<code>amdadlx64.dll</code>, or <code>amdadlx32.dll</code> for a 32 bits build).</p>
+<h2 id="freebsd"><a class="header" href="#freebsd">FreeBSD</a></h2>
+<p><strong>CPU.</strong> The RAPL package counter of the first processor is read from its registers, through the <code>cpuctl(4)</code> driver (<code>/dev/cpuctl0</code>). As on Windows, Joular Core asks the processor for its vendor with the CPUID instruction, to know which registers hold the energy unit and the package counter on Intel and AMD, and refuses Silvermont and Airmont Atoms.</p>
+<p><strong>GPU.</strong> The GPU monitor reads Nvidia cards through NVML.</p>
+<h2 id="nvidia-gpus-on-linux-windows-and-freebsd-nvml"><a class="header" href="#nvidia-gpus-on-linux-windows-and-freebsd-nvml">Nvidia GPUs on Linux, Windows and FreeBSD: NVML</a></h2>
+<p>NVML is the library installed with the Nvidia driver (<code>libnvidia-ml.so.1</code> on Linux and FreeBSD, <code>nvml.dll</code> on Windows, in the system folder, or in the Nvidia folder of Program Files for older drivers). Joular Core loads it when the GPU is opened, rather than linking to it, so the library works the same on a machine with no Nvidia driver. It reads the power of the first card listed. The same applies to ADLX on Windows (<code>amdadlx64.dll</code>, or <code>amdadlx32.dll</code> for a 32 bits build).</p>
 <h2 id="energy-counters"><a class="header" href="#energy-counters">Energy Counters</a></h2>
-<p>The RAPL counters of Linux, and of Windows when read through a driver, only count up, and wrap back to zero once full. Joular Core keeps the previous value of each counter, and turns two readings into the energy consumed between them:</p>
+<p>The RAPL counters of Linux, of Windows when read through a driver, and of FreeBSD, only count up, and wrap back to zero once full. Joular Core keeps the previous value of each counter, and turns two readings into the energy consumed between them:</p>
 <ul>
 <li>When the new value is lower, the counter wrapped, so the range it wraps at is added.</li>
 <li>A drop that does not look like a wrap (one that would mean more than half the range was used between two readings) is taken as a counter reset, for example after the machine was suspended, and gives zero.</li>
@@ -240,13 +242,14 @@
 <tr><td><code>src/joular_core.ads</code></td><td>The Ada interface: <code>Open</code>, <code>Read</code>, <code>Close</code>, <code>Version</code></td></tr>
 <tr><td><code>src/joular_core-c_api.ads</code></td><td>The C interface, matching <code>include/joularcore.h</code></td></tr>
 <tr><td><code>src/joular_core-cpu_monitor.ads</code>, <code>src/joular_core-gpu_monitor.ads</code></td><td>The two monitors, with one body per OS</td></tr>
-<tr><td><code>src/joular_core-energy_counters.adb</code></td><td>The energy between two readings of a counter that wraps (RAPL on Linux and Windows)</td></tr>
-<tr><td><code>src/joular_core-gpu_nvidia_nvml.adb</code></td><td>Nvidia GPUs through NVML, on Linux, Windows and BSD</td></tr>
+<tr><td><code>src/joular_core-energy_counters.adb</code></td><td>The energy between two readings of a counter that wraps (RAPL on Linux, Windows and FreeBSD)</td></tr>
+<tr><td><code>src/joular_core-gpu_nvidia_nvml.adb</code></td><td>Nvidia GPUs through NVML, on Linux, Windows and FreeBSD</td></tr>
+<tr><td><code>src/joular_core-processor.adb</code></td><td>The CPUID vendor check, to read the RAPL registers on Windows and FreeBSD</td></tr>
 <tr><td><code>src/linux/</code></td><td>RAPL through powercap, the power models of single-board computers, AMD GPUs through hwmon</td></tr>
-<tr><td><code>src/windows/</code></td><td>RAPL through EMI, PawnIO and Hubblo’s driver, the CPUID vendor check, AMD GPUs through ADLX, loading a shared library and finding NVML, and the Win32 bindings they share</td></tr>
+<tr><td><code>src/windows/</code></td><td>RAPL through EMI, PawnIO and Hubblo’s driver, AMD GPUs through ADLX, loading a shared library and finding NVML, and the Win32 bindings they share</td></tr>
 <tr><td><code>src/macos/</code></td><td><code>powermetrics</code>, and the specs file recording where the shared library finds the Ada runtime</td></tr>
-<tr><td><code>src/bsd/</code></td><td>Nvidia GPUs only</td></tr>
-<tr><td><code>src/posix/</code></td><td>What Linux, macOS and the BSDs do the same way (loading a shared library)</td></tr>
+<tr><td><code>src/freebsd/</code></td><td>RAPL through <code>cpuctl</code></td></tr>
+<tr><td><code>src/posix/</code></td><td>What Linux, macOS and FreeBSD do the same way (loading a shared library)</td></tr>
 <tr><td><code>include/joularcore.h</code></td><td>The C declarations</td></tr>
 <tr><td><code>example/</code></td><td>Example programs in Ada, C and Python</td></tr>
 <tr><td><code>tools/</code></td><td>The PawnIO modules, and the script turning them into an Ada package</td></tr>

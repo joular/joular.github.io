@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-ef1855d1.js";
+            window.path_to_searchindex_js = "searchindex-89e24e1d.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-8aae2392.js"></script>
@@ -185,13 +185,13 @@ It gives one simple interface: take a sample, wait, take another, and compare th
 <h2 id="key-features"><a class="header" href="#key-features">Key Features</a></h2>
 <ul>
 <li>Measure the CPU load of the whole system, of one process by its ID, or of an application by its name (every process of it)</li>
-<li>Measure on Linux, Windows and macOS (Apple Silicon and Intel Macs)</li>
+<li>Measure on Linux, Windows, macOS (Apple Silicon and Intel Macs) and FreeBSD</li>
 <li>Match an application with the program its processes actually run, so <code>firefox</code> finds every process of Firefox</li>
 <li>Give every load as a share of the whole machine, from 0.0 to 1.0</li>
 <li>Tell apart a process that could not be read (a negative load) from one that used no CPU time (0.0)</li>
 <li>Keep no state: a sample is a plain record, so it can be taken in one thread and compared in another</li>
 <li>Read the counters with no particular rights (except for the processes of other users on macOS and Windows)</li>
-<li>Static library for Ada programs, and a shared library with a C interface for other languages (one self-contained file on Linux and Windows)</li>
+<li>Static library for Ada programs, and a shared library with a C interface for other languages (one self-contained file on Linux, Windows and FreeBSD)</li>
 </ul>
 <h2 id="license"><a class="header" href="#license">License</a></h2>
 <p>CPU Load is licensed under the GNU LGPL 3 license only (LGPL-3.0-only).</p>
@@ -199,7 +199,7 @@ It gives one simple interface: take a sample, wait, take another, and compare th
 <p>Author: <a href="https://www.noureddine.org/">Adel Noureddine</a></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="supported-platforms"><a class="header" href="#supported-platforms">Supported Platforms</a></h1>
-<p>CPU Load runs on Linux, Windows and macOS, on PCs, servers, Macs and single-board computers such as the Raspberry Pi. It reads what the operating system counts, not the hardware, so it works the same whatever the processor.</p>
+<p>CPU Load runs on Linux, Windows, macOS and FreeBSD, on PCs, servers, Macs and single-board computers such as the Raspberry Pi. It reads what the operating system counts, not the hardware, so it works the same whatever the processor.</p>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -209,22 +209,26 @@ It gives one simple interface: take a sample, wait, take another, and compare th
 <tr><td>The whole system</td><td>Linux</td><td>The <code>cpu</code> line of <code>/proc/stat</code></td></tr>
 <tr><td>The whole system</td><td>macOS</td><td><code>host_statistics</code>, macOS’ CPU counters</td></tr>
 <tr><td>The whole system</td><td>Windows</td><td><code>GetSystemTimes</code></td></tr>
+<tr><td>The whole system</td><td>FreeBSD</td><td><code>kern.cp_time</code> through <code>sysctl</code></td></tr>
 <tr><td>One process, by its number</td><td>Linux</td><td><code>utime</code> + <code>stime</code> of <code>/proc/&lt;pid&gt;/stat</code></td></tr>
 <tr><td>One process, by its number</td><td>macOS</td><td><code>proc_pidinfo</code>, the user and system time of the process</td></tr>
 <tr><td>One process, by its number</td><td>Windows</td><td><code>OpenProcess</code> + <code>GetProcessTimes</code></td></tr>
+<tr><td>One process, by its number</td><td>FreeBSD</td><td><code>kern.proc</code> through <code>sysctl</code>, the CPU time of the process</td></tr>
 <tr><td>An application, every process of it</td><td>Linux</td><td><code>/proc</code> scanned, each process named by <code>/proc/&lt;pid&gt;/exe</code></td></tr>
 <tr><td>An application, every process of it</td><td>macOS</td><td><code>proc_listpids</code>, each process named by <code>proc_pidpath</code></td></tr>
 <tr><td>An application, every process of it</td><td>Windows</td><td><code>EnumProcesses</code> + <code>QueryFullProcessImageNameW</code></td></tr>
+<tr><td>An application, every process of it</td><td>FreeBSD</td><td><code>kern.proc</code> listed, each process named by <code>kern.proc.pathname</code></td></tr>
 </tbody>
 </table>
 </div>
-<p>BSD support is planned and will come in a future version.</p>
+<p>FreeBSD is supported on 64-bit systems only.</p>
 <h2 id="matching-an-application"><a class="header" href="#matching-an-application">Matching an Application</a></h2>
 <p>An application is given by the name of its program, without its folder. The name must match exactly, but upper or lower case does not matter.
 Every OS matches the program with the process that actually runs, so <code>firefox</code> finds every process of Firefox, its content processes included.</p>
 <p><strong>Linux</strong><br>A process is named by the program <code>/proc/&lt;pid&gt;/exe</code> points to. A process whose <code>/proc/&lt;pid&gt;/exe</code> cannot be read (such as a kernel thread, which runs no program directly, or another user’s process) falls back on <code>/proc/&lt;pid&gt;/comm</code>: the name the process was given, cut to 15 characters.</p>
 <p><strong>macOS</strong><br>A process is named by the program inside the bundle, so <code>firefox</code> finds the application inside <code>Firefox.app</code>, and also every program inside <code>Firefox.app</code>: for example, its content processes run <code>plugin-container</code>, from a helper bundle inside it.</p>
 <p><strong>Windows</strong><br>A trailing <code>.exe</code> is ignored, so <code>firefox</code> also finds <code>firefox.exe</code>.</p>
+<p><strong>FreeBSD</strong><br>A process is named by the program <code>kern.proc.pathname</code> gives. A process whose program cannot be named (a kernel process, which runs none, or a process whose program was replaced while it runs) falls back on its command name, cut to 19 characters.</p>
 <h2 id="macs"><a class="header" href="#macs">Macs</a></h2>
 <p>macOS is supported on Apple Silicon and Intel Macs, with the library built for the chip it runs on.
 An x86_64 build running under Rosetta on an Apple Silicon Mac reads process times about 40 times too low, so process and application loads come out close to 0%.</p>
@@ -236,22 +240,23 @@ An x86_64 build running under Rosetta on an Apple Silicon Mac reads process time
 <pre><code class="language-bash">alr with cpuload
 </code></pre>
 <p>Alire fetches the library and builds it along with your program. Then add <code>with CPU_Load;</code> to your code (see <a href="#quick-usage">Quick Usage</a>).</p>
-<p>Alire offers CPU Load on Linux, Windows and macOS.</p>
+<p>Alire offers CPU Load on Linux, Windows, macOS and FreeBSD.</p>
 <h2 id="from-source"><a class="header" href="#from-source">From Source</a></h2>
 <p>Clone the <a href="https://github.com/joular/cpuload">GitHub repository</a> and build it with GNAT and GPRBuild, or with Alire. The build gives:</p>
 <ul>
 <li>a static library (<code>libcpuload.a</code>), to link into an Ada program, which is the default</li>
-<li>a shared library (<code>libcpuload.so</code> on Linux, <code>libcpuload.dll</code> on Windows, <code>libcpuload.dylib</code> on macOS), which carries the C interface for programs in C, C++, Java, Python, Rust, etc.</li>
+<li>a shared library (<code>libcpuload.so</code> on Linux and FreeBSD, <code>libcpuload.dll</code> on Windows, <code>libcpuload.dylib</code> on macOS), which carries the C interface for programs in C, C++, Java, Python, Rust, etc.</li>
 </ul>
-<p>On Linux and Windows, the shared library carries the Ada runtime too, so it is the only file to ship with your program (on Linux, <code>libcpuload.so.0</code>, the name programs look for). On macOS, the Ada runtime stays a file of its own, which the library loads from the folder of the compiler that built it.</p>
+<p>On Linux, Windows and FreeBSD, the shared library carries the Ada runtime too, so it is the only file to ship with your program (on Linux and FreeBSD, <code>libcpuload.so.0</code>, the name programs look for). On macOS, the Ada runtime stays a file of its own, which the library loads from the folder of the compiler that built it.</p>
 <p>See <a href="#compilation">Compilation</a> for the build commands and options.</p>
 <h2 id="platform-specific-requirements"><a class="header" href="#platform-specific-requirements">Platform-specific Requirements</a></h2>
 <p>CPU Load is a library, so the privileges below are needed for the <em>program using it</em>.</p>
-<p>The counters need no particular rights on Linux, Windows or macOS: any user can read the load of the whole machine, and of their own processes.</p>
+<p>The counters need no particular rights on Linux, Windows, macOS or FreeBSD: any user can read the load of the whole machine, and of their own processes.</p>
 <ul>
 <li><strong>Linux</strong>: the load of other users’ processes can be read too, but not the program they run, so they are matched by the name in <code>/proc/&lt;pid&gt;/comm</code> instead (see <a href="#supported-platforms">Supported Platforms</a>).</li>
 <li><strong>macOS</strong>: the processes of other users cannot be read unless the program runs as root (with <code>sudo</code>), so their load is negative.</li>
 <li><strong>Windows</strong>: the processes of other users cannot be read. One of them followed by its ID reads a negative load, and in an application they are left out, as their program cannot be found either (an application made only of them reads <code>0.0</code>).</li>
+<li><strong>FreeBSD</strong>: the processes of other users can be read too, with the program they run, unless the system hides them (<code>security.bsd.see_other_uids=0</code>): one of them followed by its ID then reads a negative load, and in an application they are left out.</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="quick-usage"><a class="header" href="#quick-usage">Quick Usage</a></h1>
@@ -361,6 +366,7 @@ print("firefox:", 100.0 * lib.cpuload_process_usage(ctypes.byref(before), ctypes
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="compilation"><a class="header" href="#compilation">Compilation</a></h1>
 <p>CPU Load is written in Ada and is built with GPRBuild, or with Alire. A modern GNAT compiler is the only requirement.</p>
+<p>On FreeBSD, <code>pkg install gprbuild</code> brings GPRBuild and GNAT, whose folder <code>/usr/local/gnat12/bin</code> has to be added to <code>PATH</code>.</p>
 <h2 id="default-build"><a class="header" href="#default-build">Default Build</a></h2>
 <p>With <a href="https://alire.ada.dev">Alire</a>:</p>
 <pre><code class="language-bash">alr build
@@ -370,8 +376,8 @@ print("firefox:", 100.0 * lib.cpuload_process_usage(ctypes.byref(before), ctypes
 </code></pre>
 <p>The build produces a static library by default, <code>libcpuload.a</code> in <code>lib/static/</code>, for Ada programs.</p>
 <h2 id="choosing-the-os"><a class="header" href="#choosing-the-os">Choosing the OS</a></h2>
-<p>The build detects the OS on its own: Linux, macOS and Windows are each recognised from the target GPRBuild reports, so nothing has to be passed.</p>
-<p><code>-XPJ_OS</code> still says which OS to build for (<code>linux</code>, <code>macos</code> or <code>windows</code>) when it is not the one of the machine building it:</p>
+<p>The build detects the OS on its own: Linux, macOS, Windows and FreeBSD are each recognised from the target GPRBuild reports, so nothing has to be passed.</p>
+<p><code>-XPJ_OS</code> still says which OS to build for (<code>linux</code>, <code>macos</code>, <code>windows</code> or <code>freebsd</code>) when it is not the one of the machine building it:</p>
 <pre><code class="language-bash">gprbuild -P cpuload.gpr -XPJ_OS=windows
 </code></pre>
 <p>A library built for another OS reads no counters at all: the machine reads 0%, and processes and applications read negative.</p>
@@ -392,7 +398,7 @@ print("firefox:", 100.0 * lib.cpuload_process_usage(ctypes.byref(before), ctypes
 </table>
 </div>
 <p>Each type is built in its own folder: <code>lib/static/</code>, <code>lib/relocatable/</code> or <code>lib/static-pic/</code>.</p>
-<p>The <code>relocatable</code> library is stand-alone (it starts itself up when loaded) and, on Linux and Windows, encapsulated: it carries the Ada runtime too, so it is one self-contained file. On Linux, it is versioned as <code>libcpuload.so.0</code>.</p>
+<p>The <code>relocatable</code> library is stand-alone (it starts itself up when loaded) and, on Linux, Windows and FreeBSD, encapsulated: it carries the Ada runtime too, so it is one self-contained file. On Linux and FreeBSD, it is versioned as <code>libcpuload.so.0</code>.</p>
 <p>On macOS it cannot be encapsulated, so the Ada runtime stays a file of its own: the library records the folder of the runtime of the compiler that built it, and loads it from there with nothing to set (no <code>DYLD_LIBRARY_PATH</code>, so it also works under <code>sudo</code> and from the system’s Python).</p>
 <h2 id="building-the-examples"><a class="header" href="#building-the-examples">Building the Examples</a></h2>
 <p>The Ada example uses the static library:</p>
@@ -408,7 +414,7 @@ print("firefox:", 100.0 * lib.cpuload_process_usage(ctypes.byref(before), ctypes
 <p>Then compile the C program:</p>
 <pre><code class="language-bash">gcc example/c/main.c -Iinclude -Llib/relocatable -lcpuload -Wl,-rpath,"$PWD/lib/relocatable" -o example/c/example_c
 </code></pre>
-<p><code>-I</code> is the folder holding <code>cpuload.h</code>, <code>-L</code> and <code>-l</code> the library to link with, and <code>-rpath</code> the folder where the program looks for the library when it runs. Without <code>-rpath</code>, the program still compiles but stops on start because it cannot find the library, unless you set <code>LD_LIBRARY_PATH</code> (Linux) or <code>DYLD_LIBRARY_PATH</code> (macOS) yourself. Windows has no <code>-rpath</code>: put a copy of the DLL next to the program instead (which is what the Makefile does).</p>
+<p><code>-I</code> is the folder holding <code>cpuload.h</code>, <code>-L</code> and <code>-l</code> the library to link with, and <code>-rpath</code> the folder where the program looks for the library when it runs. Without <code>-rpath</code>, the program still compiles but stops on start because it cannot find the library, unless you set <code>LD_LIBRARY_PATH</code> (Linux and FreeBSD) or <code>DYLD_LIBRARY_PATH</code> (macOS) yourself. Windows has no <code>-rpath</code>: put a copy of the DLL next to the program instead (which is what the Makefile does).</p>
 <p>The Python example only needs the shared library, which its Makefile builds:</p>
 <pre><code class="language-bash">make -C example/python run APP=firefox
 </code></pre>
@@ -509,7 +515,7 @@ A core here is a CPU as the OS counts them, so a hardware thread on a processor 
 </ul>
 <p>A total of 0 on the very first sample is worth checking: it is what a library built for another OS gives (see <a href="#compilation">Compilation</a>), and without the check a program would print 0% forever and look idle. The example programs do this check.</p>
 <h2 id="how-often-to-sample"><a class="header" href="#how-often-to-sample">How Often to Sample</a></h2>
-<p>Sample about a second apart: Linux counts a process in 10 ms units and Windows in about 15 ms, too coarse for shorter waits. macOS counts a process in nanoseconds, and reads it well below a second, though the machine itself is still counted in 10 ms ticks.</p>
+<p>Sample about a second apart: Linux counts a process in 10 ms units, Windows in about 15 ms, and FreeBSD the machine in ticks of about 8 ms, too coarse for shorter waits. macOS counts a process in nanoseconds, and reads it well below a second, though the machine itself is still counted in 10 ms ticks.</p>
 <p>On macOS, the counters of the machine are 32 bits, counting 100 times per second for each busy core: on a 10 core machine kept busy, they can wrap after about 50 days. Only the load measured across the wrap shows 0%.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="integration-with-systems-and-tools"><a class="header" href="#integration-with-systems-and-tools">Integration with Systems and Tools</a></h1>
@@ -524,9 +530,9 @@ A core here is a CPU as the OS counts them, so a hardware thread on a processor 
 <pre><code class="language-bash">gprbuild -P your_project.gpr -aP../cpuload
 </code></pre>
 <h2 id="c-c-and-other-languages"><a class="header" href="#c-c-and-other-languages">C, C++ and Other Languages</a></h2>
-<p>Any language with a C FFI can use the shared library (<code>libcpuload.so</code> on Linux, <code>libcpuload.dll</code> on Windows, <code>libcpuload.dylib</code> on macOS) through the C interface in <a href="https://github.com/joular/cpuload/blob/HEAD/include/cpuload.h">include/cpuload.h</a>: C and C++ directly, Python through ctypes, Java through FFM or JNA, Rust through <code>libloading</code> or FFI declarations, etc.</p>
+<p>Any language with a C FFI can use the shared library (<code>libcpuload.so</code> on Linux and FreeBSD, <code>libcpuload.dll</code> on Windows, <code>libcpuload.dylib</code> on macOS) through the C interface in <a href="https://github.com/joular/cpuload/blob/HEAD/include/cpuload.h">include/cpuload.h</a>: C and C++ directly, Python through ctypes, Java through FFM or JNA, Rust through <code>libloading</code> or FFI declarations, etc.</p>
 <p>A sample is three 64-bit integers, <code>busy</code>, <code>total</code> and <code>used</code>, in this order, with the same layout on every target.</p>
-<p>On Linux and Windows, the shared library is one self-contained file, carrying the Ada runtime too, so it is the only file to ship with your program. On Windows, the program looks for the DLL next to it, so put a copy there.</p>
+<p>On Linux, Windows and FreeBSD, the shared library is one self-contained file, carrying the Ada runtime too, so it is the only file to ship with your program. On Windows, the program looks for the DLL next to it, so put a copy there.</p>
 <p>On macOS, the library loads the Ada runtime from the folder of the compiler that built it (see <a href="#compilation">Compilation</a>), so it runs on a Mac where that same compiler is installed in the same folder.</p>
 <h2 id="python"><a class="header" href="#python">Python</a></h2>
 <p>The <a href="#quick-usage">Quick Usage</a> page shows how to call the library from Python with ctypes, and <a href="https://github.com/joular/cpuload/blob/HEAD/example/python/main.py">example/python/main.py</a> is a full example.</p>
@@ -568,6 +574,10 @@ process load = (Used after − Used before) / (Total after − Total before)
 <p><strong>The machine.</strong> <code>GetSystemTimes</code> gives the idle, kernel and user times, in 100 ns units. The kernel time includes the idle time, so <code>Total</code> is the kernel and user times, and <code>Busy</code> is <code>Total</code> without the idle time.</p>
 <p><strong>A process.</strong> <code>OpenProcess</code> (asking for limited information only), then <code>GetProcessTimes</code>, give the kernel and user times of the process. The processes of other users cannot be opened, so they are not read. A process that has ended can still be queried while a handle to it is held. Its exit time, which stays zero until it ends, tells it apart, and such a process is not read.</p>
 <p><strong>An application.</strong> <code>EnumProcesses</code> lists the processes (with room for twice as many each time the list fills up, up to 65536), and <code>QueryFullProcessImageNameW</code> gives the path of each one’s program, through the same <code>OpenProcess</code>: the processes of other users cannot be named, so they are left out. A trailing <code>.exe</code> is ignored on both sides of the comparison.</p>
+<h2 id="freebsd"><a class="header" href="#freebsd">FreeBSD</a></h2>
+<p><strong>The machine.</strong> <code>kern.cp_time</code>, read through <code>sysctl</code>, gives the user, nice, system, interrupt and idle ticks of all the cores together, counted by the statistics clock (<code>stathz</code> of <code>kern.clockrate</code>, around 128 per second). <code>Busy</code> is all but the idle ticks.</p>
+<p><strong>A process.</strong> <code>kern.proc.pid</code> gives the <code>kinfo_proc</code> of the process, whose <code>ki_runtime</code> is its CPU time, already in microseconds. A process in state <code>SZOMB</code> (zombie) has ended, and is not read. Above the highest process number, FreeBSD takes the number for a thread and answers with its process, so the answer is checked to be about the process asked for.</p>
+<p><strong>An application.</strong> <code>kern.proc.proc</code> lists every process once (<code>kern.proc.all</code> lists every thread), and <code>kern.proc.pathname</code> gives the full path of each one’s program. When there is none (a kernel process runs none, and a program replaced while it runs has no path), the command name in the <code>kinfo_proc</code> is used instead.</p>
 <h2 id="code-layout"><a class="header" href="#code-layout">Code Layout</a></h2>
 <div class="table-wrapper">
 <table>
@@ -578,7 +588,7 @@ process load = (Used after − Used before) / (Total after − Total before)
 <tr><td><code>src/cpu_load.ads</code>, <code>src/cpu_load.adb</code></td><td>The interface (<code>Sample</code>, <code>Take</code>, <code>System_Usage</code>, <code>Process_Usage</code>, <code>Version</code>), and what an application is, the same on every OS</td></tr>
 <tr><td><code>src/cpu_load-platform.ads</code></td><td>The four functions each OS provides</td></tr>
 <tr><td><code>src/cpu_load-c_api.ads</code>, <code>src/cpu_load-c_api.adb</code></td><td>The C interface, matching <code>include/cpuload.h</code></td></tr>
-<tr><td><code>src/linux/</code>, <code>src/macos/</code>, <code>src/windows/</code></td><td>One body of <code>CPU_Load.Platform</code> per OS (<code>src/macos</code> also holds the specs file recording where the shared library finds the Ada runtime)</td></tr>
+<tr><td><code>src/linux/</code>, <code>src/macos/</code>, <code>src/windows/</code>, <code>src/freebsd/</code></td><td>One body of <code>CPU_Load.Platform</code> per OS (<code>src/macos</code> also holds the specs file recording where the shared library finds the Ada runtime)</td></tr>
 <tr><td><code>include/cpuload.h</code></td><td>The C declarations</td></tr>
 <tr><td><code>example/</code></td><td>Example programs in Ada, C and Python</td></tr>
 </tbody>
@@ -593,7 +603,7 @@ process load = (Used after − Used before) / (Total after − Total before)
 <li><code>Runs</code>: whether a process runs the program an application is named by</li>
 <li><code>For_Each_Process</code>: every process running</li>
 </ul>
-<p>One body per OS lives in <code>src/linux</code>, <code>src/macos</code> and <code>src/windows</code>, and <code>cpuload.gpr</code> picks the folder for the OS being built from <code>PJ_OS</code>.</p>
+<p>One body per OS lives in <code>src/linux</code>, <code>src/macos</code>, <code>src/windows</code> and <code>src/freebsd</code>, and <code>cpuload.gpr</code> picks the folder for the OS being built from <code>PJ_OS</code>.</p>
 <p>To support a new OS, write a body of <code>CPU_Load.Platform</code> for it, then add the OS and its folder to <code>PJ_OS</code> in <code>cpuload.gpr</code>, and to <code>alire.toml</code>.</p>
 
                     </main>

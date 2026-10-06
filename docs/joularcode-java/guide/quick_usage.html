@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-d7d8b02a.js";
+            window.path_to_searchindex_js = "../searchindex-3a24fa9e.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-421028e5.js"></script>
@@ -182,7 +182,7 @@
 <pre><code>java -javaagent:joularcodejava-&lt;version&gt;.jar -jar yourProgram.jar
 </code></pre>
 <p>On Linux PC/Servers, Joular Code for Java reads the CPU power from RAPL directly, which needs root, or read access to the RAPL files (see <a href="./installation.html">Installation</a>).</p>
-<p>Everywhere else (Windows, macOS, Raspberry Pi), start <a href="https://github.com/joular/powerjoular">PowerJoular</a> with the <code>-r</code> option, so it writes its power data to the shared memory ring buffer Joular Code for Java reads (with <code>sudo</code> on macOS, and from a terminal with administrative rights on Windows with the PawnIO driver):</p>
+<p>Everywhere else (Windows, macOS, FreeBSD, Raspberry Pi), start <a href="https://github.com/joular/powerjoular">PowerJoular</a> with the <code>-r</code> option, so it writes its power data to the shared memory ring buffer Joular Code for Java reads (with <code>sudo</code> on macOS, with <code>sudo</code> and the <code>cpuctl</code> module on FreeBSD, and from a terminal with administrative rights on Windows with the PawnIO driver):</p>
 <pre><code>powerjoular -r
 </code></pre>
 <p>On Windows, start PowerJoular before the application, and do not restart it while the application runs.

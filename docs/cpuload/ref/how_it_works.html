@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-ef1855d1.js";
+            window.path_to_searchindex_js = "../searchindex-89e24e1d.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-8aae2392.js"></script>
@@ -204,6 +204,10 @@ process load = (Used after − Used before) / (Total after − Total before)
 <p><strong>The machine.</strong> <code>GetSystemTimes</code> gives the idle, kernel and user times, in 100 ns units. The kernel time includes the idle time, so <code>Total</code> is the kernel and user times, and <code>Busy</code> is <code>Total</code> without the idle time.</p>
 <p><strong>A process.</strong> <code>OpenProcess</code> (asking for limited information only), then <code>GetProcessTimes</code>, give the kernel and user times of the process. The processes of other users cannot be opened, so they are not read. A process that has ended can still be queried while a handle to it is held. Its exit time, which stays zero until it ends, tells it apart, and such a process is not read.</p>
 <p><strong>An application.</strong> <code>EnumProcesses</code> lists the processes (with room for twice as many each time the list fills up, up to 65536), and <code>QueryFullProcessImageNameW</code> gives the path of each one’s program, through the same <code>OpenProcess</code>: the processes of other users cannot be named, so they are left out. A trailing <code>.exe</code> is ignored on both sides of the comparison.</p>
+<h2 id="freebsd"><a class="header" href="#freebsd">FreeBSD</a></h2>
+<p><strong>The machine.</strong> <code>kern.cp_time</code>, read through <code>sysctl</code>, gives the user, nice, system, interrupt and idle ticks of all the cores together, counted by the statistics clock (<code>stathz</code> of <code>kern.clockrate</code>, around 128 per second). <code>Busy</code> is all but the idle ticks.</p>
+<p><strong>A process.</strong> <code>kern.proc.pid</code> gives the <code>kinfo_proc</code> of the process, whose <code>ki_runtime</code> is its CPU time, already in microseconds. A process in state <code>SZOMB</code> (zombie) has ended, and is not read. Above the highest process number, FreeBSD takes the number for a thread and answers with its process, so the answer is checked to be about the process asked for.</p>
+<p><strong>An application.</strong> <code>kern.proc.proc</code> lists every process once (<code>kern.proc.all</code> lists every thread), and <code>kern.proc.pathname</code> gives the full path of each one’s program. When there is none (a kernel process runs none, and a program replaced while it runs has no path), the command name in the <code>kinfo_proc</code> is used instead.</p>
 <h2 id="code-layout"><a class="header" href="#code-layout">Code Layout</a></h2>
 <div class="table-wrapper">
 <table>
@@ -214,7 +218,7 @@ process load = (Used after − Used before) / (Total after − Total before)
 <tr><td><code>src/cpu_load.ads</code>, <code>src/cpu_load.adb</code></td><td>The interface (<code>Sample</code>, <code>Take</code>, <code>System_Usage</code>, <code>Process_Usage</code>, <code>Version</code>), and what an application is, the same on every OS</td></tr>
 <tr><td><code>src/cpu_load-platform.ads</code></td><td>The four functions each OS provides</td></tr>
 <tr><td><code>src/cpu_load-c_api.ads</code>, <code>src/cpu_load-c_api.adb</code></td><td>The C interface, matching <code>include/cpuload.h</code></td></tr>
-<tr><td><code>src/linux/</code>, <code>src/macos/</code>, <code>src/windows/</code></td><td>One body of <code>CPU_Load.Platform</code> per OS (<code>src/macos</code> also holds the specs file recording where the shared library finds the Ada runtime)</td></tr>
+<tr><td><code>src/linux/</code>, <code>src/macos/</code>, <code>src/windows/</code>, <code>src/freebsd/</code></td><td>One body of <code>CPU_Load.Platform</code> per OS (<code>src/macos</code> also holds the specs file recording where the shared library finds the Ada runtime)</td></tr>
 <tr><td><code>include/cpuload.h</code></td><td>The C declarations</td></tr>
 <tr><td><code>example/</code></td><td>Example programs in Ada, C and Python</td></tr>
 </tbody>
@@ -229,7 +233,7 @@ process load = (Used after − Used before) / (Total after − Total before)
 <li><code>Runs</code>: whether a process runs the program an application is named by</li>
 <li><code>For_Each_Process</code>: every process running</li>
 </ul>
-<p>One body per OS lives in <code>src/linux</code>, <code>src/macos</code> and <code>src/windows</code>, and <code>cpuload.gpr</code> picks the folder for the OS being built from <code>PJ_OS</code>.</p>
+<p>One body per OS lives in <code>src/linux</code>, <code>src/macos</code>, <code>src/windows</code> and <code>src/freebsd</code>, and <code>cpuload.gpr</code> picks the folder for the OS being built from <code>PJ_OS</code>.</p>
 <p>To support a new OS, write a body of <code>CPU_Load.Platform</code> for it, then add the OS and its folder to <code>PJ_OS</code> in <code>cpuload.gpr</code>, and to <code>alire.toml</code>.</p>
 
                     </main>

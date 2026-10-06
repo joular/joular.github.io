@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-3140a034.js";
+            window.path_to_searchindex_js = "../searchindex-26fb3fd6.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-b01ac823.js"></script>
@@ -182,7 +182,7 @@
 <li>Raspberry Pi devices (multiple models) and Asus Tinker Board.</li>
 <li>Inside virtual machines in all supported host platforms.</li>
 </ul>
-<p>PowerJoular works on Linux, Windows and macOS.</p>
+<p>PowerJoular works on Linux, Windows, macOS and FreeBSD.</p>
 <p>PowerJoular does the energy and CPU usage measuring through two Ada libraries we developed:</p>
 <ul>
 <li><a href="https://github.com/joular/joularcore">Joular Core</a>: for CPU and GPU energy and power consumption.</li>
@@ -198,12 +198,13 @@ On a server with several sockets, only the first one is measured.</p>
 <li>The RAPL registers through <a href="https://github.com/hubblo-org/windows-rapl-driver">Hubblo’s RAPL driver</a>.</li>
 </ul>
 <p>Setting the <code>JOULARCORE_WINDOWS_RAPL</code> environment variable to <code>emi</code>, <code>pawnio</code> or <code>hubblo</code> picks one instead of trying them in turn. Nothing has to be configured otherwise.</p>
+<p>On FreeBSD PC/Servers, PowerJoular reads the same RAPL package counter from the registers of the processor, through the <a href="https://man.freebsd.org/cgi/man.cgi?query=cpuctl&amp;sektion=4">cpuctl(4)</a> driver.</p>
 <p>On macOS, PowerJoular uses <code>powermetrics</code>, which is installed with macOS and reports the power drawn over each cycle.
 Apple Silicon Macs give their CPU and the GPU built into the same chip.
 Intel Macs give the CPU only (the whole chip: cores, integrated graphics and system agent).</p>
 <p>For the GPU, PowerJoular supports:</p>
 <ul>
-<li>Nvidia graphic cards on Linux and Windows, through NVML, which is installed with the Nvidia driver.</li>
+<li>Nvidia graphic cards on Linux, Windows and FreeBSD, through NVML, which is installed with the Nvidia driver.</li>
 <li>AMD graphic cards on Linux, through the hwmon sysfs of the amdgpu driver.</li>
 <li>AMD graphic cards on Windows, through ADLX, which is installed with the AMD driver.</li>
 <li>The GPU of Apple Silicon Macs, through <code>powermetrics</code>.</li>
@@ -242,8 +243,9 @@ However, the model is generated and trained on a specific revision (listed betwe
 <tr><td style="text-align: center">Asus Tinker Board</td><td style="text-align: center">Linux</td><td style="text-align: center">Our regression models</td><td style="text-align: center">ARM</td></tr>
 <tr><td style="text-align: center">Linux PC/Server</td><td style="text-align: center">Linux</td><td style="text-align: center">RAPL (using powercap), Nvidia NVML, AMD hwmon sysfs</td><td style="text-align: center">x86, x86_64</td></tr>
 <tr><td style="text-align: center">Windows PC/Server</td><td style="text-align: center">Windows</td><td style="text-align: center">RAPL (using EMI, PawnIO or Hubblo’s driver), Nvidia NVML, AMD ADLX</td><td style="text-align: center">x86_64</td></tr>
+<tr><td style="text-align: center">FreeBSD PC/Server</td><td style="text-align: center">FreeBSD</td><td style="text-align: center">RAPL (using cpuctl), Nvidia NVML</td><td style="text-align: center">x86_64</td></tr>
 <tr><td style="text-align: center">Mac</td><td style="text-align: center">macOS</td><td style="text-align: center">powermetrics</td><td style="text-align: center">Apple Silicon (ARM), Intel (x86_64)</td></tr>
-<tr><td style="text-align: center">Virtual Machine</td><td style="text-align: center">Linux, Windows or macOS guest, any host</td><td style="text-align: center">Host’s architecture (RAPL, regression models, others)</td><td style="text-align: center">x86, x86_64, ARM</td></tr>
+<tr><td style="text-align: center">Virtual Machine</td><td style="text-align: center">Linux, Windows, macOS or FreeBSD guest, any host</td><td style="text-align: center">Host’s architecture (RAPL, regression models, others)</td><td style="text-align: center">x86, x86_64, ARM</td></tr>
 </tbody>
 </table>
 </div>
@@ -253,7 +255,8 @@ However, the model is generated and trained on a specific revision (listed betwe
 <li><strong>Linux, PC or server</strong>: reading RAPL files needs elevated privileges on the recent kernels (5.10 and newer), so run <code>sudo powerjoular</code>, or give read rights to the files. See <a href="https://github.com/joular/powerjoular/issues/1">this issue</a>.</li>
 <li><strong>Windows</strong>: with the Energy Meter Interface (EMI), no special privileges or driver are needed. Otherwise, a RAPL driver is needed: <a href="https://pawnio.eu">PawnIO</a>, which needs PowerJoular to run from a terminal with administrative rights, or <a href="https://github.com/hubblo-org/windows-rapl-driver">Hubblo’s RAPL driver</a>, which does not. The easiest way to get a signed version of Hubblo’s driver is through the <a href="https://github.com/hubblo-org/scaphandre/releases">Scaphandre installer</a>. Reading the CPU time of a process belonging to another user also needs a terminal with administrative rights, so <code>-p</code> and <code>-a</code> on someone else’s process need it too.</li>
 <li><strong>macOS</strong>: <code>powermetrics</code> only runs as the superuser, so run <code>sudo powerjoular</code>. Without it, PowerJoular finds no power source and stops. Reading the CPU time of a process belonging to another user also needs root, so <code>-p</code> and <code>-a</code> on someone else’s process need <code>sudo</code> too.</li>
-<li><strong>Raspberry Pi, and GPU readings on Linux and Windows</strong>: no special privileges needed.</li>
+<li><strong>FreeBSD</strong>: the RAPL registers are read through the <code>cpuctl(4)</code> driver, a module not in the GENERIC kernel: load it with <code>kldload cpuctl</code> (or <code>cpuctl_load="YES"</code> in <code>/boot/loader.conf</code>), then run <code>sudo powerjoular</code>, or run it as a member of the <code>kmem</code> group.</li>
+<li><strong>Raspberry Pi, and GPU readings on Linux, Windows and FreeBSD</strong>: no special privileges needed.</li>
 </ul>
 
                     </main>

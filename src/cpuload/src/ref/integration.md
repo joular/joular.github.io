@@ -22,11 +22,11 @@ gprbuild -P your_project.gpr -aP../cpuload
 
 ## C, C++ and Other Languages
 
-Any language with a C FFI can use the shared library (`libcpuload.so` on Linux, `libcpuload.dll` on Windows, `libcpuload.dylib` on macOS) through the C interface in [include/cpuload.h](https://github.com/joular/cpuload/blob/HEAD/include/cpuload.h): C and C++ directly, Python through ctypes, Java through FFM or JNA, Rust through `libloading` or FFI declarations, etc.
+Any language with a C FFI can use the shared library (`libcpuload.so` on Linux and FreeBSD, `libcpuload.dll` on Windows, `libcpuload.dylib` on macOS) through the C interface in [include/cpuload.h](https://github.com/joular/cpuload/blob/HEAD/include/cpuload.h): C and C++ directly, Python through ctypes, Java through FFM or JNA, Rust through `libloading` or FFI declarations, etc.
 
 A sample is three 64-bit integers, `busy`, `total` and `used`, in this order, with the same layout on every target.
 
-On Linux and Windows, the shared library is one self-contained file, carrying the Ada runtime too, so it is the only file to ship with your program. On Windows, the program looks for the DLL next to it, so put a copy there.
+On Linux, Windows and FreeBSD, the shared library is one self-contained file, carrying the Ada runtime too, so it is the only file to ship with your program. On Windows, the program looks for the DLL next to it, so put a copy there.
 
 On macOS, the library loads the Ada runtime from the folder of the compiler that built it (see [Compilation](./compilation.md)), so it runs on a Mac where that same compiler is installed in the same folder.
 

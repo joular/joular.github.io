@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-d7d8b02a.js";
+            window.path_to_searchindex_js = "../searchindex-3a24fa9e.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-421028e5.js"></script>
@@ -183,10 +183,10 @@ You can install it wherever you want, and give its full path to <code>-javaagent
 <p>Joular Code for Java gets the CPU power from one of three sources, depending on the platform or operating system:</p>
 <ul>
 <li>On Linux PC/Servers, it reads RAPL directly through powercap, on Intel or AMD CPUs (since Ryzen). The RAPL files are only readable by root on most distributions (Linux kernel 5.10 and newer): run the application as root, give its user read access to these files (for example with a udev rule), or run PowerJoular with <code>-r</code> as root and set <code>power-source-type=ringbuffer</code>.</li>
-<li>On Windows, macOS and Raspberry Pi devices (and on Linux, with <code>power-source-type=ringbuffer</code>), it reads the shared memory ring buffer of <a href="https://github.com/joular/powerjoular">PowerJoular</a>. Install PowerJoular (version 2.0.0 or later), and run it with the <code>-r</code> option alongside your application. On Windows, start PowerJoular before the application, and do not restart it while the application runs.</li>
+<li>On Windows, macOS, FreeBSD and Raspberry Pi devices (and on Linux, with <code>power-source-type=ringbuffer</code>), it reads the shared memory ring buffer of <a href="https://github.com/joular/powerjoular">PowerJoular</a>. Install PowerJoular (version 2.0.0 or later), and run it with the <code>-r</code> option alongside your application. On Windows, start PowerJoular before the application, and do not restart it while the application runs.</li>
 <li>In virtual machines, set <code>power-source-type=vm</code> and <code>vm-power-file</code>: it then reads the power consumption of the virtual machine (measured in the host) from a file shared between the host and the guest (see <a href="../ref/vm.html">Virtual Machines</a>).</li>
 </ul>
-<p>PowerJoular needs <code>sudo</code> on macOS, and on Linux PC/Servers unless its user can read the RAPL files, and a terminal with administrative rights on Windows with the PawnIO driver.
+<p>PowerJoular needs <code>sudo</code> on macOS, on FreeBSD (with the <code>cpuctl</code> module loaded by <code>kldload cpuctl</code>), and on Linux PC/Servers unless its user can read the RAPL files, and a terminal with administrative rights on Windows with the PawnIO driver.
 The Java application needs none of these.</p>
 <p>A commented example of the configuration file, <code>joularcodejava.properties.example</code>, is available in the repository and with the releases.
 Copy it as <code>joularcodejava.properties</code> to the folder where you run the Java command, or give its path with <code>-Djoularcodejava.properties</code> (see <a href="../ref/configuration.html">Configuration Properties</a>).

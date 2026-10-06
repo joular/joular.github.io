@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-3140a034.js";
+            window.path_to_searchindex_js = "../searchindex-26fb3fd6.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-b01ac823.js"></script>
@@ -180,6 +180,7 @@
 <ul>
 <li>Linux powercap with RAPL support: for monitoring power consumption of Intel and AMD processors</li>
 <li>The Energy Meter Interface, PawnIO or Hubblo’s RAPL driver: for monitoring power consumption of Intel and AMD processors on Windows</li>
+<li>The <code>cpuctl</code> driver (<code>kldload cpuctl</code>): for monitoring power consumption of Intel and AMD processors on FreeBSD</li>
 <li><code>powermetrics</code> (installed with macOS): for monitoring power consumption of Macs</li>
 <li>NVML (installed with the Nvidia driver): for monitoring power consumption of Nvidia graphic cards</li>
 <li>The amdgpu driver (its hwmon sysfs files): for monitoring power consumption of AMD graphic cards on Linux</li>
@@ -194,14 +195,15 @@ Debian, Ubuntu or Raspberry Pi OS:
 sudo apt install gnat gprbuild
 </code></pre>
 <p>For other distributions, use their package manager to download the compiler, or check <a href="https://www.noureddine.org/articles/ada-on-windows-and-linux-an-installation-guide">this article for easy instruction for various distributions</a>, including RHEL and its clones which does not ship with Ada support in GCC.</p>
+<p>On FreeBSD, <code>pkg install gprbuild</code> brings GPRBuild and GNAT, whose folder <code>/usr/local/gnat12/bin</code> has to be added to <code>PATH</code>.</p>
 <p>On Windows and macOS, the easiest way is to install <a href="https://alire.ada.dev/">Alire</a>, which also downloads the GNAT compiler and GPRBuild.</p>
 <h3 id="compilation-with-the-gnat-compiler-and-gprbuild"><a class="header" href="#compilation-with-the-gnat-compiler-and-gprbuild">Compilation with the GNAT compiler and GPRBuild</a></h3>
 <p>Check out the <a href="https://github.com/joular/joularcore">Joular Core</a> and <a href="https://github.com/joular/cpuload">CPU Load</a> repositories next to the PowerJoular folder, then point GPRBuild at them:</p>
 <pre><code>gprbuild -P powerjoular.gpr -aP../joularcore -aP../cpuload -p
 </code></pre>
 <p>The PowerJoular binary will be created in the <code>bin/</code> folder.</p>
-<p>Linux, macOS and Windows are each detected on their own, from the target GPRBuild identifies.
-To build for another OS than the one you are on, use a cross compiler for that OS (given to GPRBuild with <code>--target</code>), and set <code>PJ_OS</code> to <code>linux</code>, <code>macos</code> or <code>windows</code>:</p>
+<p>Linux, macOS, Windows and FreeBSD are each detected on their own, from the target GPRBuild identifies.
+To build for another OS than the one you are on, use a cross compiler for that OS (given to GPRBuild with <code>--target</code>), and set <code>PJ_OS</code> to <code>linux</code>, <code>macos</code>, <code>windows</code> or <code>freebsd</code>:</p>
 <pre><code>gprbuild -P powerjoular.gpr -aP../joularcore -aP../cpuload -XPJ_OS=windows -p
 </code></pre>
 <h3 id="compilation-with-alire"><a class="header" href="#compilation-with-alire">Compilation with Alire</a></h3>
@@ -220,7 +222,7 @@ end Binder;
 <p>To leave nothing at all outside the binary, including the C library, build with <code>POWERJOULAR_LINKING</code> set to <code>full</code>:</p>
 <pre><code>gprbuild -P powerjoular.gpr -aP../joularcore -aP../cpuload -XPOWERJOULAR_LINKING=full -p
 </code></pre>
-<p>On Linux, a fully static binary cannot reliably load a library while it runs, so the Nvidia graphic card readings, which load NVML while running, can’t be counted on with this option.
+<p>On Linux and FreeBSD, a fully static binary cannot reliably load a library while it runs, so the Nvidia graphic card readings, which load NVML while running, can’t be counted on with this option.
 The processor readings are not affected, and PowerJoular carries on without the GPU rather than failing.</p>
 <p>On macOS, Apple ships no static C library, so this option does nothing: the binary is built the same way it is by default.</p>
 

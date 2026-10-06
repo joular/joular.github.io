@@ -7,7 +7,7 @@ PowerJoular is aimed to software developers, system administrators and to automa
 Since version 2, PowerJoular measures the hardware through our [Joular Core](https://github.com/joular/joularcore) library, and the CPU usage through our [CPU Load](https://github.com/joular/cpuload) library.
 Both are written in Ada too, and PowerJoular is compiled with them into one binary.
 
-PowerJoular's power monitoring is based on the Intel RAPL through the [Linux Power Capping Framework](https://www.kernel.org/doc/html/latest/power/powercap/powercap.html) on Linux, and through the Energy Meter Interface, PawnIO or Hubblo's driver on Windows.
+PowerJoular's power monitoring is based on the Intel RAPL through the [Linux Power Capping Framework](https://www.kernel.org/doc/html/latest/power/powercap/powercap.html) on Linux, through the Energy Meter Interface, PawnIO or Hubblo's driver on Windows, and through the ```cpuctl``` driver on FreeBSD.
 On macOS, it is based on Apple's ```powermetrics```.
 For the GPU, it optionally uses [NVIDIA's Management Library (NVML)](https://developer.nvidia.com/management-library-nvml), and AMD's hwmon sysfs (Linux) or ADLX (Windows).
 PowerJoular automatically detects the computer configuration and supported modules, and provides power data accordingly.
@@ -22,6 +22,7 @@ It reads the Pkg domain, which is supported since Intel Sandy Bridge CPUs (and o
 On a server with several sockets, only the first one is read.
 
 On Windows, the same Pkg counter is read through the Energy Meter Interface built into Windows 11, or through the PawnIO driver or Hubblo's driver, whichever answers first.
+On FreeBSD, the same Pkg counter is read from the registers of the processor, through the ```cpuctl``` driver.
 
 RAPL gives an energy counter that only counts up, and Joular Core turns it into the energy consumed since the last reading.
 PowerJoular divides it by how long the cycle actually took, rather than assuming it was exactly one second, so the watts reported are the watts drawn, even on a busy machine where a cycle takes longer than one second.
@@ -45,7 +46,7 @@ For instance, if both Intel RAPL and NVML are supported, the tool will provide a
 
 ## Monitoring a PID
 
-For monitoring a specific process through its ID (PID), PowerJoular reads the CPU time used by the process and by the whole system (```/proc/stat``` and ```/proc/pid/stat``` on Linux, ```proc_pidinfo``` and ```host_statistics``` on macOS, ```GetProcessTimes``` and ```GetSystemTimes``` on Windows), and calculates the proportion of CPU cycles used by the process, and thus calculates the power consumed by the process accordingly:
+For monitoring a specific process through its ID (PID), PowerJoular reads the CPU time used by the process and by the whole system (```/proc/stat``` and ```/proc/pid/stat``` on Linux, ```proc_pidinfo``` and ```host_statistics``` on macOS, ```GetProcessTimes``` and ```GetSystemTimes``` on Windows, ```kern.proc``` and ```kern.cp_time``` on FreeBSD), and calculates the proportion of CPU cycles used by the process, and thus calculates the power consumed by the process accordingly:
 
 ```
 process power = CPU power × process CPU usage / system CPU usage

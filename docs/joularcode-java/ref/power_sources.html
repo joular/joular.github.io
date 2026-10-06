@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-d7d8b02a.js";
+            window.path_to_searchindex_js = "../searchindex-3a24fa9e.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-421028e5.js"></script>
@@ -201,10 +201,11 @@ The sub-domains (cores, uncore, DRAM) and the <code>psys</code> domain, which co
 </code></pre>
 <h2 id="powerjoular-ring-buffer-ringbuffer"><a class="header" href="#powerjoular-ring-buffer-ringbuffer">PowerJoular ring buffer (<code>ringbuffer</code>)</a></h2>
 <p>Joular Code for Java reads the shared memory area that <a href="https://github.com/joular/powerjoular">PowerJoular</a> (version 2.0.0 or later) writes with <code>-r</code>.
-PowerJoular measures the hardware through <a href="https://github.com/joular/joularcore">Joular Core</a>: RAPL on Linux and Windows, <code>powermetrics</code> on Macs, and our regression power models on Raspberry Pi.
+PowerJoular measures the hardware through <a href="https://github.com/joular/joularcore">Joular Core</a>: RAPL on Linux, Windows and FreeBSD, <code>powermetrics</code> on Macs, and our regression power models on Raspberry Pi.
 It runs as a process of its own, so the privileges needed to measure the hardware stay out of the Java application:</p>
 <ul>
 <li>On Linux PC/Servers and on macOS, run PowerJoular with <code>sudo</code>.</li>
+<li>On FreeBSD, load the <code>cpuctl</code> module (<code>kldload cpuctl</code>), then run PowerJoular with <code>sudo</code>.</li>
 <li>On Windows, PowerJoular needs no special rights with the Energy Meter Interface or Hubblo’s RAPL driver, but needs a terminal with administrative rights with the PawnIO driver.</li>
 <li>On Raspberry Pi, no special rights are needed.</li>
 </ul>
@@ -214,6 +215,7 @@ It runs as a process of its own, so the privileges needed to measure the hardwar
 <ul>
 <li>Linux: <code>/dev/shm/powerjoular</code></li>
 <li>macOS: <code>/tmp/powerjoular</code></li>
+<li>FreeBSD: <code>/tmp/powerjoular</code></li>
 <li>Windows: <code>%PROGRAMDATA%\powerjoular</code></li>
 </ul>
 <pre><code class="language-properties">power-source-type=ringbuffer

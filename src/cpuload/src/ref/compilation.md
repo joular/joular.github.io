@@ -2,6 +2,8 @@
 
 CPU Load is written in Ada and is built with GPRBuild, or with Alire. A modern GNAT compiler is the only requirement.
 
+On FreeBSD, `pkg install gprbuild` brings GPRBuild and GNAT, whose folder `/usr/local/gnat12/bin` has to be added to `PATH`.
+
 ## Default Build
 
 With [Alire](https://alire.ada.dev):
@@ -20,9 +22,9 @@ The build produces a static library by default, `libcpuload.a` in `lib/static/`,
 
 ## Choosing the OS
 
-The build detects the OS on its own: Linux, macOS and Windows are each recognised from the target GPRBuild reports, so nothing has to be passed.
+The build detects the OS on its own: Linux, macOS, Windows and FreeBSD are each recognised from the target GPRBuild reports, so nothing has to be passed.
 
-`-XPJ_OS` still says which OS to build for (`linux`, `macos` or `windows`) when it is not the one of the machine building it:
+`-XPJ_OS` still says which OS to build for (`linux`, `macos`, `windows` or `freebsd`) when it is not the one of the machine building it:
 
 ```bash
 gprbuild -P cpuload.gpr -XPJ_OS=windows
@@ -46,7 +48,7 @@ gprbuild -P cpuload.gpr -XCPULOAD_LIBRARY_TYPE=relocatable
 
 Each type is built in its own folder: `lib/static/`, `lib/relocatable/` or `lib/static-pic/`.
 
-The `relocatable` library is stand-alone (it starts itself up when loaded) and, on Linux and Windows, encapsulated: it carries the Ada runtime too, so it is one self-contained file. On Linux, it is versioned as `libcpuload.so.0`.
+The `relocatable` library is stand-alone (it starts itself up when loaded) and, on Linux, Windows and FreeBSD, encapsulated: it carries the Ada runtime too, so it is one self-contained file. On Linux and FreeBSD, it is versioned as `libcpuload.so.0`.
 
 On macOS it cannot be encapsulated, so the Ada runtime stays a file of its own: the library records the folder of the runtime of the compiler that built it, and loads it from there with nothing to set (no `DYLD_LIBRARY_PATH`, so it also works under `sudo` and from the system's Python).
 
@@ -77,7 +79,7 @@ Then compile the C program:
 gcc example/c/main.c -Iinclude -Llib/relocatable -lcpuload -Wl,-rpath,"$PWD/lib/relocatable" -o example/c/example_c
 ```
 
-`-I` is the folder holding `cpuload.h`, `-L` and `-l` the library to link with, and `-rpath` the folder where the program looks for the library when it runs. Without `-rpath`, the program still compiles but stops on start because it cannot find the library, unless you set `LD_LIBRARY_PATH` (Linux) or `DYLD_LIBRARY_PATH` (macOS) yourself. Windows has no `-rpath`: put a copy of the DLL next to the program instead (which is what the Makefile does).
+`-I` is the folder holding `cpuload.h`, `-L` and `-l` the library to link with, and `-rpath` the folder where the program looks for the library when it runs. Without `-rpath`, the program still compiles but stops on start because it cannot find the library, unless you set `LD_LIBRARY_PATH` (Linux and FreeBSD) or `DYLD_LIBRARY_PATH` (macOS) yourself. Windows has no `-rpath`: put a copy of the DLL next to the program instead (which is what the Makefile does).
 
 The Python example only needs the shared library, which its Makefile builds:
 

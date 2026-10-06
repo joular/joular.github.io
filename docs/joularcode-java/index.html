@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-d7d8b02a.js";
+            window.path_to_searchindex_js = "searchindex-3a24fa9e.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-421028e5.js"></script>
@@ -181,7 +181,7 @@
 <p>Joular Code for Java is a lightweight and efficient Java agent for monitoring the energy consumption of methods and execution branches at the source code level.</p>
 <p>This project is part of <a href="https://github.com/joular/joularcode">Joular Code</a>, and is the successor of <a href="https://github.com/joular/joularjx">JoularJX</a>.</p>
 <p>It is a Java agent where you can simply hook it to the Java Virtual Machine when starting your Java program, or attach it to a program already running.
-To get power readings, it reads Intel and AMD RAPL directly (through powercap) on Linux, and uses the shared memory ring buffer of <a href="https://github.com/joular/powerjoular">PowerJoular</a> on Windows, macOS and Raspberry Pi devices (and on Linux too, if you prefer). Inside a virtual machine, it reads the power the host writes to a file shared with the guest.</p>
+To get power readings, it reads Intel and AMD RAPL directly (through powercap) on Linux, and uses the shared memory ring buffer of <a href="https://github.com/joular/powerjoular">PowerJoular</a> on Windows, macOS, FreeBSD and Raspberry Pi devices (and on Linux too, if you prefer). Inside a virtual machine, it reads the power the host writes to a file shared with the guest.</p>
 <h2 id="features"><a class="header" href="#features">Features</a></h2>
 <ul>
 <li>Monitor power consumption and energy of each method and execution branch at runtime</li>
@@ -191,7 +191,7 @@ To get power readings, it reads Intel and AMD RAPL directly (through powercap) o
 <li>Gets the CPU power from Linux RAPL directly, from PowerJoular’s shared memory ring buffer, or from the host of a virtual machine</li>
 <li>Generates CSV files with the power (watts) and the energy (joules) of each execution branch</li>
 <li>Provides two sets of results: one for all methods (including the JDK ones), and one filtered and calculated for your application’s methods</li>
-<li>Works on Windows, macOS, Linux and Raspberry Pi</li>
+<li>Works on Windows, macOS, Linux, FreeBSD and Raspberry Pi</li>
 </ul>
 <h2 id="license"><a class="header" href="#license">License</a></h2>
 <p>Joular Code for Java is licensed under the GNU LGPL 3 license only (LGPL-3.0-only).</p>

@@ -1,6 +1,6 @@
 # Virtual Machines
 
-PowerJoular also works inside virtual machines, with a Linux, Windows or macOS guest.
+PowerJoular also works inside virtual machines, with a Linux, Windows, macOS or FreeBSD guest.
 All its functionalities (such as monitoring a PID or an application) work the same inside a virtual machine as with bare metal installation.
 
 In virtual machines, PowerJoular in the guest OS needs to get the power consumption of the virtual machine instance itself.

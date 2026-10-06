@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-5527cac8.js";
+            window.path_to_searchindex_js = "../searchindex-d1af38a3.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-fea6b9de.js"></script>
@@ -186,7 +186,7 @@
 <pre><code class="language-bash">gprbuild -P your_project.gpr -aP../joularcore
 </code></pre>
 <h2 id="c-c-and-other-languages"><a class="header" href="#c-c-and-other-languages">C, C++ and Other Languages</a></h2>
-<p>Any language with a C FFI can use the shared library (<code>libjoularcore.so</code> on Linux, <code>libjoularcore.dll</code> on Windows, <code>libjoularcore.dylib</code> on macOS) through the C interface in <a href="https://github.com/joular/joularcore/blob/main/include/joularcore.h">include/joularcore.h</a>: C and C++ directly, Python through ctypes, Java through FFM or JNA, Rust through <code>libloading</code> or FFI declarations, etc.</p>
+<p>Any language with a C FFI can use the shared library (<code>libjoularcore.so</code> on Linux and FreeBSD, <code>libjoularcore.dll</code> on Windows, <code>libjoularcore.dylib</code> on macOS) through the C interface in <a href="https://github.com/joular/joularcore/blob/main/include/joularcore.h">include/joularcore.h</a>: C and C++ directly, Python through ctypes, Java through FFM or JNA, Rust through <code>libloading</code> or FFI declarations, etc.</p>
 <p>The two structures of the C interface have the same layout on every target, with no padding: a <code>double</code> followed by two <code>int</code> for one measurement, and the CPU measurement followed by the GPU one for a reading.</p>
 <p>On every OS but macOS, the shared library is one self-contained file, carrying the Ada runtime too, so it is the only file to ship with your program. On Windows, the program looks for the DLL next to it, so put a copy there.</p>
 <p>On macOS, the library loads the Ada runtime from the folder of the compiler that built it (see <a href="./compilation.html">Compilation</a>), so it only runs on a Mac where that same compiler is installed in the same folder.</p>

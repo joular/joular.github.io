@@ -2,13 +2,13 @@
 
 Joular Code for Java supports the following platforms and operating systems:
 
-- PC/Servers using a RAPL supported Intel processor (since Sandy Bridge) or a RAPL supported AMD processor (since Ryzen), on Linux and on Windows.
+- PC/Servers using a RAPL supported Intel processor (since Sandy Bridge) or a RAPL supported AMD processor (since Ryzen), on Linux, on Windows and on FreeBSD.
 - Macs, with Apple Silicon or Intel processors.
 - Raspberry Pi devices and Asus Tinker Board, on Linux.
 - Virtual machines (any supported guest on any host).
 
 On Linux PC/Servers, Joular Code for Java can read RAPL directly, with nothing else to install.
-On Windows, macOS and Raspberry Pi, it gets the CPU power from [PowerJoular](https://github.com/joular/powerjoular) (version 2.0.0 or later), which runs alongside the monitored application and writes its power data to a shared memory ring buffer.
+On Windows, macOS, FreeBSD and Raspberry Pi, it gets the CPU power from [PowerJoular](https://github.com/joular/powerjoular) (version 2.0.0 or later), which runs alongside the monitored application and writes its power data to a shared memory ring buffer.
 In a virtual machine, it reads the power that the host writes to a file shared with the guest.
 See [Power Sources](../ref/power_sources.md) for the details.
 
@@ -37,10 +37,11 @@ The models listed for 32 bits OS are also used on a 64 bits OS.
 |:--------------:|:---------------------:|:-----------------------------:|:-----------------------------:|
 |     Linux PC/Server    |        Linux        |             RAPL (using powercap), or PowerJoular            |             x86, x86_64            |
 |     Windows PC/Server    |        Windows        |             PowerJoular (RAPL through EMI, PawnIO or Hubblo's driver)            |             x86_64            |
+|     FreeBSD PC/Server    |        FreeBSD        |             PowerJoular (RAPL through cpuctl)            |             x86_64            |
 |     Mac    |        macOS        |             PowerJoular (powermetrics)            |             Apple Silicon (ARM), Intel (x86_64)            |
 |        Raspberry Pi       |        Linux       |             PowerJoular (our regression models)             |             ARM            |
 |        Asus Tinker Board       |        Linux       |             PowerJoular (our regression models)             |             ARM            |
-|     Virtual Machine    |        Supported guests (Windows, Linux, macOS), any host       |             Host's architecture (RAPL, regression models, others)            |             x86, x86_64, ARM            |
+|     Virtual Machine    |        Supported guests (Windows, Linux, macOS, FreeBSD), any host       |             Host's architecture (RAPL, regression models, others)            |             x86, x86_64, ARM            |
 
 ## Java Virtual Machine
 

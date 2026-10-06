@@ -7,6 +7,7 @@ Ready-made binaries and packages are released in our [GitHub repository](https:/
 - Linux: binaries, Debian installation packages (.deb, for Debian, Ubuntu, Raspberry Pi OS, etc.) and RPM packages (.rpm, for Fedora, RHEL, etc.), for x86_64 and aarch64.
 - Windows: ```powerjoular.exe```, for x86_64.
 - macOS: one binary per chip, ```powerjoular-macos-arm64``` for Apple Silicon and ```powerjoular-macos-x86_64``` for Intel Macs. Take the one of your Mac, copy it where you want it, and make it executable with ```chmod +x```.
+- FreeBSD: ```powerjoular-freebsd-amd64```, for x86_64, built on FreeBSD 14 so it also runs on FreeBSD 15. Copy it where you want it, and make it executable with ```chmod +x```.
 
 ## Which Linux build to use
 

@@ -4,7 +4,7 @@ Each reading gives one measurement for the CPU and one for the GPU. A measuremen
 
 ## Energy and Power
 
-- Some hardware reports **energy**: the joules consumed since the previous reading (RAPL on Linux and Windows). The first reading counts from `Open`.
+- Some hardware reports **energy**: the joules consumed since the previous reading (RAPL on Linux, Windows and FreeBSD). The first reading counts from `Open`.
 - Others report **power**: the watts being drawn when read (GPUs), or averaged since the previous reading (Raspberry Pi and Asus Tinker Board models).
 - On macOS, the value is the **average power since the previous reading**: Joular Core asks `powermetrics` for a sample at each reading. Opening the sources waits for the first sample of `powermetrics` (up to about three seconds).
 
@@ -22,6 +22,7 @@ To get watts from an energy reading, divide it by the time elapsed since the pre
 |---|---|
 | RAPL on Linux | **One** package of powercap, the first one whose name begins with `package` |
 | RAPL on Windows | The package domain of the first socket |
+| RAPL on FreeBSD | The package domain of the first processor, `/dev/cpuctl0` |
 | Raspberry Pi and Asus Tinker Board | A model-based estimate: a regression on CPU load, evaluated over the interval between two readings. It is not a reading of the board's actual draw |
 | Nvidia (NVML) | What the card reports for the whole GPU board. Depending on the architecture and driver, this is an average over about a second rather than an instant value |
 | AMD on Linux (hwmon) | What the amdgpu driver reports (`power1_average`, or `power1_input`), which the kernel documents as the power used by the SoC, the GPU chip. On an APU that chip includes the CPU cores, so work done on the CPU raises what this library calls the GPU, and adding CPU and GPU together counts some of it twice |

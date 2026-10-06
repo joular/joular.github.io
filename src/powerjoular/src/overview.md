@@ -10,7 +10,7 @@ PowerJoular is a command line software to monitor, in real time, the power consu
 PowerJoular is part of the <a href="https://www.noureddine.org/research/joular/"><img src="https://raw.githubusercontent.com/joular/.github/main/profile/joular.png" alt="Joular Project" width="64" /></a> project.
 
 PowerJoular can monitor the power consumption, in real time, of the CPU and the GPU in general, and also for a specific application (through its name or PID).
-It works on Linux, Windows and macOS, on multiple architectures (x86_64, ARM) and devices (computers, servers, Macs, Raspberry Pi, etc.).
+It works on Linux, Windows, macOS and FreeBSD, on multiple architectures (x86_64, ARM) and devices (computers, servers, Macs, Raspberry Pi, etc.).
 
 The official website of PowerJoular is: [https://www.noureddine.org/research/joular/powerjoular](https://www.noureddine.org/research/joular/powerjoular).
 
@@ -28,7 +28,7 @@ The official website of PowerJoular is: [https://www.noureddine.org/research/jou
 ## What changed in version 2
 
 Version 2 does the measuring using two Ada libraries we developed, [Joular Core](https://github.com/joular/joularcore) and [CPU Load](https://github.com/joular/cpuload), instead of its own code.
-This also brings Windows and macOS support, and AMD graphic cards (Nvidia cards are now read through NVML instead of ```nvidia-smi```).
+This also brings Windows, macOS and FreeBSD support, and AMD graphic cards (Nvidia cards are now read through NVML instead of ```nvidia-smi```).
 
 - **New**: ```-r``` writes the power data to a shared memory ring buffer.
 - **Removed**: ```-k```, which measured a process from its threads. It was experimental, and the process readings no longer need it.

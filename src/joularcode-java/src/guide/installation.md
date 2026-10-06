@@ -10,10 +10,10 @@ Joular Code for Java requires, at minimum, Java 21, to run the application being
 
 Joular Code for Java gets the CPU power from one of three sources, depending on the platform or operating system:
 - On Linux PC/Servers, it reads RAPL directly through powercap, on Intel or AMD CPUs (since Ryzen). The RAPL files are only readable by root on most distributions (Linux kernel 5.10 and newer): run the application as root, give its user read access to these files (for example with a udev rule), or run PowerJoular with `-r` as root and set `power-source-type=ringbuffer`.
-- On Windows, macOS and Raspberry Pi devices (and on Linux, with `power-source-type=ringbuffer`), it reads the shared memory ring buffer of [PowerJoular](https://github.com/joular/powerjoular). Install PowerJoular (version 2.0.0 or later), and run it with the `-r` option alongside your application. On Windows, start PowerJoular before the application, and do not restart it while the application runs.
+- On Windows, macOS, FreeBSD and Raspberry Pi devices (and on Linux, with `power-source-type=ringbuffer`), it reads the shared memory ring buffer of [PowerJoular](https://github.com/joular/powerjoular). Install PowerJoular (version 2.0.0 or later), and run it with the `-r` option alongside your application. On Windows, start PowerJoular before the application, and do not restart it while the application runs.
 - In virtual machines, set `power-source-type=vm` and `vm-power-file`: it then reads the power consumption of the virtual machine (measured in the host) from a file shared between the host and the guest (see [Virtual Machines](../ref/vm.md)).
 
-PowerJoular needs `sudo` on macOS, and on Linux PC/Servers unless its user can read the RAPL files, and a terminal with administrative rights on Windows with the PawnIO driver.
+PowerJoular needs `sudo` on macOS, on FreeBSD (with the `cpuctl` module loaded by `kldload cpuctl`), and on Linux PC/Servers unless its user can read the RAPL files, and a terminal with administrative rights on Windows with the PawnIO driver.
 The Java application needs none of these.
 
 A commented example of the configuration file, `joularcodejava.properties.example`, is available in the repository and with the releases.
