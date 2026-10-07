@@ -12,7 +12,7 @@ alr with joularcore
 
 Alire fetches the library and builds it along with your program. Then add `with Joular_Core;` to your code (see [Quick Usage](./quick_usage.md)).
 
-Alire offers Joular Core on Linux, Windows, macOS and FreeBSD.
+Alire offers Joular Core on Linux, Windows, macOS and FreeBSD. On FreeBSD, it builds with the GNAT in `PATH`, which has to be GNAT 15 or newer (see [Compilation](../ref/compilation.md)).
 
 ## From Source
 

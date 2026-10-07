@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-26fb3fd6.js";
+            window.path_to_searchindex_js = "searchindex-b3fdd22d.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-b01ac823.js"></script>
@@ -393,7 +393,7 @@ Debian, Ubuntu or Raspberry Pi OS:
 sudo apt install gnat gprbuild
 </code></pre>
 <p>For other distributions, use their package manager to download the compiler, or check <a href="https://www.noureddine.org/articles/ada-on-windows-and-linux-an-installation-guide">this article for easy instruction for various distributions</a>, including RHEL and its clones which does not ship with Ada support in GCC.</p>
-<p>On FreeBSD, <code>pkg install gprbuild</code> brings GPRBuild and GNAT, whose folder <code>/usr/local/gnat12/bin</code> has to be added to <code>PATH</code>.</p>
+<p>On FreeBSD, use GNAT 15 or newer, which Alire also takes from <code>PATH</code>: <code>pkg install gprbuild gnat15</code> brings GPRBuild and GNAT 15, whose folder <code>/usr/local/gnat15/bin</code> has to be added to <code>PATH</code>. GNAT 12, which <code>pkg install gprbuild</code> uses, crashes while compiling Joular Core.</p>
 <p>On Windows and macOS, the easiest way is to install <a href="https://alire.ada.dev/">Alire</a>, which also downloads the GNAT compiler and GPRBuild.</p>
 <h3 id="compilation-with-the-gnat-compiler-and-gprbuild"><a class="header" href="#compilation-with-the-gnat-compiler-and-gprbuild">Compilation with the GNAT compiler and GPRBuild</a></h3>
 <p>Check out the <a href="https://github.com/joular/joularcore">Joular Core</a> and <a href="https://github.com/joular/cpuload">CPU Load</a> repositories next to the PowerJoular folder, then point GPRBuild at them:</p>

@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-d1af38a3.js";
+            window.path_to_searchindex_js = "searchindex-2ce27a7f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-fea6b9de.js"></script>
@@ -287,7 +287,7 @@ It detects automatically what the machine offers (which CPU, which GPU, and how 
 <pre><code class="language-bash">alr with joularcore
 </code></pre>
 <p>Alire fetches the library and builds it along with your program. Then add <code>with Joular_Core;</code> to your code (see <a href="#quick-usage">Quick Usage</a>).</p>
-<p>Alire offers Joular Core on Linux, Windows, macOS and FreeBSD.</p>
+<p>Alire offers Joular Core on Linux, Windows, macOS and FreeBSD. On FreeBSD, it builds with the GNAT in <code>PATH</code>, which has to be GNAT 15 or newer (see <a href="#compilation">Compilation</a>).</p>
 <h2 id="from-source"><a class="header" href="#from-source">From Source</a></h2>
 <p>Clone the <a href="https://github.com/joular/joularcore">GitHub repository</a> and build it with GNAT and GPRBuild, or with Alire. The build gives:</p>
 <ul>
@@ -402,7 +402,7 @@ lib.joularcore_close()
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="compilation"><a class="header" href="#compilation">Compilation</a></h1>
 <p>Joular Core is written in Ada and is built with GPRBuild, or with Alire. A modern GNAT compiler is the only requirement.</p>
-<p>On FreeBSD, <code>pkg install gprbuild</code> brings GPRBuild and GNAT, whose folder <code>/usr/local/gnat12/bin</code> has to be added to <code>PATH</code>.</p>
+<p>On FreeBSD, GNAT 15 or newer is needed: <code>pkg install gprbuild gnat15</code> brings GPRBuild and GNAT 15, whose folder <code>/usr/local/gnat15/bin</code> has to be added to <code>PATH</code>. GNAT 12, which <code>pkg install gprbuild</code> uses, crashes on the code reading <code>cpuctl</code>, and ignores the pragma that keeps the shared library away from the signal handlers of the program loading it. Alire takes the GNAT in <code>PATH</code> there too, and refuses an older one.</p>
 <h2 id="default-build"><a class="header" href="#default-build">Default Build</a></h2>
 <p>With <a href="https://alire.ada.dev">Alire</a>:</p>
 <pre><code class="language-bash">alr build
@@ -444,6 +444,7 @@ lib.joularcore_close()
 <p>The C example comes with a Makefile that builds the shared library and the program:</p>
 <pre><code class="language-bash">make -C example/c
 </code></pre>
+<p>On FreeBSD, the Makefiles need GNU make: run <code>gmake</code> instead of <code>make</code>.</p>
 <p>To build it by hand instead, from the root of the repository, first compile the library:</p>
 <pre><code class="language-bash">gprbuild -P joularcore.gpr -XJOULARCORE_LIBRARY_TYPE=relocatable
 </code></pre>

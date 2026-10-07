@@ -2,7 +2,7 @@
 
 Joular Core is written in Ada and is built with GPRBuild, or with Alire. A modern GNAT compiler is the only requirement.
 
-On FreeBSD, `pkg install gprbuild` brings GPRBuild and GNAT, whose folder `/usr/local/gnat12/bin` has to be added to `PATH`.
+On FreeBSD, GNAT 15 or newer is needed: `pkg install gprbuild gnat15` brings GPRBuild and GNAT 15, whose folder `/usr/local/gnat15/bin` has to be added to `PATH`. GNAT 12, which `pkg install gprbuild` uses, crashes on the code reading `cpuctl`, and ignores the pragma that keeps the shared library away from the signal handlers of the program loading it. Alire takes the GNAT in `PATH` there too, and refuses an older one.
 
 ## Default Build
 
@@ -66,6 +66,8 @@ The C example comes with a Makefile that builds the shared library and the progr
 ```bash
 make -C example/c
 ```
+
+On FreeBSD, the Makefiles need GNU make: run `gmake` instead of `make`.
 
 To build it by hand instead, from the root of the repository, first compile the library:
 

@@ -12,7 +12,7 @@ alr with cpuload
 
 Alire fetches the library and builds it along with your program. Then add `with CPU_Load;` to your code (see [Quick Usage](./quick_usage.md)).
 
-Alire offers CPU Load on Linux, Windows, macOS and FreeBSD.
+Alire offers CPU Load on Linux, Windows, macOS and FreeBSD. On FreeBSD, it builds with the GNAT in `PATH`, which has to be GNAT 15 or newer (see [Compilation](../ref/compilation.md)).
 
 ## From Source
 

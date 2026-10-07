@@ -25,7 +25,7 @@ sudo apt install gnat gprbuild
 
 For other distributions, use their package manager to download the compiler, or check [this article for easy instruction for various distributions](https://www.noureddine.org/articles/ada-on-windows-and-linux-an-installation-guide), including RHEL and its clones which does not ship with Ada support in GCC.
 
-On FreeBSD, ```pkg install gprbuild``` brings GPRBuild and GNAT, whose folder ```/usr/local/gnat12/bin``` has to be added to ```PATH```.
+On FreeBSD, use GNAT 15 or newer, which Alire also takes from ```PATH```: ```pkg install gprbuild gnat15``` brings GPRBuild and GNAT 15, whose folder ```/usr/local/gnat15/bin``` has to be added to ```PATH```. GNAT 12, which ```pkg install gprbuild``` uses, crashes while compiling Joular Core.
 
 On Windows and macOS, the easiest way is to install [Alire](https://alire.ada.dev/), which also downloads the GNAT compiler and GPRBuild.
 
