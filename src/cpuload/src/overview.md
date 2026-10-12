@@ -2,6 +2,8 @@
 
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPLv3-blue)](https://www.gnu.org/licenses/lgpl-3.0) [![Ada](https://img.shields.io/badge/Made%20with-Ada-blue)](https://www.adaic.org)
 
+![CPU Load Logo](joular-cpuload.png)
+
 CPU Load is an Ada library that reports the CPU load of the system, of a specific process by its ID, or of a specific application by its name (meaning every one of its processes running when a sample is taken).
 It gives one simple interface: take a sample, wait, take another, and compare the two.
 
