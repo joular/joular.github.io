@@ -3,6 +3,8 @@
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPLv3-blue)](https://www.gnu.org/licenses/lgpl-3.0)
 [![Java](https://img.shields.io/badge/Java-21%2B-orange)](https://openjdk.java.net)
 
+![Joular Code for Java Logo](joularcode-java.png)
+
 Joular Code for Java is part of the <a href="https://www.noureddine.org/research/joular/"><img src="https://raw.githubusercontent.com/joular/.github/main/profile/joular.png" alt="Joular Project" width="64" /></a> project.
 
 Joular Code for Java is a lightweight and efficient Java agent for monitoring the energy consumption of methods and execution branches at the source code level.
