@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-b3fdd22d.js";
+            window.path_to_searchindex_js = "searchindex-00e9c7e1.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-b01ac823.js"></script>
@@ -506,7 +506,7 @@ When running PowerJoular as root, write the CSV files to a folder only root can 
 </tbody>
 </table>
 </div>
-<p>The area is 248 bytes, in the byte order of the machine: a counter of 8 bytes, then 5 entries of 48 bytes each.</p>
+<p>The area is 288 bytes, in the byte order of the machine: a counter of 8 bytes, then 5 entries of 56 bytes each.</p>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -518,7 +518,8 @@ When running PowerJoular as root, write the CSV files to a folder only root can 
 <tr><td><code>gpu_power</code></td><td>IEEE double</td><td>GPU power in watts</td></tr>
 <tr><td><code>total_power</code></td><td>IEEE double</td><td>CPU plus GPU power in watts</td></tr>
 <tr><td><code>cpu_usage</code></td><td>IEEE double</td><td>Load of the machine, from 0.0 to 1.0</td></tr>
-<tr><td><code>pid_app_power</code></td><td>IEEE double</td><td>Power of the monitored process or application in watts, zero when none is monitored, and <code>-1</code> when the one monitored could not be read</td></tr>
+<tr><td><code>pid_app_power</code></td><td>IEEE double</td><td>CPU power of the monitored process or application in watts, zero when none is monitored, and <code>-1</code> when the one monitored could not be read</td></tr>
+<tr><td><code>pid_app_usage</code></td><td>IEEE double</td><td>Load of the monitored process or application, from 0.0 to 1.0, zero when none is monitored, and <code>-1</code> when the one monitored could not be read</td></tr>
 </tbody>
 </table>
 </div>

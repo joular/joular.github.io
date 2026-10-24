@@ -69,7 +69,7 @@ A file that cannot be written to is reported once, and the monitoring goes on: P
 | macOS | ```/tmp/powerjoular``` |
 | FreeBSD | ```/tmp/powerjoular``` |
 
-The area is 248 bytes, in the byte order of the machine: a counter of 8 bytes, then 5 entries of 48 bytes each.
+The area is 288 bytes, in the byte order of the machine: a counter of 8 bytes, then 5 entries of 56 bytes each.
 
 | Field | Type | Meaning |
 |---|---|---|
@@ -78,7 +78,8 @@ The area is 248 bytes, in the byte order of the machine: a counter of 8 bytes, t
 | ```gpu_power``` | IEEE double | GPU power in watts |
 | ```total_power``` | IEEE double | CPU plus GPU power in watts |
 | ```cpu_usage``` | IEEE double | Load of the machine, from 0.0 to 1.0 |
-| ```pid_app_power``` | IEEE double | Power of the monitored process or application in watts, zero when none is monitored, and ```-1``` when the one monitored could not be read |
+| ```pid_app_power``` | IEEE double | CPU power of the monitored process or application in watts, zero when none is monitored, and ```-1``` when the one monitored could not be read |
+| ```pid_app_usage``` | IEEE double | Load of the monitored process or application, from 0.0 to 1.0, zero when none is monitored, and ```-1``` when the one monitored could not be read |
 
 A measurement goes in the entry the counter points at (```counter mod 5```), and the counter is raised afterwards.
 A reader follows the counter to know when a new measurement has landed, and the timestamps to know how old each entry is.
