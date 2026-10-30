@@ -15,6 +15,7 @@ The following options are available:
 - ```-f filename```: save monitoring data to the given filename path, in CSV format
 - ```-o filename```: save only last monitoring data to the given filename path (file overwritten with only latest power measures)
 - ```-t```: print the power data to the terminal
+- ```-i```: show the visual TUI with power data on the whole terminal along with bars and a chart (see [Exporting Power Data](./exports.html#visual-tui))
 - ```-d```: print the available hardware components on start up (the versions of PowerJoular and its libraries, whether the CPU and the GPU can be measured, and the path of the ring buffer with ```-r```)
 - ```-r```: write the power data to a shared memory ring buffer, for another program to read with low latency
 - ```-m filename```: specify a filename for the power consumption of the virtual machine (written by the host)
@@ -23,12 +24,13 @@ The following options are available:
 You can mix options, i.e., ```powerjoular -tp 144``` will monitor PID 144 and will print to the terminal.
 
 A few rules apply when mixing them:
-- ```-p``` and ```-a``` cannot be used together.
-- With ```-f```, ```-o``` or ```-r```, the terminal is only used if ```-t``` is also given.
+- ```-p``` and ```-a``` cannot be used together, nor can ```-f``` and ```-o```.
+- ```-p``` needs a process PowerJoular can read when it starts: one that is not running, or that this user is not allowed to read, is refused.
+- With ```-f```, ```-o``` or ```-r```, the terminal is only used if ```-t``` or ```-i``` is also given.
 - ```-m``` and ```-s``` go together, and the file given to ```-m``` must already hold a power value in that format when PowerJoular starts.
 
-When monitoring a process (```-p```) or an application (```-a```), ```-f``` and ```-o``` write **two** CSV files: the given filename for the whole system, and the same name with the PID or the application name added to it, for the process or the application.
-For example, ```powerjoular -p 144 -f power.csv``` writes ```power.csv``` and ```power.csv-144.csv```.
+When monitoring a process (```-p```) or an application (```-a```), ```-f``` and ```-o``` write **two** CSV files: the given filename for the whole system, and a second one named after the PID or the application name, for the process or the application.
+For example, ```powerjoular -p 144 -f power.csv``` writes ```power.csv``` and ```power-144.csv```.
 
 See [Exporting Power Data](./exports.html) for the content of the CSV files and of the ring buffer.
 

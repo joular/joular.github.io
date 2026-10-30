@@ -33,13 +33,13 @@ A use case example is using Joular Code for Java on the guest OS and PowerJoular
 - Install [PowerJoular](https://github.com/joular/powerjoular)
 - Run PowerJoular while specifying the PID of the virtual machine of the guest OS, and writing the power data in a CSV file in overwrite mode.
 - For instance, you can run PowerJoular with the following command: `powerjoular -p $VM_PID -o /home/vm/vm.csv`
-- This writes two files: `/home/vm/vm.csv` with the power of the whole host, and `/home/vm/vm.csv-$VM_PID.csv` with the power of the virtual machine process.
-- Share the `/home/vm/vm.csv-$VM_PID.csv` between the host OS and the guest OS (read-only for the guest, as PowerJoular on the host usually runs as root)
+- This writes two files: `/home/vm/vm.csv` with the power of the whole host, and `/home/vm/vm-$VM_PID.csv` with the power of the virtual machine process.
+- Share the `/home/vm/vm-$VM_PID.csv` between the host OS and the guest OS (read-only for the guest, as PowerJoular on the host usually runs as root)
 
 ### In the guest OS
 
 - Get Joular Code for Java (download or compile it)
-- Share the `/home/vm/vm.csv-$VM_PID.csv` between the host OS and the guest OS, potentially having a different path of the file inside the guest. For instance, `/opt/vm/vm.csv`
+- Share the `/home/vm/vm-$VM_PID.csv` between the host OS and the guest OS, potentially having a different path of the file inside the guest. For instance, `/opt/vm/vm.csv`
 - Modify `joularcodejava.properties` and set `power-source-type` to `vm`, `vm-power-file` to the shared file `/opt/vm/vm.csv`, and `vm-power-format` to the proper format (in this case to `powerjoular`).
 - Start your Java application with the Joular Code for Java agent as usual.
 

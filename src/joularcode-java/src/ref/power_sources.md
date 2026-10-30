@@ -71,6 +71,6 @@ See [Virtual Machines](./vm.md) for the details.
 
 ```properties
 power-source-type=vm
-vm-power-file=/mnt/shared/vm-power.csv-<pid>.csv
+vm-power-file=/mnt/shared/vm-power-<pid>.csv
 vm-power-format=powerjoular
 ```

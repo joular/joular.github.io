@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-00e9c7e1.js";
+            window.path_to_searchindex_js = "../searchindex-9a08d1f2.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-b01ac823.js"></script>
@@ -176,38 +176,48 @@
                     <main>
                         <h1 id="exporting-power-data"><a class="header" href="#exporting-power-data">Exporting Power Data</a></h1>
 <p>PowerJoular exports its power data to the terminal, to CSV files, and to a shared memory ring buffer.
-The CSV files and the ring buffer can be used at the same time, and with the terminal when <code>-t</code> is given.</p>
+The CSV files and the ring buffer can be used at the same time, and with the terminal when <code>-t</code> or <code>-i</code> is given.</p>
 <h2 id="terminal"><a class="header" href="#terminal">Terminal</a></h2>
-<p>With no option, PowerJoular prints the power of the machine on the terminal, once a second, on the same line:</p>
-<pre><code>Total Power: 18.45 Watts (CPU: 15.20 W, GPU: 3.25 W)
+<p>With no option, PowerJoular shows its name and version, then the power of the machine, once a second, on one line rewritten in place:</p>
+<pre><code>Total  18.45 W | CPU  15.20 W | GPU   3.25 W | load ███░░░░░░░  25 %
 </code></pre>
-<p>The GPU is only shown when one was found.</p>
-<p>When monitoring a process (<code>-p</code>) or an application (<code>-a</code>), the terminal shows its CPU usage and its CPU power, with the CPU usage and the CPU power of the whole system between brackets (the GPU is not shown):</p>
-<pre><code>PID monitoring:	CPU: 3.10 % (24.60 %)	1.92 Watts (15.20 Watts)
-Application monitoring:	CPU: 3.10 % (24.60 %)	1.92 Watts (15.20 Watts)
+<p>The GPU is only shown when one was found. The meter is the CPU load of the machine. Set <code>NO_COLOR</code> to turn the colours off.</p>
+<p>When monitoring a process (<code>-p</code>) or an application (<code>-a</code>), the line shows the process instead: the share of the CPU power that is its own, its power <code>of</code> the power of the whole CPU, and its CPU usage <code>of</code> the load of the whole machine (the GPU is not shown):</p>
+<pre><code>PID 144 | CPU █░░░░░░░░░  13 % |  1.92 of 15.20 W | usage  3.1 of 25 %
 </code></pre>
 <p><code>n/a</code> is shown when the process or the application could not be read.</p>
-<p>When the output is not a terminal (a file or a pipe), each measurement is printed on its own line.</p>
+<p>When the output is not a terminal (a file or a pipe), each measurement is a line of plain text, the same as in version 1, which scripts can read:</p>
+<pre><code>Total Power: 18.45 Watts (CPU: 15.20 W, GPU: 3.25 W)
+PID monitoring:	CPU: 3.10 % (24.60 %)	1.92 Watts (15.20 Watts)
+Application monitoring:	CPU: 3.10 % (24.60 %)	1.92 Watts (15.20 Watts)
+</code></pre>
+<h3 id="visual-tui"><a class="header" href="#visual-tui">Visual TUI</a></h3>
+<p><code>-i</code> shows the visual TUI on the whole terminal: the power in large digits, a bar for the CPU and the GPU when there is a GPU (with <code>-p</code> or <code>-a</code>, the process’s share of the CPU), a bar for the load, and a chart with one bar a second.
+A side panel lists what was found (CPU, GPU) and what is being written (<code>-f</code>, <code>-o</code>, <code>-r</code>).</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../screenshots/windows-TUI-app.png" alt="PowerJoular TUI on Windows, monitoring an application"><span class="img-wrapper"><img src="../screenshots/windows-TUI-app.png" alt="PowerJoular TUI on Windows, monitoring an application"></span></label></p>
+<p>It works with every option, and stops with Ctrl+C. <code>NO_COLOR</code> turns its colours off too.
+Messages that come while it is shown are printed when it closes.
+A window smaller than 50 by 16 gets the <code>-t</code> line instead, and a pipe or a file gets exactly what <code>-t</code> prints.</p>
 <h2 id="csv-files"><a class="header" href="#csv-files">CSV files</a></h2>
 <p><code>-f</code> adds a row every second to the file, and starts a new or empty file with a header (an existing file is added to, not emptied):</p>
 <pre><code>Timestamp,CPU Usage,Total Power,CPU Power,GPU Power
 1756681930,0.2460,18.4500,15.2000,3.2500
 </code></pre>
 <p>The time of the measurement is a Unix timestamp in seconds, the CPU usage goes from 0.0 to 1.0, and the power is in watts.</p>
-<p>When monitoring a process or an application, a second file is written, with the PID or the application name added to the given filename (<code>power.csv-144.csv</code> for <code>-p 144 -f power.csv</code>).
+<p>When monitoring a process or an application, a second file is written, named after the PID or the application name (<code>power-144.csv</code> for <code>-p 144 -f power.csv</code>).
 It has the CPU usage and the power of that process or application:</p>
 <pre><code>Timestamp,CPU Usage,CPU Power
 1756681930,0.0310,1.9154
 </code></pre>
 <p><code>-o</code> writes the latest measurement only: the file is rewritten every second and carries no header, which is a good option for another program polling it for the current value.</p>
-<p>Both value columns of the process file hold <code>-1.0000</code> for a second where the monitored process could not be read at all: it has stopped, it was never running, or the system does not let us get the information needed.
+<p>Both value columns of the process file hold <code>-1.0000</code> for a second where the monitored process could not be read at all: it has stopped, or the system does not let us get the information needed.
 That is not the same as <code>0.0000</code>, which means a process that was read and used no CPU time.</p>
 <p><code>-a</code> is the exception: an application with no running process at all is reported as <code>0.0000</code> and not as <code>-1.0000</code>, because we can’t tell apart a name that matches nothing from a name whose processes did not use any CPU time.
 <code>-1.0000</code> still appears for <code>-a</code> when processes of the application are found but the system does not let us read any of them.
 A process we cannot read is left out of the sum when others of the application can be read, so the value is then short by what that process used.</p>
-<p>PowerJoular refuses to write a CSV file if a symbolic link is already at its path.
-This is a basic check, not a guarantee, as the link can still be swapped in after the check.
-When running PowerJoular as root, write the CSV files to a folder only root can write to (such as <code>/run/powerjoular</code> for the service), not to a shared folder such as <code>/tmp</code>.</p>
+<p>PowerJoular never writes a CSV file through a symbolic link: <code>-o</code> writes a new file each time and renames it over the previous one, and <code>-f</code> starts a new file or appends to one that is not a link.
+A hard link is still followed when <code>-f</code> appends: Linux refuses to make one to another user’s file, but macOS and FreeBSD don’t.
+So when running PowerJoular as root, write the CSV files to a folder only root can write to (such as <code>/run/powerjoular</code> for the service), not to a shared folder such as <code>/tmp</code>.</p>
 <p>A file that cannot be written to is reported once, and the monitoring goes on: PowerJoular tries the file again every second, and writes to it again once it can.</p>
 <h2 id="shared-memory-ring-buffer"><a class="header" href="#shared-memory-ring-buffer">Shared memory ring buffer</a></h2>
 <p><code>-r</code> writes every measurement to a shared memory ring buffer, which any program on the same machine can read with low latency.</p>

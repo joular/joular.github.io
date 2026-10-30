@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-00e9c7e1.js";
+            window.path_to_searchindex_js = "searchindex-9a08d1f2.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-b01ac823.js"></script>
@@ -195,11 +195,22 @@ It works on Linux, Windows, macOS and FreeBSD, on multiple architectures (x86_64
 <li>Provides a systemd service (daemon) to continuously monitor power of devices on Linux</li>
 <li>Low overhead (written in Ada and compiled to native code, one binary with nothing to install alongside it)</li>
 </ul>
+<h2 id="screenshots"><a class="header" href="#screenshots">Screenshots</a></h2>
+<h3 id="visual-tui-with-the--i-option"><a class="header" href="#visual-tui-with-the--i-option">Visual TUI (with the <code>-i</code> option)</a></h3>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="screenshots/windows-TUI-app.png" alt="PowerJoular TUI on Windows, monitoring an application"><span class="img-wrapper"><img src="screenshots/windows-TUI-app.png" alt="PowerJoular TUI on Windows, monitoring an application"></span></label>
+<label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="screenshots/macos-TUI-app.png" alt="PowerJoular TUI on macOS, monitoring an application"><span class="img-wrapper"><img src="screenshots/macos-TUI-app.png" alt="PowerJoular TUI on macOS, monitoring an application"></span></label>
+<label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="screenshots/windows-TUI-noapp.png" alt="PowerJoular TUI on Windows, whole system"><span class="img-wrapper"><img src="screenshots/windows-TUI-noapp.png" alt="PowerJoular TUI on Windows, whole system"></span></label></p>
+<h3 id="default-terminal-view"><a class="header" href="#default-terminal-view">Default terminal view</a></h3>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="screenshots/windows-cmd-app.png" alt="PowerJoular on Windows, monitoring an application"><span class="img-wrapper"><img src="screenshots/windows-cmd-app.png" alt="PowerJoular on Windows, monitoring an application"></span></label>
+<label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="screenshots/windows-cmd-noapp.png" alt="PowerJoular on Windows, whole system"><span class="img-wrapper"><img src="screenshots/windows-cmd-noapp.png" alt="PowerJoular on Windows, whole system"></span></label>
+<label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="screenshots/macos-cmd-app.png" alt="PowerJoular on macOS, monitoring an application"><span class="img-wrapper"><img src="screenshots/macos-cmd-app.png" alt="PowerJoular on macOS, monitoring an application"></span></label>
+<label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="screenshots/macos-cmd-noapp.png" alt="PowerJoular on macOS, whole system"><span class="img-wrapper"><img src="screenshots/macos-cmd-noapp.png" alt="PowerJoular on macOS, whole system"></span></label></p>
 <h2 id="what-changed-in-version-2"><a class="header" href="#what-changed-in-version-2">What changed in version 2</a></h2>
 <p>Version 2 does the measuring using two Ada libraries we developed, <a href="https://github.com/joular/joularcore">Joular Core</a> and <a href="https://github.com/joular/cpuload">CPU Load</a>, instead of its own code.
 This also brings Windows, macOS and FreeBSD support, and AMD graphic cards (Nvidia cards are now read through NVML instead of <code>nvidia-smi</code>).</p>
 <ul>
 <li><strong>New</strong>: <code>-r</code> writes the power data to a shared memory ring buffer.</li>
+<li><strong>New</strong>: <code>-i</code> shows the visual TUI with power data on the whole terminal along with bars and a chart.</li>
 <li><strong>Removed</strong>: <code>-k</code>, which measured a process from its threads. It was experimental, and the process readings no longer need it.</li>
 <li><strong>Removed</strong>: <code>-l</code>, which picked the linear power models of the single-board computers. The polynomial models are now the only ones used, as they are much more accurate and their overhead is minimal.</li>
 <li><strong>Removed</strong>: <code>-c</code>, which wrote the timestamps in milliseconds.</li>
@@ -250,7 +261,7 @@ All rights reserved. This program and the accompanying materials are made availa
 </ul>
 <p>On Linux PC/Servers, PowerJoular uses powercap Linux interface to read RAPL (Running Average Power Limit) energy consumption, for Intel and AMD processors.</p>
 <p>PowerJoular reads the RAPL package domain (cores, integrated graphics, memory controller and last level caches).
-On a server with several sockets, only the first one is measured.</p>
+On a server with several sockets, every socket is measured and the packages are added together.</p>
 <p>On Windows PC/Servers, PowerJoular reads the same RAPL package counter in one of three ways, and keeps the first one that answers:</p>
 <ul>
 <li>The <a href="https://learn.microsoft.com/en-us/windows-hardware/drivers/powermeter/energy-meter-interface">Energy Meter Interface</a> (EMI), built into Windows 11. Nothing to install.</li>
@@ -361,19 +372,22 @@ On Linux PC/servers, PowerJoular uses Intel’s RAPL through the Linux powercap 
 On macOS, <code>powermetrics</code> also requires root/sudo access: <code>sudo powerjoular</code>.
 On FreeBSD, reading RAPL needs the <code>cpuctl</code> module (<code>kldload cpuctl</code>) and root/sudo access: <code>sudo powerjoular</code>.
 On Windows and Raspberry Pi, no special access is needed, except with the PawnIO driver on Windows, which needs a terminal with administrative rights (see <a href="#supported-platforms">Supported Platforms</a>).</p>
-<p>By default, the software will show the total power consumption, and the power of the CPU and of the GPU (when there is one), on the terminal, every second, until Ctrl+C:</p>
-<pre><code>Total Power: 18.45 Watts (CPU: 15.20 W, GPU: 3.25 W)
+<p>By default, the software shows its name and version, then the total power consumption, the power of the CPU and of the GPU (when there is one), and the CPU load, on one line of the terminal rewritten every second, until Ctrl+C:</p>
+<pre><code>Total  18.45 W | CPU  15.20 W | GPU   3.25 W | load ███░░░░░░░  25 %
 </code></pre>
 <p>To monitor a specific application, just run PowerJoular with the <code>-a appName</code> parameter, or with <code>-p pid</code> for a specific process.
-The terminal then shows the CPU usage and the CPU power of the application or the process, with the ones of the whole system between brackets:</p>
-<pre><code>Application monitoring:	CPU: 3.10 % (24.60 %)	1.92 Watts (15.20 Watts)
+The line then shows the application or the process: its share of the CPU power, its power <code>of</code> the power of the whole CPU, and its CPU usage <code>of</code> the load of the whole machine:</p>
+<pre><code>firefox | CPU █░░░░░░░░░  13 % |  1.92 of 15.20 W | usage  3.1 of 25 %
 </code></pre>
+<p>When the output is a file or a pipe, each measurement is a line of plain text instead (see <a href="#exporting-power-data">Exporting Power Data</a>).</p>
+<p>For a visual TUI on the whole terminal, with the power in large digits, bars and a chart, add <code>-i</code>:</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="screenshots/macos-TUI-app.png" alt="PowerJoular TUI on macOS, monitoring an application"><span class="img-wrapper"><img src="screenshots/macos-TUI-app.png" alt="PowerJoular TUI on macOS, monitoring an application"></span></label></p>
 <p>To save the power data to a CSV file, add <code>-f filename</code>, or <code>-o filename</code> to keep only the latest values in the file.
-When a file (or the ring buffer, with <code>-r</code>) is given, PowerJoular no longer prints on the terminal: add <code>-t</code> to print there too.</p>
+When a file (or the ring buffer, with <code>-r</code>) is given, PowerJoular no longer prints on the terminal: add <code>-t</code> (or <code>-i</code>) to print there too.</p>
 <p>PowerJoular is a powerful tool with many functionalities that can be accessed using specific parameters. Check the <a href="#command-line-options">Command Line Options page</a> for the detailed list.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="compilation"><a class="header" href="#compilation">Compilation</a></h1>
-<p>PowerJoular is written with Ada, and requires a modern Ada compiler, such as GNAT, together with the <a href="https://github.com/joular/joularcore">Joular Core</a> and <a href="https://github.com/joular/cpuload">CPU Load</a> libraries.</p>
+<p>PowerJoular is written with Ada, and requires GNAT 11 or newer, together with the <a href="https://github.com/joular/joularcore">Joular Core</a> and <a href="https://github.com/joular/cpuload">CPU Load</a> libraries.</p>
 <p>PowerJoular depends on the following libraries and tools for certain of its functions, but can function without them:</p>
 <ul>
 <li>Linux powercap with RAPL support: for monitoring power consumption of Intel and AMD processors</li>
@@ -439,6 +453,7 @@ On FreeBSD, reading RAPL needs the <code>cpuctl</code> module (<code>kldload cpu
 <li><code>-f filename</code>: save monitoring data to the given filename path, in CSV format</li>
 <li><code>-o filename</code>: save only last monitoring data to the given filename path (file overwritten with only latest power measures)</li>
 <li><code>-t</code>: print the power data to the terminal</li>
+<li><code>-i</code>: show the visual TUI with power data on the whole terminal along with bars and a chart (see <a href="#visual-tui">Exporting Power Data</a>)</li>
 <li><code>-d</code>: print the available hardware components on start up (the versions of PowerJoular and its libraries, whether the CPU and the GPU can be measured, and the path of the ring buffer with <code>-r</code>)</li>
 <li><code>-r</code>: write the power data to a shared memory ring buffer, for another program to read with low latency</li>
 <li><code>-m filename</code>: specify a filename for the power consumption of the virtual machine (written by the host)</li>
@@ -447,49 +462,60 @@ On FreeBSD, reading RAPL needs the <code>cpuctl</code> module (<code>kldload cpu
 <p>You can mix options, i.e., <code>powerjoular -tp 144</code> will monitor PID 144 and will print to the terminal.</p>
 <p>A few rules apply when mixing them:</p>
 <ul>
-<li><code>-p</code> and <code>-a</code> cannot be used together.</li>
-<li>With <code>-f</code>, <code>-o</code> or <code>-r</code>, the terminal is only used if <code>-t</code> is also given.</li>
+<li><code>-p</code> and <code>-a</code> cannot be used together, nor can <code>-f</code> and <code>-o</code>.</li>
+<li><code>-p</code> needs a process PowerJoular can read when it starts: one that is not running, or that this user is not allowed to read, is refused.</li>
+<li>With <code>-f</code>, <code>-o</code> or <code>-r</code>, the terminal is only used if <code>-t</code> or <code>-i</code> is also given.</li>
 <li><code>-m</code> and <code>-s</code> go together, and the file given to <code>-m</code> must already hold a power value in that format when PowerJoular starts.</li>
 </ul>
-<p>When monitoring a process (<code>-p</code>) or an application (<code>-a</code>), <code>-f</code> and <code>-o</code> write <strong>two</strong> CSV files: the given filename for the whole system, and the same name with the PID or the application name added to it, for the process or the application.
-For example, <code>powerjoular -p 144 -f power.csv</code> writes <code>power.csv</code> and <code>power.csv-144.csv</code>.</p>
+<p>When monitoring a process (<code>-p</code>) or an application (<code>-a</code>), <code>-f</code> and <code>-o</code> write <strong>two</strong> CSV files: the given filename for the whole system, and a second one named after the PID or the application name, for the process or the application.
+For example, <code>powerjoular -p 144 -f power.csv</code> writes <code>power.csv</code> and <code>power-144.csv</code>.</p>
 <p>See <a href="#exporting-power-data">Exporting Power Data</a> for the content of the CSV files and of the ring buffer.</p>
 <p>On Windows, the <code>JOULARCORE_WINDOWS_RAPL</code> environment variable picks how the RAPL counter is read (<code>emi</code>, <code>pawnio</code> or <code>hubblo</code>), instead of trying the three in turn (see <a href="#supported-platforms">Supported Platforms</a>).</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="exporting-power-data"><a class="header" href="#exporting-power-data">Exporting Power Data</a></h1>
 <p>PowerJoular exports its power data to the terminal, to CSV files, and to a shared memory ring buffer.
-The CSV files and the ring buffer can be used at the same time, and with the terminal when <code>-t</code> is given.</p>
+The CSV files and the ring buffer can be used at the same time, and with the terminal when <code>-t</code> or <code>-i</code> is given.</p>
 <h2 id="terminal"><a class="header" href="#terminal">Terminal</a></h2>
-<p>With no option, PowerJoular prints the power of the machine on the terminal, once a second, on the same line:</p>
-<pre><code>Total Power: 18.45 Watts (CPU: 15.20 W, GPU: 3.25 W)
+<p>With no option, PowerJoular shows its name and version, then the power of the machine, once a second, on one line rewritten in place:</p>
+<pre><code>Total  18.45 W | CPU  15.20 W | GPU   3.25 W | load ███░░░░░░░  25 %
 </code></pre>
-<p>The GPU is only shown when one was found.</p>
-<p>When monitoring a process (<code>-p</code>) or an application (<code>-a</code>), the terminal shows its CPU usage and its CPU power, with the CPU usage and the CPU power of the whole system between brackets (the GPU is not shown):</p>
-<pre><code>PID monitoring:	CPU: 3.10 % (24.60 %)	1.92 Watts (15.20 Watts)
-Application monitoring:	CPU: 3.10 % (24.60 %)	1.92 Watts (15.20 Watts)
+<p>The GPU is only shown when one was found. The meter is the CPU load of the machine. Set <code>NO_COLOR</code> to turn the colours off.</p>
+<p>When monitoring a process (<code>-p</code>) or an application (<code>-a</code>), the line shows the process instead: the share of the CPU power that is its own, its power <code>of</code> the power of the whole CPU, and its CPU usage <code>of</code> the load of the whole machine (the GPU is not shown):</p>
+<pre><code>PID 144 | CPU █░░░░░░░░░  13 % |  1.92 of 15.20 W | usage  3.1 of 25 %
 </code></pre>
 <p><code>n/a</code> is shown when the process or the application could not be read.</p>
-<p>When the output is not a terminal (a file or a pipe), each measurement is printed on its own line.</p>
+<p>When the output is not a terminal (a file or a pipe), each measurement is a line of plain text, the same as in version 1, which scripts can read:</p>
+<pre><code>Total Power: 18.45 Watts (CPU: 15.20 W, GPU: 3.25 W)
+PID monitoring:	CPU: 3.10 % (24.60 %)	1.92 Watts (15.20 Watts)
+Application monitoring:	CPU: 3.10 % (24.60 %)	1.92 Watts (15.20 Watts)
+</code></pre>
+<h3 id="visual-tui"><a class="header" href="#visual-tui">Visual TUI</a></h3>
+<p><code>-i</code> shows the visual TUI on the whole terminal: the power in large digits, a bar for the CPU and the GPU when there is a GPU (with <code>-p</code> or <code>-a</code>, the process’s share of the CPU), a bar for the load, and a chart with one bar a second.
+A side panel lists what was found (CPU, GPU) and what is being written (<code>-f</code>, <code>-o</code>, <code>-r</code>).</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="screenshots/windows-TUI-app.png" alt="PowerJoular TUI on Windows, monitoring an application"><span class="img-wrapper"><img src="screenshots/windows-TUI-app.png" alt="PowerJoular TUI on Windows, monitoring an application"></span></label></p>
+<p>It works with every option, and stops with Ctrl+C. <code>NO_COLOR</code> turns its colours off too.
+Messages that come while it is shown are printed when it closes.
+A window smaller than 50 by 16 gets the <code>-t</code> line instead, and a pipe or a file gets exactly what <code>-t</code> prints.</p>
 <h2 id="csv-files"><a class="header" href="#csv-files">CSV files</a></h2>
 <p><code>-f</code> adds a row every second to the file, and starts a new or empty file with a header (an existing file is added to, not emptied):</p>
 <pre><code>Timestamp,CPU Usage,Total Power,CPU Power,GPU Power
 1756681930,0.2460,18.4500,15.2000,3.2500
 </code></pre>
 <p>The time of the measurement is a Unix timestamp in seconds, the CPU usage goes from 0.0 to 1.0, and the power is in watts.</p>
-<p>When monitoring a process or an application, a second file is written, with the PID or the application name added to the given filename (<code>power.csv-144.csv</code> for <code>-p 144 -f power.csv</code>).
+<p>When monitoring a process or an application, a second file is written, named after the PID or the application name (<code>power-144.csv</code> for <code>-p 144 -f power.csv</code>).
 It has the CPU usage and the power of that process or application:</p>
 <pre><code>Timestamp,CPU Usage,CPU Power
 1756681930,0.0310,1.9154
 </code></pre>
 <p><code>-o</code> writes the latest measurement only: the file is rewritten every second and carries no header, which is a good option for another program polling it for the current value.</p>
-<p>Both value columns of the process file hold <code>-1.0000</code> for a second where the monitored process could not be read at all: it has stopped, it was never running, or the system does not let us get the information needed.
+<p>Both value columns of the process file hold <code>-1.0000</code> for a second where the monitored process could not be read at all: it has stopped, or the system does not let us get the information needed.
 That is not the same as <code>0.0000</code>, which means a process that was read and used no CPU time.</p>
 <p><code>-a</code> is the exception: an application with no running process at all is reported as <code>0.0000</code> and not as <code>-1.0000</code>, because we can’t tell apart a name that matches nothing from a name whose processes did not use any CPU time.
 <code>-1.0000</code> still appears for <code>-a</code> when processes of the application are found but the system does not let us read any of them.
 A process we cannot read is left out of the sum when others of the application can be read, so the value is then short by what that process used.</p>
-<p>PowerJoular refuses to write a CSV file if a symbolic link is already at its path.
-This is a basic check, not a guarantee, as the link can still be swapped in after the check.
-When running PowerJoular as root, write the CSV files to a folder only root can write to (such as <code>/run/powerjoular</code> for the service), not to a shared folder such as <code>/tmp</code>.</p>
+<p>PowerJoular never writes a CSV file through a symbolic link: <code>-o</code> writes a new file each time and renames it over the previous one, and <code>-f</code> starts a new file or appends to one that is not a link.
+A hard link is still followed when <code>-f</code> appends: Linux refuses to make one to another user’s file, but macOS and FreeBSD don’t.
+So when running PowerJoular as root, write the CSV files to a folder only root can write to (such as <code>/run/powerjoular</code> for the service), not to a shared folder such as <code>/tmp</code>.</p>
 <p>A file that cannot be written to is reported once, and the monitoring goes on: PowerJoular tries the file again every second, and writes to it again once it can.</p>
 <h2 id="shared-memory-ring-buffer"><a class="header" href="#shared-memory-ring-buffer">Shared memory ring buffer</a></h2>
 <p><code>-r</code> writes every measurement to a shared memory ring buffer, which any program on the same machine can read with low latency.</p>
@@ -584,13 +610,13 @@ Afterwards, a negative power in the file, such as the <code>-1.0000</code> Power
 <li>Install PowerJoular</li>
 <li>Run PowerJoular while specifying the PID of the virtual machine of the guest OS, and writing the power data in a CSV file in overwrite mode.</li>
 <li>For instance, you can run PowerJoular with the following command: <code>powerjoular -p $VM_PID -o /home/vm/vm.csv</code></li>
-<li>This writes two files: <code>/home/vm/vm.csv</code> with the power of the whole host, and <code>/home/vm/vm.csv-$VM_PID.csv</code> with the power of the virtual machine process.</li>
-<li>Share the <code>/home/vm/vm.csv-$VM_PID.csv</code> between the host OS and the guest OS (read-only for the guest, as PowerJoular on the host usually runs as root)</li>
+<li>This writes two files: <code>/home/vm/vm.csv</code> with the power of the whole host, and <code>/home/vm/vm-$VM_PID.csv</code> with the power of the virtual machine process.</li>
+<li>Share the <code>/home/vm/vm-$VM_PID.csv</code> between the host OS and the guest OS (read-only for the guest, as PowerJoular on the host usually runs as root)</li>
 </ul>
 <h3 id="in-the-guest-os"><a class="header" href="#in-the-guest-os">In the guest OS</a></h3>
 <ul>
 <li>Install PowerJoular</li>
-<li>Share the <code>/home/vm/vm.csv-$VM_PID.csv</code> between the host OS and the guest OS, potentially having a different path of the file inside the guest. For instance, <code>/opt/vm/vm.csv</code></li>
+<li>Share the <code>/home/vm/vm-$VM_PID.csv</code> between the host OS and the guest OS, potentially having a different path of the file inside the guest. For instance, <code>/opt/vm/vm.csv</code></li>
 <li>Run PowerJoular with the -m and -s options to specify the file and the power data format.</li>
 <li>For example, in our use case example: <code>powerjoular -m /opt/vm/vm.csv -s powerjoular</code></li>
 <li>You can add other options for your needs, such as -p or -a to monitor a specific process or application inside your virtual machine.</li>
@@ -612,7 +638,7 @@ PowerJoular automatically detects the computer configuration and supported modul
 <h2 id="cpu-power-monitoring"><a class="header" href="#cpu-power-monitoring">CPU Power Monitoring</a></h2>
 <p>For the CPU, PowerJoular uses the Intel RAPL power data through the Linux powercap interface by reading the appropriate system files (or our regression models on Raspberry Pi and similar devices).</p>
 <p>It reads the Pkg domain, which is supported since Intel Sandy Bridge CPUs (and on AMD Ryzen and EPYC), and provides energy consumption for the CPU cores, integrated graphics, memory controller and last level caches.
-On a server with several sockets, only the first one is read.</p>
+On a server with several sockets, the packages of every socket are added together.</p>
 <p>On Windows, the same Pkg counter is read through the Energy Meter Interface built into Windows 11, or through the PawnIO driver or Hubblo’s driver, whichever answers first.
 On FreeBSD, the same Pkg counter is read from the registers of the processor, through the <code>cpuctl</code> driver.</p>
 <p>RAPL gives an energy counter that only counts up, and Joular Core turns it into the energy consumed since the last reading.
@@ -624,9 +650,9 @@ On Apple Silicon, it gives the CPU and the GPU of the chip from the same sample.
 The model uses CPU utilization (calculated from CPU cycles statistics from the <code>/proc/stat</code> file), and the board is detected from <code>/proc/device-tree/model</code>.</p>
 <h2 id="gpu-power-monitoring"><a class="header" href="#gpu-power-monitoring">GPU Power Monitoring</a></h2>
 <p>For the GPU, PowerJoular checks if the Nvidia driver is installed, then uses its NVML library to verify if GPU power monitoring is supported to the specific graphic card, and to read GPU power consumption every second.
-When there is no Nvidia card, it looks for an AMD card: through the hwmon sysfs of the amdgpu driver on Linux, and through ADLX, which comes with the AMD driver, on Windows.
+It also looks for AMD cards: through the hwmon sysfs of the amdgpu driver on Linux, and through ADLX, which comes with the AMD driver, on Windows.
 On Apple Silicon Macs, the GPU power comes from <code>powermetrics</code>, with the CPU power.
-Only the first graphic card found is read.</p>
+The power of every card found, of either make, is added together.</p>
 <p>Finally, PowerJoular aggregates power readings from all supported components to provide an overall power consumption.
 For instance, if both Intel RAPL and NVML are supported, the tool will provide an aggregated power value for both CPU and GPU.</p>
 <h2 id="monitoring-a-pid"><a class="header" href="#monitoring-a-pid">Monitoring a PID</a></h2>

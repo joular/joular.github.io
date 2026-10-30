@@ -19,7 +19,7 @@ On Raspberry Pi and Asus Tinker Board (and similar devices), PowerJoular uses it
 For the CPU, PowerJoular uses the Intel RAPL power data through the Linux powercap interface by reading the appropriate system files (or our regression models on Raspberry Pi and similar devices).
 
 It reads the Pkg domain, which is supported since Intel Sandy Bridge CPUs (and on AMD Ryzen and EPYC), and provides energy consumption for the CPU cores, integrated graphics, memory controller and last level caches.
-On a server with several sockets, only the first one is read.
+On a server with several sockets, the packages of every socket are added together.
 
 On Windows, the same Pkg counter is read through the Energy Meter Interface built into Windows 11, or through the PawnIO driver or Hubblo's driver, whichever answers first.
 On FreeBSD, the same Pkg counter is read from the registers of the processor, through the ```cpuctl``` driver.
@@ -37,9 +37,9 @@ The model uses CPU utilization (calculated from CPU cycles statistics from the `
 ## GPU Power Monitoring
 
 For the GPU, PowerJoular checks if the Nvidia driver is installed, then uses its NVML library to verify if GPU power monitoring is supported to the specific graphic card, and to read GPU power consumption every second.
-When there is no Nvidia card, it looks for an AMD card: through the hwmon sysfs of the amdgpu driver on Linux, and through ADLX, which comes with the AMD driver, on Windows.
+It also looks for AMD cards: through the hwmon sysfs of the amdgpu driver on Linux, and through ADLX, which comes with the AMD driver, on Windows.
 On Apple Silicon Macs, the GPU power comes from ```powermetrics```, with the CPU power.
-Only the first graphic card found is read.
+The power of every card found, of either make, is added together.
 
 Finally, PowerJoular aggregates power readings from all supported components to provide an overall power consumption.
 For instance, if both Intel RAPL and NVML are supported, the tool will provide an aggregated power value for both CPU and GPU.

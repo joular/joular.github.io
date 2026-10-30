@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3a24fa9e.js";
+            window.path_to_searchindex_js = "searchindex-320a6c6a.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-421028e5.js"></script>
@@ -407,7 +407,7 @@ Run PowerJoular on the host for that process, share the file it writes with the 
 Nothing else has to run in the virtual machine.</p>
 <p>See <a href="#virtual-machines">Virtual Machines</a> for the details.</p>
 <pre><code class="language-properties">power-source-type=vm
-vm-power-file=/mnt/shared/vm-power.csv-&lt;pid&gt;.csv
+vm-power-file=/mnt/shared/vm-power-&lt;pid&gt;.csv
 vm-power-format=powerjoular
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div>
@@ -529,13 +529,13 @@ A negative value, such as the <code>-1.0000</code> PowerJoular writes for a proc
 <li>Install <a href="https://github.com/joular/powerjoular">PowerJoular</a></li>
 <li>Run PowerJoular while specifying the PID of the virtual machine of the guest OS, and writing the power data in a CSV file in overwrite mode.</li>
 <li>For instance, you can run PowerJoular with the following command: <code>powerjoular -p $VM_PID -o /home/vm/vm.csv</code></li>
-<li>This writes two files: <code>/home/vm/vm.csv</code> with the power of the whole host, and <code>/home/vm/vm.csv-$VM_PID.csv</code> with the power of the virtual machine process.</li>
-<li>Share the <code>/home/vm/vm.csv-$VM_PID.csv</code> between the host OS and the guest OS (read-only for the guest, as PowerJoular on the host usually runs as root)</li>
+<li>This writes two files: <code>/home/vm/vm.csv</code> with the power of the whole host, and <code>/home/vm/vm-$VM_PID.csv</code> with the power of the virtual machine process.</li>
+<li>Share the <code>/home/vm/vm-$VM_PID.csv</code> between the host OS and the guest OS (read-only for the guest, as PowerJoular on the host usually runs as root)</li>
 </ul>
 <h3 id="in-the-guest-os"><a class="header" href="#in-the-guest-os">In the guest OS</a></h3>
 <ul>
 <li>Get Joular Code for Java (download or compile it)</li>
-<li>Share the <code>/home/vm/vm.csv-$VM_PID.csv</code> between the host OS and the guest OS, potentially having a different path of the file inside the guest. For instance, <code>/opt/vm/vm.csv</code></li>
+<li>Share the <code>/home/vm/vm-$VM_PID.csv</code> between the host OS and the guest OS, potentially having a different path of the file inside the guest. For instance, <code>/opt/vm/vm.csv</code></li>
 <li>Modify <code>joularcodejava.properties</code> and set <code>power-source-type</code> to <code>vm</code>, <code>vm-power-file</code> to the shared file <code>/opt/vm/vm.csv</code>, and <code>vm-power-format</code> to the proper format (in this case to <code>powerjoular</code>).</li>
 <li>Start your Java application with the Joular Code for Java agent as usual.</li>
 </ul>

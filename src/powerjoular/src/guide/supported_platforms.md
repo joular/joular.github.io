@@ -15,7 +15,7 @@ PowerJoular does the energy and CPU usage measuring through two Ada libraries we
 On Linux PC/Servers, PowerJoular uses powercap Linux interface to read RAPL (Running Average Power Limit) energy consumption, for Intel and AMD processors.
 
 PowerJoular reads the RAPL package domain (cores, integrated graphics, memory controller and last level caches).
-On a server with several sockets, only the first one is measured.
+On a server with several sockets, every socket is measured and the packages are added together.
 
 On Windows PC/Servers, PowerJoular reads the same RAPL package counter in one of three ways, and keeps the first one that answers:
 - The [Energy Meter Interface](https://learn.microsoft.com/en-us/windows-hardware/drivers/powermeter/energy-meter-interface) (EMI), built into Windows 11. Nothing to install.

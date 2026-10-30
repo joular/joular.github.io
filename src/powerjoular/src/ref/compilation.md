@@ -1,6 +1,6 @@
 # Compilation
 
-PowerJoular is written with Ada, and requires a modern Ada compiler, such as GNAT, together with the [Joular Core](https://github.com/joular/joularcore) and [CPU Load](https://github.com/joular/cpuload) libraries.
+PowerJoular is written with Ada, and requires GNAT 11 or newer, together with the [Joular Core](https://github.com/joular/joularcore) and [CPU Load](https://github.com/joular/cpuload) libraries.
 
 PowerJoular depends on the following libraries and tools for certain of its functions, but can function without them:
 - Linux powercap with RAPL support: for monitoring power consumption of Intel and AMD processors

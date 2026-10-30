@@ -29,13 +29,13 @@ A use case example is using PowerJoular on both the host and the guest.
 - Install PowerJoular
 - Run PowerJoular while specifying the PID of the virtual machine of the guest OS, and writing the power data in a CSV file in overwrite mode.
 - For instance, you can run PowerJoular with the following command: ```powerjoular -p $VM_PID -o /home/vm/vm.csv```
-- This writes two files: ```/home/vm/vm.csv``` with the power of the whole host, and ```/home/vm/vm.csv-$VM_PID.csv``` with the power of the virtual machine process.
-- Share the ```/home/vm/vm.csv-$VM_PID.csv``` between the host OS and the guest OS (read-only for the guest, as PowerJoular on the host usually runs as root)
+- This writes two files: ```/home/vm/vm.csv``` with the power of the whole host, and ```/home/vm/vm-$VM_PID.csv``` with the power of the virtual machine process.
+- Share the ```/home/vm/vm-$VM_PID.csv``` between the host OS and the guest OS (read-only for the guest, as PowerJoular on the host usually runs as root)
 
 ### In the guest OS
 
 - Install PowerJoular
-- Share the ```/home/vm/vm.csv-$VM_PID.csv``` between the host OS and the guest OS, potentially having a different path of the file inside the guest. For instance, ```/opt/vm/vm.csv```
+- Share the ```/home/vm/vm-$VM_PID.csv``` between the host OS and the guest OS, potentially having a different path of the file inside the guest. For instance, ```/opt/vm/vm.csv```
 - Run PowerJoular with the -m and -s options to specify the file and the power data format.
 - For example, in our use case example: ```powerjoular -m /opt/vm/vm.csv -s powerjoular```
 - You can add other options for your needs, such as -p or -a to monitor a specific process or application inside your virtual machine.

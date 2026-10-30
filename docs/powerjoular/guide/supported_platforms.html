@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-00e9c7e1.js";
+            window.path_to_searchindex_js = "../searchindex-9a08d1f2.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-b01ac823.js"></script>
@@ -190,7 +190,7 @@
 </ul>
 <p>On Linux PC/Servers, PowerJoular uses powercap Linux interface to read RAPL (Running Average Power Limit) energy consumption, for Intel and AMD processors.</p>
 <p>PowerJoular reads the RAPL package domain (cores, integrated graphics, memory controller and last level caches).
-On a server with several sockets, only the first one is measured.</p>
+On a server with several sockets, every socket is measured and the packages are added together.</p>
 <p>On Windows PC/Servers, PowerJoular reads the same RAPL package counter in one of three ways, and keeps the first one that answers:</p>
 <ul>
 <li>The <a href="https://learn.microsoft.com/en-us/windows-hardware/drivers/powermeter/energy-meter-interface">Energy Meter Interface</a> (EMI), built into Windows 11. Nothing to install.</li>

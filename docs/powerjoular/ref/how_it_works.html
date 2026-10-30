@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-00e9c7e1.js";
+            window.path_to_searchindex_js = "../searchindex-9a08d1f2.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-b01ac823.js"></script>
@@ -187,7 +187,7 @@ PowerJoular automatically detects the computer configuration and supported modul
 <h2 id="cpu-power-monitoring"><a class="header" href="#cpu-power-monitoring">CPU Power Monitoring</a></h2>
 <p>For the CPU, PowerJoular uses the Intel RAPL power data through the Linux powercap interface by reading the appropriate system files (or our regression models on Raspberry Pi and similar devices).</p>
 <p>It reads the Pkg domain, which is supported since Intel Sandy Bridge CPUs (and on AMD Ryzen and EPYC), and provides energy consumption for the CPU cores, integrated graphics, memory controller and last level caches.
-On a server with several sockets, only the first one is read.</p>
+On a server with several sockets, the packages of every socket are added together.</p>
 <p>On Windows, the same Pkg counter is read through the Energy Meter Interface built into Windows 11, or through the PawnIO driver or Hubblo’s driver, whichever answers first.
 On FreeBSD, the same Pkg counter is read from the registers of the processor, through the <code>cpuctl</code> driver.</p>
 <p>RAPL gives an energy counter that only counts up, and Joular Core turns it into the energy consumed since the last reading.
@@ -199,9 +199,9 @@ On Apple Silicon, it gives the CPU and the GPU of the chip from the same sample.
 The model uses CPU utilization (calculated from CPU cycles statistics from the <code>/proc/stat</code> file), and the board is detected from <code>/proc/device-tree/model</code>.</p>
 <h2 id="gpu-power-monitoring"><a class="header" href="#gpu-power-monitoring">GPU Power Monitoring</a></h2>
 <p>For the GPU, PowerJoular checks if the Nvidia driver is installed, then uses its NVML library to verify if GPU power monitoring is supported to the specific graphic card, and to read GPU power consumption every second.
-When there is no Nvidia card, it looks for an AMD card: through the hwmon sysfs of the amdgpu driver on Linux, and through ADLX, which comes with the AMD driver, on Windows.
+It also looks for AMD cards: through the hwmon sysfs of the amdgpu driver on Linux, and through ADLX, which comes with the AMD driver, on Windows.
 On Apple Silicon Macs, the GPU power comes from <code>powermetrics</code>, with the CPU power.
-Only the first graphic card found is read.</p>
+The power of every card found, of either make, is added together.</p>
 <p>Finally, PowerJoular aggregates power readings from all supported components to provide an overall power consumption.
 For instance, if both Intel RAPL and NVML are supported, the tool will provide an aggregated power value for both CPU and GPU.</p>
 <h2 id="monitoring-a-pid"><a class="header" href="#monitoring-a-pid">Monitoring a PID</a></h2>

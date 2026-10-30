@@ -1,28 +1,44 @@
 # Exporting Power Data
 
 PowerJoular exports its power data to the terminal, to CSV files, and to a shared memory ring buffer.
-The CSV files and the ring buffer can be used at the same time, and with the terminal when ```-t``` is given.
+The CSV files and the ring buffer can be used at the same time, and with the terminal when ```-t``` or ```-i``` is given.
 
 ## Terminal
 
-With no option, PowerJoular prints the power of the machine on the terminal, once a second, on the same line:
+With no option, PowerJoular shows its name and version, then the power of the machine, once a second, on one line rewritten in place:
 
 ```
-Total Power: 18.45 Watts (CPU: 15.20 W, GPU: 3.25 W)
+Total  18.45 W | CPU  15.20 W | GPU   3.25 W | load ███░░░░░░░  25 %
 ```
 
-The GPU is only shown when one was found.
+The GPU is only shown when one was found. The meter is the CPU load of the machine. Set ```NO_COLOR``` to turn the colours off.
 
-When monitoring a process (```-p```) or an application (```-a```), the terminal shows its CPU usage and its CPU power, with the CPU usage and the CPU power of the whole system between brackets (the GPU is not shown):
+When monitoring a process (```-p```) or an application (```-a```), the line shows the process instead: the share of the CPU power that is its own, its power ```of``` the power of the whole CPU, and its CPU usage ```of``` the load of the whole machine (the GPU is not shown):
 
 ```
-PID monitoring:	CPU: 3.10 % (24.60 %)	1.92 Watts (15.20 Watts)
-Application monitoring:	CPU: 3.10 % (24.60 %)	1.92 Watts (15.20 Watts)
+PID 144 | CPU █░░░░░░░░░  13 % |  1.92 of 15.20 W | usage  3.1 of 25 %
 ```
 
 ```n/a``` is shown when the process or the application could not be read.
 
-When the output is not a terminal (a file or a pipe), each measurement is printed on its own line.
+When the output is not a terminal (a file or a pipe), each measurement is a line of plain text, the same as in version 1, which scripts can read:
+
+```
+Total Power: 18.45 Watts (CPU: 15.20 W, GPU: 3.25 W)
+PID monitoring:	CPU: 3.10 % (24.60 %)	1.92 Watts (15.20 Watts)
+Application monitoring:	CPU: 3.10 % (24.60 %)	1.92 Watts (15.20 Watts)
+```
+
+### Visual TUI
+
+```-i``` shows the visual TUI on the whole terminal: the power in large digits, a bar for the CPU and the GPU when there is a GPU (with ```-p``` or ```-a```, the process's share of the CPU), a bar for the load, and a chart with one bar a second.
+A side panel lists what was found (CPU, GPU) and what is being written (```-f```, ```-o```, ```-r```).
+
+![PowerJoular TUI on Windows, monitoring an application](../screenshots/windows-TUI-app.png)
+
+It works with every option, and stops with Ctrl+C. ```NO_COLOR``` turns its colours off too.
+Messages that come while it is shown are printed when it closes.
+A window smaller than 50 by 16 gets the ```-t``` line instead, and a pipe or a file gets exactly what ```-t``` prints.
 
 ## CSV files
 
@@ -35,7 +51,7 @@ Timestamp,CPU Usage,Total Power,CPU Power,GPU Power
 
 The time of the measurement is a Unix timestamp in seconds, the CPU usage goes from 0.0 to 1.0, and the power is in watts.
 
-When monitoring a process or an application, a second file is written, with the PID or the application name added to the given filename (```power.csv-144.csv``` for ```-p 144 -f power.csv```).
+When monitoring a process or an application, a second file is written, named after the PID or the application name (```power-144.csv``` for ```-p 144 -f power.csv```).
 It has the CPU usage and the power of that process or application:
 
 ```
@@ -45,16 +61,16 @@ Timestamp,CPU Usage,CPU Power
 
 ```-o``` writes the latest measurement only: the file is rewritten every second and carries no header, which is a good option for another program polling it for the current value.
 
-Both value columns of the process file hold ```-1.0000``` for a second where the monitored process could not be read at all: it has stopped, it was never running, or the system does not let us get the information needed.
+Both value columns of the process file hold ```-1.0000``` for a second where the monitored process could not be read at all: it has stopped, or the system does not let us get the information needed.
 That is not the same as ```0.0000```, which means a process that was read and used no CPU time.
 
 ```-a``` is the exception: an application with no running process at all is reported as ```0.0000``` and not as ```-1.0000```, because we can't tell apart a name that matches nothing from a name whose processes did not use any CPU time.
 ```-1.0000``` still appears for ```-a``` when processes of the application are found but the system does not let us read any of them.
 A process we cannot read is left out of the sum when others of the application can be read, so the value is then short by what that process used.
 
-PowerJoular refuses to write a CSV file if a symbolic link is already at its path.
-This is a basic check, not a guarantee, as the link can still be swapped in after the check.
-When running PowerJoular as root, write the CSV files to a folder only root can write to (such as ```/run/powerjoular``` for the service), not to a shared folder such as ```/tmp```.
+PowerJoular never writes a CSV file through a symbolic link: ```-o``` writes a new file each time and renames it over the previous one, and ```-f``` starts a new file or appends to one that is not a link.
+A hard link is still followed when ```-f``` appends: Linux refuses to make one to another user's file, but macOS and FreeBSD don't.
+So when running PowerJoular as root, write the CSV files to a folder only root can write to (such as ```/run/powerjoular``` for the service), not to a shared folder such as ```/tmp```.
 
 A file that cannot be written to is reported once, and the monitoring goes on: PowerJoular tries the file again every second, and writes to it again once it can.
 

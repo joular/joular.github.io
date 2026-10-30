@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-00e9c7e1.js";
+            window.path_to_searchindex_js = "../searchindex-9a08d1f2.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-b01ac823.js"></script>
@@ -198,13 +198,13 @@ Afterwards, a negative power in the file, such as the <code>-1.0000</code> Power
 <li>Install PowerJoular</li>
 <li>Run PowerJoular while specifying the PID of the virtual machine of the guest OS, and writing the power data in a CSV file in overwrite mode.</li>
 <li>For instance, you can run PowerJoular with the following command: <code>powerjoular -p $VM_PID -o /home/vm/vm.csv</code></li>
-<li>This writes two files: <code>/home/vm/vm.csv</code> with the power of the whole host, and <code>/home/vm/vm.csv-$VM_PID.csv</code> with the power of the virtual machine process.</li>
-<li>Share the <code>/home/vm/vm.csv-$VM_PID.csv</code> between the host OS and the guest OS (read-only for the guest, as PowerJoular on the host usually runs as root)</li>
+<li>This writes two files: <code>/home/vm/vm.csv</code> with the power of the whole host, and <code>/home/vm/vm-$VM_PID.csv</code> with the power of the virtual machine process.</li>
+<li>Share the <code>/home/vm/vm-$VM_PID.csv</code> between the host OS and the guest OS (read-only for the guest, as PowerJoular on the host usually runs as root)</li>
 </ul>
 <h3 id="in-the-guest-os"><a class="header" href="#in-the-guest-os">In the guest OS</a></h3>
 <ul>
 <li>Install PowerJoular</li>
-<li>Share the <code>/home/vm/vm.csv-$VM_PID.csv</code> between the host OS and the guest OS, potentially having a different path of the file inside the guest. For instance, <code>/opt/vm/vm.csv</code></li>
+<li>Share the <code>/home/vm/vm-$VM_PID.csv</code> between the host OS and the guest OS, potentially having a different path of the file inside the guest. For instance, <code>/opt/vm/vm.csv</code></li>
 <li>Run PowerJoular with the -m and -s options to specify the file and the power data format.</li>
 <li>For example, in our use case example: <code>powerjoular -m /opt/vm/vm.csv -s powerjoular</code></li>
 <li>You can add other options for your needs, such as -p or -a to monitor a specific process or application inside your virtual machine.</li>

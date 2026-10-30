@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-00e9c7e1.js";
+            window.path_to_searchindex_js = "../searchindex-9a08d1f2.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-b01ac823.js"></script>
@@ -189,6 +189,7 @@ On FreeBSD, reading RAPL needs the <code>cpuctl</code> module (<code>kldload cpu
 <li><code>-f filename</code>: save monitoring data to the given filename path, in CSV format</li>
 <li><code>-o filename</code>: save only last monitoring data to the given filename path (file overwritten with only latest power measures)</li>
 <li><code>-t</code>: print the power data to the terminal</li>
+<li><code>-i</code>: show the visual TUI with power data on the whole terminal along with bars and a chart (see <a href="./exports.html#visual-tui">Exporting Power Data</a>)</li>
 <li><code>-d</code>: print the available hardware components on start up (the versions of PowerJoular and its libraries, whether the CPU and the GPU can be measured, and the path of the ring buffer with <code>-r</code>)</li>
 <li><code>-r</code>: write the power data to a shared memory ring buffer, for another program to read with low latency</li>
 <li><code>-m filename</code>: specify a filename for the power consumption of the virtual machine (written by the host)</li>
@@ -197,12 +198,13 @@ On FreeBSD, reading RAPL needs the <code>cpuctl</code> module (<code>kldload cpu
 <p>You can mix options, i.e., <code>powerjoular -tp 144</code> will monitor PID 144 and will print to the terminal.</p>
 <p>A few rules apply when mixing them:</p>
 <ul>
-<li><code>-p</code> and <code>-a</code> cannot be used together.</li>
-<li>With <code>-f</code>, <code>-o</code> or <code>-r</code>, the terminal is only used if <code>-t</code> is also given.</li>
+<li><code>-p</code> and <code>-a</code> cannot be used together, nor can <code>-f</code> and <code>-o</code>.</li>
+<li><code>-p</code> needs a process PowerJoular can read when it starts: one that is not running, or that this user is not allowed to read, is refused.</li>
+<li>With <code>-f</code>, <code>-o</code> or <code>-r</code>, the terminal is only used if <code>-t</code> or <code>-i</code> is also given.</li>
 <li><code>-m</code> and <code>-s</code> go together, and the file given to <code>-m</code> must already hold a power value in that format when PowerJoular starts.</li>
 </ul>
-<p>When monitoring a process (<code>-p</code>) or an application (<code>-a</code>), <code>-f</code> and <code>-o</code> write <strong>two</strong> CSV files: the given filename for the whole system, and the same name with the PID or the application name added to it, for the process or the application.
-For example, <code>powerjoular -p 144 -f power.csv</code> writes <code>power.csv</code> and <code>power.csv-144.csv</code>.</p>
+<p>When monitoring a process (<code>-p</code>) or an application (<code>-a</code>), <code>-f</code> and <code>-o</code> write <strong>two</strong> CSV files: the given filename for the whole system, and a second one named after the PID or the application name, for the process or the application.
+For example, <code>powerjoular -p 144 -f power.csv</code> writes <code>power.csv</code> and <code>power-144.csv</code>.</p>
 <p>See <a href="./exports.html">Exporting Power Data</a> for the content of the CSV files and of the ring buffer.</p>
 <p>On Windows, the <code>JOULARCORE_WINDOWS_RAPL</code> environment variable picks how the RAPL counter is read (<code>emi</code>, <code>pawnio</code> or <code>hubblo</code>), instead of trying the three in turn (see <a href="../guide/supported_platforms.html">Supported Platforms</a>).</p>
 
