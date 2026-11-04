@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-320a6c6a.js";
+            window.path_to_searchindex_js = "../searchindex-ea183441.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-421028e5.js"></script>
@@ -189,7 +189,8 @@ You can install it wherever you want, and give its full path to <code>-javaagent
 <p>PowerJoular needs <code>sudo</code> on macOS, on FreeBSD (with the <code>cpuctl</code> module loaded by <code>kldload cpuctl</code>), and on Linux PC/Servers unless its user can read the RAPL files, and a terminal with administrative rights on Windows with the PawnIO driver.
 The Java application needs none of these.</p>
 <p>A commented example of the configuration file, <code>joularcodejava.properties.example</code>, is available in the repository and with the releases.
-Copy it as <code>joularcodejava.properties</code> to the folder where you run the Java command, or give its path with <code>-Djoularcodejava.properties</code> (see <a href="../ref/configuration.html">Configuration Properties</a>).
+Copy it as <code>joularcodejava.properties</code> to the folder where you run the Java command, or give its path as the agent’s argument (<code>-javaagent:joularcodejava-&lt;version&gt;.jar=&lt;path&gt;</code>) or with <code>-Djoularcodejava.properties</code> (see <a href="../ref/configuration.html">Configuration Properties</a>).
+On Windows, write the paths in it with <code>/</code> or <code>\\</code>, as <code>\</code> starts an escape sequence there.
 Without a configuration file, the default values are used.</p>
 
                     </main>

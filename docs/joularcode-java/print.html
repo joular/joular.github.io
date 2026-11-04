@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-320a6c6a.js";
+            window.path_to_searchindex_js = "searchindex-ea183441.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-421028e5.js"></script>
@@ -273,7 +273,8 @@ You can install it wherever you want, and give its full path to <code>-javaagent
 <p>PowerJoular needs <code>sudo</code> on macOS, on FreeBSD (with the <code>cpuctl</code> module loaded by <code>kldload cpuctl</code>), and on Linux PC/Servers unless its user can read the RAPL files, and a terminal with administrative rights on Windows with the PawnIO driver.
 The Java application needs none of these.</p>
 <p>A commented example of the configuration file, <code>joularcodejava.properties.example</code>, is available in the repository and with the releases.
-Copy it as <code>joularcodejava.properties</code> to the folder where you run the Java command, or give its path with <code>-Djoularcodejava.properties</code> (see <a href="#configuration-properties">Configuration Properties</a>).
+Copy it as <code>joularcodejava.properties</code> to the folder where you run the Java command, or give its path as the agent’s argument (<code>-javaagent:joularcodejava-&lt;version&gt;.jar=&lt;path&gt;</code>) or with <code>-Djoularcodejava.properties</code> (see <a href="#configuration-properties">Configuration Properties</a>).
+On Windows, write the paths in it with <code>/</code> or <code>\\</code>, as <code>\</code> starts an escape sequence there.
 Without a configuration file, the default values are used.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="quick-usage"><a class="header" href="#quick-usage">Quick Usage</a></h1>
@@ -283,13 +284,14 @@ Without a configuration file, the default values are used.</p>
 <p>If your program is a JAR file, then just run it as usual while adding Joular Code for Java:</p>
 <pre><code>java -javaagent:joularcodejava-&lt;version&gt;.jar -jar yourProgram.jar
 </code></pre>
-<p>On Linux PC/Servers, Joular Code for Java reads the CPU power from RAPL directly, which needs root, or read access to the RAPL files (see <a href="#installation">Installation</a>).</p>
+<p>On Linux PC/Servers, Joular Code for Java reads the CPU power from RAPL directly, which needs root, or read access to the RAPL files (see <a href="#installation">Installation</a>).
+Without them, it says so, and reads the PowerJoular ring buffer instead.</p>
 <p>Everywhere else (Windows, macOS, FreeBSD, Raspberry Pi), start <a href="https://github.com/joular/powerjoular">PowerJoular</a> with the <code>-r</code> option, so it writes its power data to the shared memory ring buffer Joular Code for Java reads (with <code>sudo</code> on macOS, with <code>sudo</code> and the <code>cpuctl</code> module on FreeBSD, and from a terminal with administrative rights on Windows with the PawnIO driver):</p>
 <pre><code>powerjoular -r
 </code></pre>
 <p>On Windows, start PowerJoular before the application, and do not restart it while the application runs.
 On Linux, you can also run <code>sudo powerjoular -r</code> and set <code>power-source-type=ringbuffer</code>, so the Java application does not need root.</p>
-<p>Joular Code for Java will generate two CSV files, and will create these files in a <code>joular-code-java-results</code> folder:</p>
+<p>Joular Code for Java will generate two CSV files, in a folder of their own for each run, <code>&lt;pid&gt;-&lt;yyyyMMdd-HHmmss&gt;</code>, inside a <code>joular-code-java-results</code> folder:</p>
 <ul>
 <li><code>methods-power-all.csv</code>: the power and energy of every execution branch, including the JDK ones.</li>
 <li><code>methods-power-app.csv</code>: the power and energy of the execution branches of your application, according to the <code>methods-filtering-prefix</code> setting.</li>
@@ -297,7 +299,10 @@ On Linux, you can also run <code>sudo powerjoular -r</code> and set <code>power-
 <p>To focus the second file on your own code, set the packages of your application in <code>joularcodejava.properties</code>, in the folder where you run the Java command:</p>
 <pre><code class="language-properties">methods-filtering-prefix=com.example
 </code></pre>
-<p>To use a configuration file from another path:</p>
+<p>To use a configuration file from another path, give it as the agent’s argument:</p>
+<pre><code>java -javaagent:joularcodejava-&lt;version&gt;.jar=/path/to/joularcodejava.properties -jar yourProgram.jar
+</code></pre>
+<p>Or with the <code>-Djoularcodejava.properties</code> property:</p>
 <pre><code>java -Djoularcodejava.properties=/path/to/joularcodejava.properties -javaagent:joularcodejava-&lt;version&gt;.jar -jar yourProgram.jar
 </code></pre>
 <p>Joular Code for Java writes its messages on the standard error, and leaves the standard output to the application.
@@ -318,13 +323,16 @@ The agent itself has no runtime dependencies, so the JAR holds nothing but its o
 <h1 id="configuration-properties"><a class="header" href="#configuration-properties">Configuration Properties</a></h1>
 <p>Joular Code for Java can be configured by modifying the <code>joularcodejava.properties</code> file, read from:</p>
 <ol>
-<li>The path given with the <code>-Djoularcodejava.properties=&lt;path&gt;</code> JVM property</li>
+<li>The path given as the agent’s argument: <code>-javaagent:joularcodejava-&lt;version&gt;.jar=&lt;path&gt;</code></li>
+<li>Otherwise, the path given with the <code>-Djoularcodejava.properties=&lt;path&gt;</code> JVM property</li>
 <li>Otherwise, <code>joularcodejava.properties</code> in the folder where you run the Java command</li>
 </ol>
 <p>A missing file, or a property left empty, means the default value is used.
-A path given with <code>-Djoularcodejava.properties</code> where there is no file also means the defaults are used: the working folder is not searched then.</p>
+A path given as the agent’s argument or with <code>-Djoularcodejava.properties</code> where there is no file also means the defaults are used, with a warning: the working folder is not searched then.</p>
 <p>The configuration is read once, when the agent starts.
-When the agent is attached to a running JVM, both are those of that JVM: its own <code>-Djoularcodejava.properties</code>, and its working folder.</p>
+When the agent is attached to a running JVM, the path can be given as the agent’s argument there too (see <a href="#integration-with-systems-and-tools">Integration with Systems and Tools</a>). Otherwise, the other two are those of that JVM: its own <code>-Djoularcodejava.properties</code>, and its working folder.</p>
+<p>In this file, <code>\</code> starts an escape sequence, so on Windows write paths with <code>/</code> or <code>\\</code>, for example <code>results-path=C:/Users/me/results</code>.
+Written <code>C:\Users\me\results</code>, the backslashes are dropped, and a <code>\u</code> (as in <code>C:\users</code>) makes the whole file unreadable, so the defaults are used, with a warning.</p>
 <p><a href="https://github.com/joular/joularcode-java/blob/HEAD/joularcodejava.properties.example">joularcodejava.properties.example</a> is a commented example you can start from.</p>
 <p>The following properties are available:</p>
 <ul>
@@ -333,11 +341,15 @@ When the agent is attached to a running JVM, both are those of that JVM: its own
 <li><code>vm-power-file</code>: the path for the power consumption of the virtual machine. Inside a virtual machine, indicate the file containing the power consumption of the VM (which is usually a file in the host that is shared with the guest). It must be set when <code>power-source-type</code> is <code>vm</code> (default: empty). See <a href="#virtual-machines">Virtual Machines</a>.</li>
 <li><code>vm-power-format</code>: power format of the shared VM power file: <code>watts</code> (a file containing one value, the power consumption of the VM), or <code>powerjoular</code> (the row <a href="https://github.com/joular/powerjoular">PowerJoular</a> writes with <code>-o</code> in the host, containing 3 columns: timestamp, CPU utilization of the VM and CPU power of the VM) (default: <code>powerjoular</code>).</li>
 <li><code>stack-monitoring-sample-rate</code>: the sample rate (in milliseconds) for the agent to monitor methods usage by calling the JVM stack, from 1 to 1000 (default: <code>10</code>). A higher value means less accurate energy data, and a lower value means a higher overhead of the agent. Below 5 milliseconds, a warning is shown, as sampling can noticeably slow the application down. A value that is not a number from 1 to 1000 is replaced by the default, with a warning.</li>
-<li><code>results-path</code>: the folder where the CSV files are written (default: <code>joular-code-java-results</code>). A relative path starts from the folder where the Java command runs.</li>
+<li><code>max-stack-depth</code>: how many methods of each thread’s stack are kept, from the newest (default: <code>64</code>). A deeper stack loses its oldest methods, so its branch starts lower, and a smaller value makes sampling cheaper. A value that is not a positive number is replaced by the default, with a warning.</li>
+<li><code>results-path</code>: the folder where the CSV files are written, in a sub-folder per run (default: <code>joular-code-java-results</code>). A relative path starts from the folder where the Java command runs. See <a href="#generated-files">Generated Files</a>.</li>
 <li><code>methods-filtering-prefix</code>: list of package or class name prefixes, separated by commas, which will be used to filter the methods of your application, for example <code>com.example,org.myapp</code> (default: empty, no filter). See <a href="#generated-files">Generated Files</a> for explanations.</li>
+<li><code>lines-monitoring</code>: <code>true</code> also writes the power of each line of code, to <code>lines-power-all.csv</code>, <code>lines-power-app.csv</code> and <code>lines-power-app-self.csv</code> (default: <code>false</code>). See <a href="#generated-files">Generated Files</a>.</li>
+<li><code>aggregate</code>: <code>true</code> writes one row per branch when the JVM stops, with its energy and average power over the whole run, instead of a row per monitoring cycle (default: <code>false</code>).</li>
 </ul>
-<p>The values of <code>power-source-type</code> and <code>vm-power-format</code> can be written in upper or lower case.
-An unknown value for either of them is not replaced by the default: Joular Code for Java says why on the standard error, and the monitoring is off (the application still runs as usual).
+<p>The values of <code>power-source-type</code>, <code>vm-power-format</code>, <code>lines-monitoring</code> and <code>aggregate</code> can be written in upper or lower case.
+A value other than <code>true</code> or <code>false</code> for <code>lines-monitoring</code> or <code>aggregate</code> is replaced by <code>false</code>, with a warning.
+An unknown value for <code>power-source-type</code> or <code>vm-power-format</code> is not replaced by the default: Joular Code for Java says why on the standard error, and the monitoring is off (the application still runs as usual).
 The same happens with <code>vm</code> without <code>vm-power-file</code>, or <code>rapl</code> on another OS than Linux.</p>
 <h2 id="method-filtering"><a class="header" href="#method-filtering">Method filtering</a></h2>
 <p>The <code>methods-filtering-prefix</code> property controls which methods appear in the <code>methods-power-app.csv</code> file:</p>
@@ -349,18 +361,18 @@ The same happens with <code>vm</code> without <code>vm-power-file</code>, or <co
 <p>A method matches when its full name (<code>package.Class.method</code>) starts with one of the prefixes.
 The prefix is compared as plain text, not as a package: <code>com.example</code> also matches <code>com.examples</code>. Use <code>com.example.</code> to match the <code>com.example</code> package and its sub-packages, but not <code>com.examples</code>.</p>
 <h2 id="when-the-application-runs-as-root"><a class="header" href="#when-the-application-runs-as-root">When the application runs as root</a></h2>
-<p>Give the configuration file with <code>-Djoularcodejava.properties</code>, rather than leaving it in a folder others can write to, since the file sets where the results are written.</p>
+<p>Give the configuration file as the agent’s argument or with <code>-Djoularcodejava.properties</code>, rather than leaving it in a folder others can write to, since the file sets where the results are written.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="power-sources"><a class="header" href="#power-sources">Power Sources</a></h1>
 <p>Joular Code for Java gets the CPU power of the machine from one of three sources (RAPL, the PowerJoular ring buffer, or the host of a virtual machine), chosen with the <code>power-source-type</code> property:</p>
 <ul>
-<li><code>auto</code> (the default): RAPL on Linux, and the PowerJoular ring buffer everywhere else, including Linux machines without RAPL such as the Raspberry Pi.</li>
+<li><code>auto</code> (the default): the virtual machine file when <code>vm-power-file</code> is set, else RAPL on Linux, else the PowerJoular ring buffer, including on Linux machines without RAPL such as the Raspberry Pi.</li>
 <li><code>rapl</code>: Linux RAPL, read directly.</li>
 <li><code>ringbuffer</code>: the shared memory ring buffer PowerJoular writes with <code>-r</code>.</li>
 <li><code>vm</code>: inside a virtual machine, the file the host writes the power of the virtual machine to.</li>
 </ul>
-<p>With <code>auto</code>, RAPL is picked on a Linux machine that has it, even when the application is not allowed to read it.
-In that case, the monitoring is off (the application still runs as usual), so either give the application read access to RAPL, or run PowerJoular with <code>-r</code> and set <code>power-source-type=ringbuffer</code>.</p>
+<p>With <code>auto</code>, on a Linux machine that has RAPL but where the application is not allowed to read it, Joular Code for Java says so with a warning, and reads the PowerJoular ring buffer instead: run PowerJoular with <code>-r</code> as root.
+Set <code>power-source-type=ringbuffer</code> to go straight to the ring buffer, without the warning.</p>
 <p>When the source cannot be opened, Joular Code for Java says why on the standard error, and the application carries on without monitoring.
 When the power cannot be read, the cycle gets no energy, and the monitoring carries on once it can be read again.</p>
 <h2 id="linux-rapl-rapl"><a class="header" href="#linux-rapl-rapl">Linux RAPL (<code>rapl</code>)</a></h2>
@@ -373,7 +385,7 @@ The sub-domains (cores, uncore, DRAM) and the <code>psys</code> domain, which co
 <li>Give its user read access to those files (for example with a udev rule)</li>
 <li>Run PowerJoular with <code>-r</code> as root, and set <code>power-source-type=ringbuffer</code>, so the Java application does not need root</li>
 </ul>
-<p>PowerJoular reads the first package only, so on a machine with several sockets, <code>rapl</code> and <code>ringbuffer</code> do not give the same values.</p>
+<p>PowerJoular adds up every package too, so <code>rapl</code> and <code>ringbuffer</code> give the same values on a machine with several sockets.</p>
 <pre><code class="language-properties">power-source-type=rapl
 </code></pre>
 <h2 id="powerjoular-ring-buffer-ringbuffer"><a class="header" href="#powerjoular-ring-buffer-ringbuffer">PowerJoular ring buffer (<code>ringbuffer</code>)</a></h2>
@@ -412,7 +424,7 @@ vm-power-format=powerjoular
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="generated-files"><a class="header" href="#generated-files">Generated Files</a></h1>
-<p>Joular Code for Java will generate two CSV files, and will create these files in the <code>joular-code-java-results</code> folder (which can be changed with the <code>results-path</code> property):</p>
+<p>Joular Code for Java will generate two CSV files, five with <code>lines-monitoring=true</code>, in a folder per run inside the <code>joular-code-java-results</code> folder (which can be changed with the <code>results-path</code> property):</p>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -421,13 +433,18 @@ vm-power-format=powerjoular
 <tbody>
 <tr><td><code>methods-power-all.csv</code></td><td>Power and energy of all observed execution branches, including the JDK ones</td></tr>
 <tr><td><code>methods-power-app.csv</code></td><td>Power and energy of the execution branches of your application, according to the <code>methods-filtering-prefix</code> setting</td></tr>
+<tr><td><code>lines-power-all.csv</code></td><td>As <code>methods-power-all.csv</code>, with the line of each method (only with <code>lines-monitoring=true</code>)</td></tr>
+<tr><td><code>lines-power-app.csv</code></td><td>As <code>methods-power-app.csv</code>, with the line of each method (only with <code>lines-monitoring=true</code>)</td></tr>
+<tr><td><code>lines-power-app-self.csv</code></td><td>Power and energy of each line of your application itself, added up over the branches that reach it (only with <code>lines-monitoring=true</code>)</td></tr>
 </tbody>
 </table>
 </div>
 <p>At the end of every monitoring cycle (about 1 second), one row is added to each file for every execution branch that consumed power during the cycle.
-Branches with a power of zero are not written.</p>
-<p>The files are added to, and not overwritten: running the application again with the same results folder adds its rows after the previous ones.
-Use another <code>results-path</code>, or move the files away, to keep each run on its own.</p>
+Branches with a power of zero are not written.
+With <code>aggregate=true</code>, the files get their rows once, when the JVM stops (see <a href="#csv-format">CSV format</a>).</p>
+<p>Each run has its own folder, <code>&lt;pid&gt;-&lt;yyyyMMdd-HHmmss&gt;</code>, named after the process id of the JVM and the time the agent started, so runs never mix.
+When that folder is already there, <code>-2</code>, <code>-3</code>… is added to the name: JVMs in containers that share a results folder often have the same process id, and may start in the same second.
+At startup, Joular Code for Java says which folder it writes to.</p>
 <p>Joular Code for Java never follows a symbolic link when it opens its result files, since it may run as root, and the results folder may be one every user can write to.</p>
 <h2 id="the-filtered-file"><a class="header" href="#the-filtered-file">The filtered file</a></h2>
 <p>The second file is not just a subset of the first one, but rather a recalculation done by Joular Code for Java to provide accurate data: the methods that start with the filtered prefixes are allocated the power or energy of the methods they call that do not match a prefix (the JDK’s, but also those of libraries and frameworks).</p>
@@ -440,9 +457,21 @@ Use another <code>results-path</code>, or move the files away, to keep each run 
 <p>In the filtered file, a branch only has the methods that match a prefix, and the branches that end up the same are added up into one row.
 The samples with no matching method at all are left out of this file, so its totals are lower than those of the first file.
 When <code>methods-filtering-prefix</code> is empty, both files hold the same data.</p>
+<h2 id="lines-of-code"><a class="header" href="#lines-of-code">Lines of code</a></h2>
+<p>With <code>lines-monitoring=true</code>, the energy is also measured by line of code, and three more files are written:</p>
+<ul>
+<li><code>lines-power-all.csv</code> and <code>lines-power-app.csv</code> have the same rows as the methods files, with the same filtering, but each method of a branch comes with its line, as the JVM stack trace writes it: <code>com.example.Main.main(Main.java:12);com.example.Service.process(Service.java:120)</code>. The line of the newest method is the line being executed, and the line of every other method is the line calling the next one.</li>
+<li><code>lines-power-app-self.csv</code> has one row per line of your application per cycle, whatever it was called from: the newest method of each branch that matches <code>methods-filtering-prefix</code> (the newest of all without a filter), so the line that was running, or that called into the JDK. It is the total of a line itself, where the two other files split it by execution branch.</li>
+</ul>
+<p>The methods files stay the same.</p>
+<ul>
+<li>Thread dumps are taken at safepoints, which the JVM places on loop back edges, calls and returns, so the samples gather on those lines: the energy per line is accurate to the loop or the block of statements, not to the single line.</li>
+<li>Classes need line numbers in their debug information, which <code>javac</code> and Maven include by default. Without them a method is written <code>(Service.java)</code>, and <code>(Unknown Source)</code> when the file is unknown too. Native methods are written <code>(Native Method)</code>.</li>
+<li>Lines give more distinct branches than methods, so the files grow faster.</li>
+</ul>
 <h2 id="csv-format"><a class="header" href="#csv-format">CSV format</a></h2>
-<p>Both files share the same format:</p>
-<pre><code>timestamp,branch,power_watts,energy_joules,interval_seconds,coverage
+<p>All files share the same format:</p>
+<pre><code>Timestamp,branch,power_watts,energy_joules,interval_seconds,coverage
 </code></pre>
 <div class="table-wrapper">
 <table>
@@ -450,7 +479,7 @@ When <code>methods-filtering-prefix</code> is empty, both files hold the same da
 <tr><th>Column</th><th>Type</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code>timestamp</code></td><td>long (ms)</td><td>Unix timestamp in milliseconds at the end of the monitoring cycle</td></tr>
+<tr><td><code>Timestamp</code></td><td>double (s)</td><td>Unix time in seconds, with milliseconds, at the end of the monitoring cycle, as PowerJoular writes it</td></tr>
 <tr><td><code>branch</code></td><td>string</td><td>The call chain, from the oldest to the newest method, separated by semicolons (e.g., <code>com.example.Main.run;com.example.Service.process</code>)</td></tr>
 <tr><td><code>power_watts</code></td><td>double</td><td>Estimated power consumed by this branch during the cycle (W)</td></tr>
 <tr><td><code>energy_joules</code></td><td>double</td><td>Energy = power_watts × interval_seconds (J)</td></tr>
@@ -460,26 +489,28 @@ When <code>methods-filtering-prefix</code> is empty, both files hold the same da
 </table>
 </div>
 <p>A branch with a comma, a double quote or a line break in it is written between double quotes (standard CSV), so read the files with a CSV parser.</p>
-<p>To get the total energy of a branch over the whole execution, add up its <code>energy_joules</code> values.</p>
+<p>To get the total energy of a branch over the whole execution, add up its <code>energy_joules</code> values, or set <code>aggregate=true</code>.</p>
+<p>With <code>aggregate=true</code>, each branch has one row, written when the JVM stops: <code>power_watts</code> is its average over the whole run, <code>energy_joules</code> its total, <code>interval_seconds</code> how long the run was monitored, and <code>coverage</code> the average over the run.</p>
 <h3 id="example-output"><a class="header" href="#example-output">Example output</a></h3>
-<pre><code>timestamp,branch,power_watts,energy_joules,interval_seconds,coverage
-1746000000000,com.example.Main.main;com.example.Worker.compute,2.341500000,2.341500000,1.000000000,1.0000
-1746000001000,com.example.Main.main;com.example.Worker.compute,2.158300000,2.158300000,1.000000000,0.9974
+<pre><code>Timestamp,branch,power_watts,energy_joules,interval_seconds,coverage
+1746000000.000,com.example.Main.main;com.example.Worker.compute,2.341500000,2.341500000,1.000000000,1.0000
+1746000001.000,com.example.Main.main;com.example.Worker.compute,2.158300000,2.158300000,1.000000000,0.9974
 </code></pre>
 <h3 id="what-coverage-means"><a class="header" href="#what-coverage-means">What <code>coverage</code> means</a></h3>
 <p>Power is split between threads by the CPU time each one used, and the denominator is every thread that used CPU, not only the ones that were caught in a sample.
 Power drawn by a thread that was never sampled is therefore left unattributed, rather than shared out over the threads it did see.</p>
 <p><code>coverage</code> says how much of the JVM’s CPU time is represented: at <code>1.0</code> everything was accounted for, and at <code>0.6</code> only 60% of what the JVM consumed is attributed to the observed threads at that timestamp.
-Below <code>1.0</code>, the power reported per branch is a lower bound. When <code>coverage</code> drops below 0.5, Joular Code for Java shows a warning (once, until it rises again).</p>
-<p>Threads that end during a cycle, even ones started before it, are not counted here, because the JVM stops reporting a thread’s CPU time once it has ended.
-Their CPU time is still part of the JVM’s, so their power is spread over the threads still alive at the end of the cycle (like the power of the garbage collector), and <code>coverage</code> does not drop because of them.</p>
+Below <code>1.0</code>, the power reported per branch is a lower bound. When <code>coverage</code> drops below 0.5, Joular Code for Java shows a warning, once per run.</p>
+<p>A sampled thread that ends during a cycle is charged up to the sample that last saw it, because the JVM stops reporting a thread’s CPU time once it has ended.
+A thread that ends without ever being sampled is not counted here. Its CPU time is still part of the JVM’s, so its power is spread over the threads still alive at the end of the cycle (like the power of the garbage collector), and <code>coverage</code> does not drop because of it.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="integration-with-systems-and-tools"><a class="header" href="#integration-with-systems-and-tools">Integration with Systems and Tools</a></h1>
 <p>Joular Code for Java is a Java agent, and the compiled JAR file has no external dependencies.
 Therefore, it can be integrated and used in any setup running a standard JVM (OpenJDK, Oracle JDK), Java 21 or later (see <a href="#supported-platforms">Supported Platforms</a>).</p>
 <p>For instance, you can add Joular Code for Java to the run/execute parameters of your favorite IDE (Eclipse, IntelliJ IDEA, NetBeans, etc.), or to your development workflow or continuous integration and delivery processes (CI/CD).</p>
 <p>Joular Code for Java runs with the same configuration options and generated files on all supported platforms, from Windows to Linux, from x86_64 servers and PC to ARM Raspberry Pi devices.</p>
-<p>The generated CSV files are added to at the end of every monitoring cycle (about every second), so other tools can read them while the application runs, or after it ends.</p>
+<p>The generated CSV files are added to at the end of every monitoring cycle (about every second), so other tools can read them while the application runs, or after it ends.
+With <code>aggregate=true</code>, they get their rows only when the JVM stops.</p>
 <h2 id="attaching-to-a-running-jvm"><a class="header" href="#attaching-to-a-running-jvm">Attaching to a running JVM</a></h2>
 <p>The agent can also be loaded into a JVM that is already running, without restarting it, from another Java program using the Attach API (<code>com.sun.tools.attach.VirtualMachine</code>, in the <code>jdk.attach</code> module):</p>
 <pre><code class="language-java">VirtualMachine vm = VirtualMachine.attach(pid);
@@ -488,14 +519,24 @@ vm.detach();
 </code></pre>
 <p>Monitoring starts when the agent is loaded, so whatever the application did before that is not in the results.
 JDK 21 and later allow the attach by default but print a warning: start the target JVM with <code>-XX:+EnableDynamicAgentLoading</code> to silence it, or with <code>-XX:-EnableDynamicAgentLoading</code> to forbid it.</p>
-<p>The configuration is read when the agent attaches, in the target JVM: <code>-Djoularcodejava.properties=...</code> belongs on its own command line, and the default <code>joularcodejava.properties</code> and a relative <code>results-path</code> are taken from its working folder.</p>
+<p>The configuration is read when the agent attaches, in the target JVM. Give its path as the agent’s argument:</p>
+<pre><code class="language-java">vm.loadAgent("/path/to/joularcodejava-&lt;version&gt;.jar", "/path/to/joularcodejava.properties");
+</code></pre>
+<p>Or with <code>jcmd</code>:</p>
+<pre><code>jcmd &lt;pid&gt; JVMTI.agent_load /path/to/joularcodejava-&lt;version&gt;.jar /path/to/joularcodejava.properties
+</code></pre>
+<p>Without it, <code>-Djoularcodejava.properties=...</code> belongs on the target JVM’s own command line, and the default <code>joularcodejava.properties</code> is taken from its working folder.
+A relative path, as the argument or in <code>results-path</code>, starts from that working folder too.</p>
 <p>Attaching again while Joular Code for Java is monitoring is ignored, with a warning, rather than starting a second monitor.
 If the first one has stopped (for instance, because its power source could not be opened), attaching again reads the configuration again and starts monitoring.</p>
 <h2 id="application-servers-and-long-running-applications"><a class="header" href="#application-servers-and-long-running-applications">Application servers and long-running applications</a></h2>
 <p>Joular Code for Java monitors the JVM until it stops, and closes its files when the JVM shuts down.
 It works the same for a program that ends on its own and for an application server or a service that keeps running (Spring Boot, Tomcat, etc.).
 Unlike JoularJX, there is no <code>application-server</code> property to set.</p>
-<p>The cycle in progress when the JVM shuts down is not written, so the last second or so of a run is not in the results, and a program that ends within its first cycle leaves files with only their header.</p>
+<p>With RAPL, the cycle in progress when the JVM shuts down is written too, over the time it lasted.
+The other sources give their power once a second, so with them that cycle is not written: the last second or so of a run is not in the results, and a program that ends within its first second leaves files with only their header.</p>
+<p>Joular Code for Java sets up <code>java.util.logging</code> for its messages as it starts, before the application.
+Application servers that bring their own log manager, such as WildFly and JBoss, then need it given on the command line, as with other Java agents: <code>-Djava.util.logging.manager=org.jboss.logmanager.LogManager</code>, with its JAR in <code>-Xbootclasspath/a:</code>.</p>
 <h2 id="messages"><a class="header" href="#messages">Messages</a></h2>
 <p>Joular Code for Java writes its messages on the standard error, and leaves the standard output to the application.
 The first line gives its version (<code>Joular Code for Java: version &lt;version&gt;</code>), and the next ones read as <code>dd-MM-yyyy HH:mm:ss LEVEL: message</code>.</p>
@@ -558,21 +599,24 @@ It runs in a separate thread and collects information about CPU usage of the JVM
 <h2 id="the-monitoring-process"><a class="header" href="#the-monitoring-process">The monitoring process</a></h2>
 <p>The monitoring process is as follows, every monitoring cycle (about 1 second):</p>
 <ol>
-<li>Every <code>stack-monitoring-sample-rate</code> milliseconds (by default, 10 milliseconds), Joular Code for Java captures the stack trace of every <code>RUNNABLE</code> thread, counting how often each execution branch is seen.</li>
-<li>At the start and the end of each cycle, it reads the CPU time of each thread and of the whole JVM, using the JDK’s <code>ThreadMXBean</code> and <code>OperatingSystemMXBean</code>.</li>
+<li>Every <code>stack-monitoring-sample-rate</code> milliseconds (by default, 10 milliseconds), Joular Code for Java reads the CPU time of each thread, and captures the stack trace of every <code>RUNNABLE</code> thread that used CPU since the previous sample. The CPU time the thread used since its previous sample is charged to the execution branch it is on.</li>
+<li>At the start and the end of each cycle, it reads the CPU time of each thread and of the whole JVM, using the JDK’s <code>ThreadMXBean</code> and <code>OperatingSystemMXBean</code>, and on Linux, the CPU time of the whole machine from <code>/proc/stat</code>.</li>
 <li>It reads the CPU power of the machine over the cycle, from RAPL, PowerJoular, or the host of a virtual machine (see <a href="#power-sources">Power Sources</a>).</li>
 <li>It calculates the power of the JVM: the JVM’s share of the CPU power is its own CPU load over the machine’s.</li>
-<li>It attributes the power to methods and execution branches: each thread receives a part of the JVM’s power proportional to its CPU time. Within each thread, the power is then distributed to its execution branches, proportionally to how often each was seen in the stack samples.</li>
+<li>It attributes the power to methods and execution branches: each execution branch receives a part of the JVM’s power proportional to the CPU time charged to it, over the CPU time of all of the JVM’s threads.</li>
 <li>It writes the results to the CSV files: both the power (W) and the energy (J = W × cycle duration) of each branch for that cycle.</li>
 </ol>
 <p>In short:</p>
 <pre><code>JVM power      = CPU power × JVM CPU load / machine CPU load
-thread power   = JVM power × thread CPU time / CPU time of all the JVM's threads
-branch power   = thread power × samples of the branch in the thread / samples of the thread
+branch power   = JVM power × CPU time charged to the branch / CPU time of all the JVM's threads
 </code></pre>
-<p>A branch seen on several threads (for example, the workers of a thread pool running the same code) gets the sum of its power on each of them.
+<p>A branch seen on several threads (for example, the workers of a thread pool running the same code) is charged the CPU time of each of them.
+The CPU time a thread uses after its last sample of a cycle goes to the branch that sample caught.
 The JVM’s share is never more than the whole CPU power, and when the machine’s CPU load is unknown, the JVM’s own load is used instead.</p>
-<p>Threads are weighted by their CPU time rather than by their number of samples, so a thread blocked in native I/O (which Java still reports as <code>RUNNABLE</code>) is not charged for waiting.</p>
+<p>On Linux, the machine’s CPU load and its number of CPUs are read from <code>/proc/stat</code>, so inside a container the JVM’s share is of the host’s CPUs, not of the few the cgroup lets it see.
+The steal time there, which the host of a virtual machine gave to others, counts as idle, so the load of a virtual machine is its own work.</p>
+<p>Branches are weighted by CPU time rather than by their number of samples, so a thread blocked in native I/O (which Java still reports as <code>RUNNABLE</code>) uses no CPU, and the branch it waits on is not charged for waiting.
+For the same reason, the stacks of threads that used no CPU since the previous sample are not taken: they would be charged nothing, and most threads of a server wait, so walking their stacks would cost far more than the rest of the sampling.</p>
 <p>The JVM’s own native threads (garbage collector, JIT compiler) are part of the JVM’s power, but not of any Java thread’s CPU time, so their share is spread over the Java threads in proportion to their own CPU time.</p>
 <p>The agent’s own monitoring thread is left out: it is not sampled, and its CPU time is taken out of the JVM’s.</p>
 <h2 id="execution-branches"><a class="header" href="#execution-branches">Execution branches</a></h2>
@@ -581,24 +625,27 @@ The JVM’s share is never more than the whole CPU power, and when the machine�
 <p>Usually the method on the top of the stack trace is a method from the JDK.
 For example, calling <code>System.out.println()</code> from the application’s method <code>Main</code> will call other methods from the JDK (such as buffers, writeln, etc.).
 Joular Code for Java checks, in the stack trace, which methods of the branch belong to the application we wish to monitor (with the <code>methods-filtering-prefix</code> setting), and thus allocates to them the power of the methods they call that are not part of the application (the JDK’s, libraries, frameworks), in the filtered file (see <a href="#generated-files">Generated Files</a>).</p>
-<p>Two stack traces are the same branch when they go through the same methods, whatever the line numbers.</p>
+<p>Two stack traces are the same branch when they go through the same methods, whatever the line numbers.
+With <code>lines-monitoring=true</code>, the lines files also tell them apart by line (see <a href="#generated-files">Generated Files</a>).</p>
+<p>Only the newest <code>max-stack-depth</code> methods of each stack are kept (by default, 64), so a deeper stack loses its oldest methods, and its branch starts lower.</p>
 <h2 id="timing-of-the-cycles"><a class="header" href="#timing-of-the-cycles">Timing of the cycles</a></h2>
 <p>The length of a cycle depends on the power source:</p>
 <ul>
-<li>With RAPL, a cycle lasts one second (until the first stack sample after one second, so a little more with a large <code>stack-monitoring-sample-rate</code>), and the energy is read at its very end, so the power and the stack samples cover the same time.</li>
+<li>With RAPL, a cycle lasts one second (until the first stack sample after one second, so a little more with a large <code>stack-monitoring-sample-rate</code>), and the energy is read at its very end, so the power and the stack samples cover the same time. When the JVM stops, the cycle in progress is written too, over the time it lasted.</li>
 <li>With the PowerJoular ring buffer, a cycle ends when PowerJoular publishes a measurement, or after two seconds without one, in which case that cycle gets no rows. While there is no ring buffer to read yet, cycles last one second and get no rows.</li>
 <li>In a virtual machine, a cycle lasts one second too, like with RAPL, and gets the latest power the host wrote.</li>
 </ul>
-<p>Each cycle starts where the previous one ended, so no time is lost while the results are written.</p>
+<p>Each cycle starts where the previous one ended, so no time is lost while the results are written.
+The PowerJoular ring buffer and the host of a virtual machine give the power once a second, so with them the cycle in progress when the JVM stops is not written.</p>
 <h2 id="limits"><a class="header" href="#limits">Limits</a></h2>
 <p>Sampling the stacks of the JVM’s threads cannot see:</p>
 <ul>
-<li>Threads that end during a cycle, even ones started before it, as the JVM no longer reports their CPU time once they have ended. Their power is spread over the threads still alive, like the garbage collector’s, and <code>coverage</code> does not show it.</li>
-<li>Virtual threads, which are not in the thread dumps Joular Code for Java takes.</li>
-<li>Whether a sampled thread was actually running on a CPU at that instant.</li>
+<li>Threads that end without ever being sampled, as the JVM no longer reports their CPU time once they have ended. Their power is spread over the threads still alive, like the garbage collector’s, and <code>coverage</code> does not show it. A sampled thread that ends is charged up to its last sample.</li>
+<li>Virtual threads, which are not in the thread dumps Joular Code for Java takes. What they run is spent by their carrier threads, and goes to the carriers’ own branches in the JDK (<code>ForkJoinPool</code>, <code>VirtualThread</code>), not to the application’s methods.</li>
+<li>Which branch a thread was on between two samples: the CPU time it used since its previous sample goes to the branch it is on at this one.</li>
 </ul>
 <p>The <code>coverage</code> column of the generated files says how much of the CPU time of the JVM’s threads was accounted for in each cycle.</p>
-<p>When the stacks cannot be sampled as often as asked (with many threads, and a very low <code>stack-monitoring-sample-rate</code>), Joular Code for Java shows a warning: set a higher <code>stack-monitoring-sample-rate</code>, or accept coarser data.</p>
+<p>When the stacks cannot be sampled as often as asked (with many threads, and a very low <code>stack-monitoring-sample-rate</code>), Joular Code for Java shows a warning, once per run: set a higher <code>stack-monitoring-sample-rate</code> or a lower <code>max-stack-depth</code>, or accept coarser data.</p>
 
                     </main>
 

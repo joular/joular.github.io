@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-320a6c6a.js";
+            window.path_to_searchindex_js = "../searchindex-ea183441.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-421028e5.js"></script>
@@ -181,21 +181,24 @@ It runs in a separate thread and collects information about CPU usage of the JVM
 <h2 id="the-monitoring-process"><a class="header" href="#the-monitoring-process">The monitoring process</a></h2>
 <p>The monitoring process is as follows, every monitoring cycle (about 1 second):</p>
 <ol>
-<li>Every <code>stack-monitoring-sample-rate</code> milliseconds (by default, 10 milliseconds), Joular Code for Java captures the stack trace of every <code>RUNNABLE</code> thread, counting how often each execution branch is seen.</li>
-<li>At the start and the end of each cycle, it reads the CPU time of each thread and of the whole JVM, using the JDK’s <code>ThreadMXBean</code> and <code>OperatingSystemMXBean</code>.</li>
+<li>Every <code>stack-monitoring-sample-rate</code> milliseconds (by default, 10 milliseconds), Joular Code for Java reads the CPU time of each thread, and captures the stack trace of every <code>RUNNABLE</code> thread that used CPU since the previous sample. The CPU time the thread used since its previous sample is charged to the execution branch it is on.</li>
+<li>At the start and the end of each cycle, it reads the CPU time of each thread and of the whole JVM, using the JDK’s <code>ThreadMXBean</code> and <code>OperatingSystemMXBean</code>, and on Linux, the CPU time of the whole machine from <code>/proc/stat</code>.</li>
 <li>It reads the CPU power of the machine over the cycle, from RAPL, PowerJoular, or the host of a virtual machine (see <a href="./power_sources.html">Power Sources</a>).</li>
 <li>It calculates the power of the JVM: the JVM’s share of the CPU power is its own CPU load over the machine’s.</li>
-<li>It attributes the power to methods and execution branches: each thread receives a part of the JVM’s power proportional to its CPU time. Within each thread, the power is then distributed to its execution branches, proportionally to how often each was seen in the stack samples.</li>
+<li>It attributes the power to methods and execution branches: each execution branch receives a part of the JVM’s power proportional to the CPU time charged to it, over the CPU time of all of the JVM’s threads.</li>
 <li>It writes the results to the CSV files: both the power (W) and the energy (J = W × cycle duration) of each branch for that cycle.</li>
 </ol>
 <p>In short:</p>
 <pre><code>JVM power      = CPU power × JVM CPU load / machine CPU load
-thread power   = JVM power × thread CPU time / CPU time of all the JVM's threads
-branch power   = thread power × samples of the branch in the thread / samples of the thread
+branch power   = JVM power × CPU time charged to the branch / CPU time of all the JVM's threads
 </code></pre>
-<p>A branch seen on several threads (for example, the workers of a thread pool running the same code) gets the sum of its power on each of them.
+<p>A branch seen on several threads (for example, the workers of a thread pool running the same code) is charged the CPU time of each of them.
+The CPU time a thread uses after its last sample of a cycle goes to the branch that sample caught.
 The JVM’s share is never more than the whole CPU power, and when the machine’s CPU load is unknown, the JVM’s own load is used instead.</p>
-<p>Threads are weighted by their CPU time rather than by their number of samples, so a thread blocked in native I/O (which Java still reports as <code>RUNNABLE</code>) is not charged for waiting.</p>
+<p>On Linux, the machine’s CPU load and its number of CPUs are read from <code>/proc/stat</code>, so inside a container the JVM’s share is of the host’s CPUs, not of the few the cgroup lets it see.
+The steal time there, which the host of a virtual machine gave to others, counts as idle, so the load of a virtual machine is its own work.</p>
+<p>Branches are weighted by CPU time rather than by their number of samples, so a thread blocked in native I/O (which Java still reports as <code>RUNNABLE</code>) uses no CPU, and the branch it waits on is not charged for waiting.
+For the same reason, the stacks of threads that used no CPU since the previous sample are not taken: they would be charged nothing, and most threads of a server wait, so walking their stacks would cost far more than the rest of the sampling.</p>
 <p>The JVM’s own native threads (garbage collector, JIT compiler) are part of the JVM’s power, but not of any Java thread’s CPU time, so their share is spread over the Java threads in proportion to their own CPU time.</p>
 <p>The agent’s own monitoring thread is left out: it is not sampled, and its CPU time is taken out of the JVM’s.</p>
 <h2 id="execution-branches"><a class="header" href="#execution-branches">Execution branches</a></h2>
@@ -204,24 +207,27 @@ The JVM’s share is never more than the whole CPU power, and when the machine�
 <p>Usually the method on the top of the stack trace is a method from the JDK.
 For example, calling <code>System.out.println()</code> from the application’s method <code>Main</code> will call other methods from the JDK (such as buffers, writeln, etc.).
 Joular Code for Java checks, in the stack trace, which methods of the branch belong to the application we wish to monitor (with the <code>methods-filtering-prefix</code> setting), and thus allocates to them the power of the methods they call that are not part of the application (the JDK’s, libraries, frameworks), in the filtered file (see <a href="./generated_files.html">Generated Files</a>).</p>
-<p>Two stack traces are the same branch when they go through the same methods, whatever the line numbers.</p>
+<p>Two stack traces are the same branch when they go through the same methods, whatever the line numbers.
+With <code>lines-monitoring=true</code>, the lines files also tell them apart by line (see <a href="./generated_files.html">Generated Files</a>).</p>
+<p>Only the newest <code>max-stack-depth</code> methods of each stack are kept (by default, 64), so a deeper stack loses its oldest methods, and its branch starts lower.</p>
 <h2 id="timing-of-the-cycles"><a class="header" href="#timing-of-the-cycles">Timing of the cycles</a></h2>
 <p>The length of a cycle depends on the power source:</p>
 <ul>
-<li>With RAPL, a cycle lasts one second (until the first stack sample after one second, so a little more with a large <code>stack-monitoring-sample-rate</code>), and the energy is read at its very end, so the power and the stack samples cover the same time.</li>
+<li>With RAPL, a cycle lasts one second (until the first stack sample after one second, so a little more with a large <code>stack-monitoring-sample-rate</code>), and the energy is read at its very end, so the power and the stack samples cover the same time. When the JVM stops, the cycle in progress is written too, over the time it lasted.</li>
 <li>With the PowerJoular ring buffer, a cycle ends when PowerJoular publishes a measurement, or after two seconds without one, in which case that cycle gets no rows. While there is no ring buffer to read yet, cycles last one second and get no rows.</li>
 <li>In a virtual machine, a cycle lasts one second too, like with RAPL, and gets the latest power the host wrote.</li>
 </ul>
-<p>Each cycle starts where the previous one ended, so no time is lost while the results are written.</p>
+<p>Each cycle starts where the previous one ended, so no time is lost while the results are written.
+The PowerJoular ring buffer and the host of a virtual machine give the power once a second, so with them the cycle in progress when the JVM stops is not written.</p>
 <h2 id="limits"><a class="header" href="#limits">Limits</a></h2>
 <p>Sampling the stacks of the JVM’s threads cannot see:</p>
 <ul>
-<li>Threads that end during a cycle, even ones started before it, as the JVM no longer reports their CPU time once they have ended. Their power is spread over the threads still alive, like the garbage collector’s, and <code>coverage</code> does not show it.</li>
-<li>Virtual threads, which are not in the thread dumps Joular Code for Java takes.</li>
-<li>Whether a sampled thread was actually running on a CPU at that instant.</li>
+<li>Threads that end without ever being sampled, as the JVM no longer reports their CPU time once they have ended. Their power is spread over the threads still alive, like the garbage collector’s, and <code>coverage</code> does not show it. A sampled thread that ends is charged up to its last sample.</li>
+<li>Virtual threads, which are not in the thread dumps Joular Code for Java takes. What they run is spent by their carrier threads, and goes to the carriers’ own branches in the JDK (<code>ForkJoinPool</code>, <code>VirtualThread</code>), not to the application’s methods.</li>
+<li>Which branch a thread was on between two samples: the CPU time it used since its previous sample goes to the branch it is on at this one.</li>
 </ul>
 <p>The <code>coverage</code> column of the generated files says how much of the CPU time of the JVM’s threads was accounted for in each cycle.</p>
-<p>When the stacks cannot be sampled as often as asked (with many threads, and a very low <code>stack-monitoring-sample-rate</code>), Joular Code for Java shows a warning: set a higher <code>stack-monitoring-sample-rate</code>, or accept coarser data.</p>
+<p>When the stacks cannot be sampled as often as asked (with many threads, and a very low <code>stack-monitoring-sample-rate</code>), Joular Code for Java shows a warning, once per run: set a higher <code>stack-monitoring-sample-rate</code> or a lower <code>max-stack-depth</code>, or accept coarser data.</p>
 
                     </main>
 

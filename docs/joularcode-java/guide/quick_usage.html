@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-320a6c6a.js";
+            window.path_to_searchindex_js = "../searchindex-ea183441.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-421028e5.js"></script>
@@ -181,13 +181,14 @@
 <p>If your program is a JAR file, then just run it as usual while adding Joular Code for Java:</p>
 <pre><code>java -javaagent:joularcodejava-&lt;version&gt;.jar -jar yourProgram.jar
 </code></pre>
-<p>On Linux PC/Servers, Joular Code for Java reads the CPU power from RAPL directly, which needs root, or read access to the RAPL files (see <a href="./installation.html">Installation</a>).</p>
+<p>On Linux PC/Servers, Joular Code for Java reads the CPU power from RAPL directly, which needs root, or read access to the RAPL files (see <a href="./installation.html">Installation</a>).
+Without them, it says so, and reads the PowerJoular ring buffer instead.</p>
 <p>Everywhere else (Windows, macOS, FreeBSD, Raspberry Pi), start <a href="https://github.com/joular/powerjoular">PowerJoular</a> with the <code>-r</code> option, so it writes its power data to the shared memory ring buffer Joular Code for Java reads (with <code>sudo</code> on macOS, with <code>sudo</code> and the <code>cpuctl</code> module on FreeBSD, and from a terminal with administrative rights on Windows with the PawnIO driver):</p>
 <pre><code>powerjoular -r
 </code></pre>
 <p>On Windows, start PowerJoular before the application, and do not restart it while the application runs.
 On Linux, you can also run <code>sudo powerjoular -r</code> and set <code>power-source-type=ringbuffer</code>, so the Java application does not need root.</p>
-<p>Joular Code for Java will generate two CSV files, and will create these files in a <code>joular-code-java-results</code> folder:</p>
+<p>Joular Code for Java will generate two CSV files, in a folder of their own for each run, <code>&lt;pid&gt;-&lt;yyyyMMdd-HHmmss&gt;</code>, inside a <code>joular-code-java-results</code> folder:</p>
 <ul>
 <li><code>methods-power-all.csv</code>: the power and energy of every execution branch, including the JDK ones.</li>
 <li><code>methods-power-app.csv</code>: the power and energy of the execution branches of your application, according to the <code>methods-filtering-prefix</code> setting.</li>
@@ -195,7 +196,10 @@ On Linux, you can also run <code>sudo powerjoular -r</code> and set <code>power-
 <p>To focus the second file on your own code, set the packages of your application in <code>joularcodejava.properties</code>, in the folder where you run the Java command:</p>
 <pre><code class="language-properties">methods-filtering-prefix=com.example
 </code></pre>
-<p>To use a configuration file from another path:</p>
+<p>To use a configuration file from another path, give it as the agent’s argument:</p>
+<pre><code>java -javaagent:joularcodejava-&lt;version&gt;.jar=/path/to/joularcodejava.properties -jar yourProgram.jar
+</code></pre>
+<p>Or with the <code>-Djoularcodejava.properties</code> property:</p>
 <pre><code>java -Djoularcodejava.properties=/path/to/joularcodejava.properties -javaagent:joularcodejava-&lt;version&gt;.jar -jar yourProgram.jar
 </code></pre>
 <p>Joular Code for Java writes its messages on the standard error, and leaves the standard output to the application.

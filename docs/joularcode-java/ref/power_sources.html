@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-320a6c6a.js";
+            window.path_to_searchindex_js = "../searchindex-ea183441.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-421028e5.js"></script>
@@ -177,13 +177,13 @@
                         <h1 id="power-sources"><a class="header" href="#power-sources">Power Sources</a></h1>
 <p>Joular Code for Java gets the CPU power of the machine from one of three sources (RAPL, the PowerJoular ring buffer, or the host of a virtual machine), chosen with the <code>power-source-type</code> property:</p>
 <ul>
-<li><code>auto</code> (the default): RAPL on Linux, and the PowerJoular ring buffer everywhere else, including Linux machines without RAPL such as the Raspberry Pi.</li>
+<li><code>auto</code> (the default): the virtual machine file when <code>vm-power-file</code> is set, else RAPL on Linux, else the PowerJoular ring buffer, including on Linux machines without RAPL such as the Raspberry Pi.</li>
 <li><code>rapl</code>: Linux RAPL, read directly.</li>
 <li><code>ringbuffer</code>: the shared memory ring buffer PowerJoular writes with <code>-r</code>.</li>
 <li><code>vm</code>: inside a virtual machine, the file the host writes the power of the virtual machine to.</li>
 </ul>
-<p>With <code>auto</code>, RAPL is picked on a Linux machine that has it, even when the application is not allowed to read it.
-In that case, the monitoring is off (the application still runs as usual), so either give the application read access to RAPL, or run PowerJoular with <code>-r</code> and set <code>power-source-type=ringbuffer</code>.</p>
+<p>With <code>auto</code>, on a Linux machine that has RAPL but where the application is not allowed to read it, Joular Code for Java says so with a warning, and reads the PowerJoular ring buffer instead: run PowerJoular with <code>-r</code> as root.
+Set <code>power-source-type=ringbuffer</code> to go straight to the ring buffer, without the warning.</p>
 <p>When the source cannot be opened, Joular Code for Java says why on the standard error, and the application carries on without monitoring.
 When the power cannot be read, the cycle gets no energy, and the monitoring carries on once it can be read again.</p>
 <h2 id="linux-rapl-rapl"><a class="header" href="#linux-rapl-rapl">Linux RAPL (<code>rapl</code>)</a></h2>
@@ -196,7 +196,7 @@ The sub-domains (cores, uncore, DRAM) and the <code>psys</code> domain, which co
 <li>Give its user read access to those files (for example with a udev rule)</li>
 <li>Run PowerJoular with <code>-r</code> as root, and set <code>power-source-type=ringbuffer</code>, so the Java application does not need root</li>
 </ul>
-<p>PowerJoular reads the first package only, so on a machine with several sockets, <code>rapl</code> and <code>ringbuffer</code> do not give the same values.</p>
+<p>PowerJoular adds up every package too, so <code>rapl</code> and <code>ringbuffer</code> give the same values on a machine with several sockets.</p>
 <pre><code class="language-properties">power-source-type=rapl
 </code></pre>
 <h2 id="powerjoular-ring-buffer-ringbuffer"><a class="header" href="#powerjoular-ring-buffer-ringbuffer">PowerJoular ring buffer (<code>ringbuffer</code>)</a></h2>

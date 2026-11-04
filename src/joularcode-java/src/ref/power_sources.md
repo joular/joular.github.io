@@ -2,13 +2,13 @@
 
 Joular Code for Java gets the CPU power of the machine from one of three sources (RAPL, the PowerJoular ring buffer, or the host of a virtual machine), chosen with the `power-source-type` property:
 
-- `auto` (the default): RAPL on Linux, and the PowerJoular ring buffer everywhere else, including Linux machines without RAPL such as the Raspberry Pi.
+- `auto` (the default): the virtual machine file when `vm-power-file` is set, else RAPL on Linux, else the PowerJoular ring buffer, including on Linux machines without RAPL such as the Raspberry Pi.
 - `rapl`: Linux RAPL, read directly.
 - `ringbuffer`: the shared memory ring buffer PowerJoular writes with `-r`.
 - `vm`: inside a virtual machine, the file the host writes the power of the virtual machine to.
 
-With `auto`, RAPL is picked on a Linux machine that has it, even when the application is not allowed to read it.
-In that case, the monitoring is off (the application still runs as usual), so either give the application read access to RAPL, or run PowerJoular with `-r` and set `power-source-type=ringbuffer`.
+With `auto`, on a Linux machine that has RAPL but where the application is not allowed to read it, Joular Code for Java says so with a warning, and reads the PowerJoular ring buffer instead: run PowerJoular with `-r` as root.
+Set `power-source-type=ringbuffer` to go straight to the ring buffer, without the warning.
 
 When the source cannot be opened, Joular Code for Java says why on the standard error, and the application carries on without monitoring.
 When the power cannot be read, the cycle gets no energy, and the monitoring carries on once it can be read again.
@@ -24,7 +24,7 @@ Nothing else is needed, but the `energy_uj` files are only readable by root on m
 - Give its user read access to those files (for example with a udev rule)
 - Run PowerJoular with `-r` as root, and set `power-source-type=ringbuffer`, so the Java application does not need root
 
-PowerJoular reads the first package only, so on a machine with several sockets, `rapl` and `ringbuffer` do not give the same values.
+PowerJoular adds up every package too, so `rapl` and `ringbuffer` give the same values on a machine with several sockets.
 
 ```properties
 power-source-type=rapl

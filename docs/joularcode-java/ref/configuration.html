@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-320a6c6a.js";
+            window.path_to_searchindex_js = "../searchindex-ea183441.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-421028e5.js"></script>
@@ -177,13 +177,16 @@
                         <h1 id="configuration-properties"><a class="header" href="#configuration-properties">Configuration Properties</a></h1>
 <p>Joular Code for Java can be configured by modifying the <code>joularcodejava.properties</code> file, read from:</p>
 <ol>
-<li>The path given with the <code>-Djoularcodejava.properties=&lt;path&gt;</code> JVM property</li>
+<li>The path given as the agent’s argument: <code>-javaagent:joularcodejava-&lt;version&gt;.jar=&lt;path&gt;</code></li>
+<li>Otherwise, the path given with the <code>-Djoularcodejava.properties=&lt;path&gt;</code> JVM property</li>
 <li>Otherwise, <code>joularcodejava.properties</code> in the folder where you run the Java command</li>
 </ol>
 <p>A missing file, or a property left empty, means the default value is used.
-A path given with <code>-Djoularcodejava.properties</code> where there is no file also means the defaults are used: the working folder is not searched then.</p>
+A path given as the agent’s argument or with <code>-Djoularcodejava.properties</code> where there is no file also means the defaults are used, with a warning: the working folder is not searched then.</p>
 <p>The configuration is read once, when the agent starts.
-When the agent is attached to a running JVM, both are those of that JVM: its own <code>-Djoularcodejava.properties</code>, and its working folder.</p>
+When the agent is attached to a running JVM, the path can be given as the agent’s argument there too (see <a href="./integration.html">Integration with Systems and Tools</a>). Otherwise, the other two are those of that JVM: its own <code>-Djoularcodejava.properties</code>, and its working folder.</p>
+<p>In this file, <code>\</code> starts an escape sequence, so on Windows write paths with <code>/</code> or <code>\\</code>, for example <code>results-path=C:/Users/me/results</code>.
+Written <code>C:\Users\me\results</code>, the backslashes are dropped, and a <code>\u</code> (as in <code>C:\users</code>) makes the whole file unreadable, so the defaults are used, with a warning.</p>
 <p><a href="https://github.com/joular/joularcode-java/blob/HEAD/joularcodejava.properties.example">joularcodejava.properties.example</a> is a commented example you can start from.</p>
 <p>The following properties are available:</p>
 <ul>
@@ -192,11 +195,15 @@ When the agent is attached to a running JVM, both are those of that JVM: its own
 <li><code>vm-power-file</code>: the path for the power consumption of the virtual machine. Inside a virtual machine, indicate the file containing the power consumption of the VM (which is usually a file in the host that is shared with the guest). It must be set when <code>power-source-type</code> is <code>vm</code> (default: empty). See <a href="./vm.html">Virtual Machines</a>.</li>
 <li><code>vm-power-format</code>: power format of the shared VM power file: <code>watts</code> (a file containing one value, the power consumption of the VM), or <code>powerjoular</code> (the row <a href="https://github.com/joular/powerjoular">PowerJoular</a> writes with <code>-o</code> in the host, containing 3 columns: timestamp, CPU utilization of the VM and CPU power of the VM) (default: <code>powerjoular</code>).</li>
 <li><code>stack-monitoring-sample-rate</code>: the sample rate (in milliseconds) for the agent to monitor methods usage by calling the JVM stack, from 1 to 1000 (default: <code>10</code>). A higher value means less accurate energy data, and a lower value means a higher overhead of the agent. Below 5 milliseconds, a warning is shown, as sampling can noticeably slow the application down. A value that is not a number from 1 to 1000 is replaced by the default, with a warning.</li>
-<li><code>results-path</code>: the folder where the CSV files are written (default: <code>joular-code-java-results</code>). A relative path starts from the folder where the Java command runs.</li>
+<li><code>max-stack-depth</code>: how many methods of each thread’s stack are kept, from the newest (default: <code>64</code>). A deeper stack loses its oldest methods, so its branch starts lower, and a smaller value makes sampling cheaper. A value that is not a positive number is replaced by the default, with a warning.</li>
+<li><code>results-path</code>: the folder where the CSV files are written, in a sub-folder per run (default: <code>joular-code-java-results</code>). A relative path starts from the folder where the Java command runs. See <a href="./generated_files.html">Generated Files</a>.</li>
 <li><code>methods-filtering-prefix</code>: list of package or class name prefixes, separated by commas, which will be used to filter the methods of your application, for example <code>com.example,org.myapp</code> (default: empty, no filter). See <a href="./generated_files.html">Generated Files</a> for explanations.</li>
+<li><code>lines-monitoring</code>: <code>true</code> also writes the power of each line of code, to <code>lines-power-all.csv</code>, <code>lines-power-app.csv</code> and <code>lines-power-app-self.csv</code> (default: <code>false</code>). See <a href="./generated_files.html">Generated Files</a>.</li>
+<li><code>aggregate</code>: <code>true</code> writes one row per branch when the JVM stops, with its energy and average power over the whole run, instead of a row per monitoring cycle (default: <code>false</code>).</li>
 </ul>
-<p>The values of <code>power-source-type</code> and <code>vm-power-format</code> can be written in upper or lower case.
-An unknown value for either of them is not replaced by the default: Joular Code for Java says why on the standard error, and the monitoring is off (the application still runs as usual).
+<p>The values of <code>power-source-type</code>, <code>vm-power-format</code>, <code>lines-monitoring</code> and <code>aggregate</code> can be written in upper or lower case.
+A value other than <code>true</code> or <code>false</code> for <code>lines-monitoring</code> or <code>aggregate</code> is replaced by <code>false</code>, with a warning.
+An unknown value for <code>power-source-type</code> or <code>vm-power-format</code> is not replaced by the default: Joular Code for Java says why on the standard error, and the monitoring is off (the application still runs as usual).
 The same happens with <code>vm</code> without <code>vm-power-file</code>, or <code>rapl</code> on another OS than Linux.</p>
 <h2 id="method-filtering"><a class="header" href="#method-filtering">Method filtering</a></h2>
 <p>The <code>methods-filtering-prefix</code> property controls which methods appear in the <code>methods-power-app.csv</code> file:</p>
@@ -208,7 +215,7 @@ The same happens with <code>vm</code> without <code>vm-power-file</code>, or <co
 <p>A method matches when its full name (<code>package.Class.method</code>) starts with one of the prefixes.
 The prefix is compared as plain text, not as a package: <code>com.example</code> also matches <code>com.examples</code>. Use <code>com.example.</code> to match the <code>com.example</code> package and its sub-packages, but not <code>com.examples</code>.</p>
 <h2 id="when-the-application-runs-as-root"><a class="header" href="#when-the-application-runs-as-root">When the application runs as root</a></h2>
-<p>Give the configuration file with <code>-Djoularcodejava.properties</code>, rather than leaving it in a folder others can write to, since the file sets where the results are written.</p>
+<p>Give the configuration file as the agent’s argument or with <code>-Djoularcodejava.properties</code>, rather than leaving it in a folder others can write to, since the file sets where the results are written.</p>
 
                     </main>
 

@@ -17,5 +17,6 @@ PowerJoular needs `sudo` on macOS, on FreeBSD (with the `cpuctl` module loaded b
 The Java application needs none of these.
 
 A commented example of the configuration file, `joularcodejava.properties.example`, is available in the repository and with the releases.
-Copy it as `joularcodejava.properties` to the folder where you run the Java command, or give its path with `-Djoularcodejava.properties` (see [Configuration Properties](../ref/configuration.md)).
+Copy it as `joularcodejava.properties` to the folder where you run the Java command, or give its path as the agent's argument (`-javaagent:joularcodejava-<version>.jar=<path>`) or with `-Djoularcodejava.properties` (see [Configuration Properties](../ref/configuration.md)).
+On Windows, write the paths in it with `/` or `\\`, as `\` starts an escape sequence there.
 Without a configuration file, the default values are used.

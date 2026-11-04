@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-320a6c6a.js";
+            window.path_to_searchindex_js = "../searchindex-ea183441.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-421028e5.js"></script>
@@ -175,7 +175,7 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="generated-files"><a class="header" href="#generated-files">Generated Files</a></h1>
-<p>Joular Code for Java will generate two CSV files, and will create these files in the <code>joular-code-java-results</code> folder (which can be changed with the <code>results-path</code> property):</p>
+<p>Joular Code for Java will generate two CSV files, five with <code>lines-monitoring=true</code>, in a folder per run inside the <code>joular-code-java-results</code> folder (which can be changed with the <code>results-path</code> property):</p>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -184,13 +184,18 @@
 <tbody>
 <tr><td><code>methods-power-all.csv</code></td><td>Power and energy of all observed execution branches, including the JDK ones</td></tr>
 <tr><td><code>methods-power-app.csv</code></td><td>Power and energy of the execution branches of your application, according to the <code>methods-filtering-prefix</code> setting</td></tr>
+<tr><td><code>lines-power-all.csv</code></td><td>As <code>methods-power-all.csv</code>, with the line of each method (only with <code>lines-monitoring=true</code>)</td></tr>
+<tr><td><code>lines-power-app.csv</code></td><td>As <code>methods-power-app.csv</code>, with the line of each method (only with <code>lines-monitoring=true</code>)</td></tr>
+<tr><td><code>lines-power-app-self.csv</code></td><td>Power and energy of each line of your application itself, added up over the branches that reach it (only with <code>lines-monitoring=true</code>)</td></tr>
 </tbody>
 </table>
 </div>
 <p>At the end of every monitoring cycle (about 1 second), one row is added to each file for every execution branch that consumed power during the cycle.
-Branches with a power of zero are not written.</p>
-<p>The files are added to, and not overwritten: running the application again with the same results folder adds its rows after the previous ones.
-Use another <code>results-path</code>, or move the files away, to keep each run on its own.</p>
+Branches with a power of zero are not written.
+With <code>aggregate=true</code>, the files get their rows once, when the JVM stops (see <a href="#csv-format">CSV format</a>).</p>
+<p>Each run has its own folder, <code>&lt;pid&gt;-&lt;yyyyMMdd-HHmmss&gt;</code>, named after the process id of the JVM and the time the agent started, so runs never mix.
+When that folder is already there, <code>-2</code>, <code>-3</code>… is added to the name: JVMs in containers that share a results folder often have the same process id, and may start in the same second.
+At startup, Joular Code for Java says which folder it writes to.</p>
 <p>Joular Code for Java never follows a symbolic link when it opens its result files, since it may run as root, and the results folder may be one every user can write to.</p>
 <h2 id="the-filtered-file"><a class="header" href="#the-filtered-file">The filtered file</a></h2>
 <p>The second file is not just a subset of the first one, but rather a recalculation done by Joular Code for Java to provide accurate data: the methods that start with the filtered prefixes are allocated the power or energy of the methods they call that do not match a prefix (the JDK’s, but also those of libraries and frameworks).</p>
@@ -203,9 +208,21 @@ Use another <code>results-path</code>, or move the files away, to keep each run 
 <p>In the filtered file, a branch only has the methods that match a prefix, and the branches that end up the same are added up into one row.
 The samples with no matching method at all are left out of this file, so its totals are lower than those of the first file.
 When <code>methods-filtering-prefix</code> is empty, both files hold the same data.</p>
+<h2 id="lines-of-code"><a class="header" href="#lines-of-code">Lines of code</a></h2>
+<p>With <code>lines-monitoring=true</code>, the energy is also measured by line of code, and three more files are written:</p>
+<ul>
+<li><code>lines-power-all.csv</code> and <code>lines-power-app.csv</code> have the same rows as the methods files, with the same filtering, but each method of a branch comes with its line, as the JVM stack trace writes it: <code>com.example.Main.main(Main.java:12);com.example.Service.process(Service.java:120)</code>. The line of the newest method is the line being executed, and the line of every other method is the line calling the next one.</li>
+<li><code>lines-power-app-self.csv</code> has one row per line of your application per cycle, whatever it was called from: the newest method of each branch that matches <code>methods-filtering-prefix</code> (the newest of all without a filter), so the line that was running, or that called into the JDK. It is the total of a line itself, where the two other files split it by execution branch.</li>
+</ul>
+<p>The methods files stay the same.</p>
+<ul>
+<li>Thread dumps are taken at safepoints, which the JVM places on loop back edges, calls and returns, so the samples gather on those lines: the energy per line is accurate to the loop or the block of statements, not to the single line.</li>
+<li>Classes need line numbers in their debug information, which <code>javac</code> and Maven include by default. Without them a method is written <code>(Service.java)</code>, and <code>(Unknown Source)</code> when the file is unknown too. Native methods are written <code>(Native Method)</code>.</li>
+<li>Lines give more distinct branches than methods, so the files grow faster.</li>
+</ul>
 <h2 id="csv-format"><a class="header" href="#csv-format">CSV format</a></h2>
-<p>Both files share the same format:</p>
-<pre><code>timestamp,branch,power_watts,energy_joules,interval_seconds,coverage
+<p>All files share the same format:</p>
+<pre><code>Timestamp,branch,power_watts,energy_joules,interval_seconds,coverage
 </code></pre>
 <div class="table-wrapper">
 <table>
@@ -213,7 +230,7 @@ When <code>methods-filtering-prefix</code> is empty, both files hold the same da
 <tr><th>Column</th><th>Type</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code>timestamp</code></td><td>long (ms)</td><td>Unix timestamp in milliseconds at the end of the monitoring cycle</td></tr>
+<tr><td><code>Timestamp</code></td><td>double (s)</td><td>Unix time in seconds, with milliseconds, at the end of the monitoring cycle, as PowerJoular writes it</td></tr>
 <tr><td><code>branch</code></td><td>string</td><td>The call chain, from the oldest to the newest method, separated by semicolons (e.g., <code>com.example.Main.run;com.example.Service.process</code>)</td></tr>
 <tr><td><code>power_watts</code></td><td>double</td><td>Estimated power consumed by this branch during the cycle (W)</td></tr>
 <tr><td><code>energy_joules</code></td><td>double</td><td>Energy = power_watts × interval_seconds (J)</td></tr>
@@ -223,19 +240,20 @@ When <code>methods-filtering-prefix</code> is empty, both files hold the same da
 </table>
 </div>
 <p>A branch with a comma, a double quote or a line break in it is written between double quotes (standard CSV), so read the files with a CSV parser.</p>
-<p>To get the total energy of a branch over the whole execution, add up its <code>energy_joules</code> values.</p>
+<p>To get the total energy of a branch over the whole execution, add up its <code>energy_joules</code> values, or set <code>aggregate=true</code>.</p>
+<p>With <code>aggregate=true</code>, each branch has one row, written when the JVM stops: <code>power_watts</code> is its average over the whole run, <code>energy_joules</code> its total, <code>interval_seconds</code> how long the run was monitored, and <code>coverage</code> the average over the run.</p>
 <h3 id="example-output"><a class="header" href="#example-output">Example output</a></h3>
-<pre><code>timestamp,branch,power_watts,energy_joules,interval_seconds,coverage
-1746000000000,com.example.Main.main;com.example.Worker.compute,2.341500000,2.341500000,1.000000000,1.0000
-1746000001000,com.example.Main.main;com.example.Worker.compute,2.158300000,2.158300000,1.000000000,0.9974
+<pre><code>Timestamp,branch,power_watts,energy_joules,interval_seconds,coverage
+1746000000.000,com.example.Main.main;com.example.Worker.compute,2.341500000,2.341500000,1.000000000,1.0000
+1746000001.000,com.example.Main.main;com.example.Worker.compute,2.158300000,2.158300000,1.000000000,0.9974
 </code></pre>
 <h3 id="what-coverage-means"><a class="header" href="#what-coverage-means">What <code>coverage</code> means</a></h3>
 <p>Power is split between threads by the CPU time each one used, and the denominator is every thread that used CPU, not only the ones that were caught in a sample.
 Power drawn by a thread that was never sampled is therefore left unattributed, rather than shared out over the threads it did see.</p>
 <p><code>coverage</code> says how much of the JVM’s CPU time is represented: at <code>1.0</code> everything was accounted for, and at <code>0.6</code> only 60% of what the JVM consumed is attributed to the observed threads at that timestamp.
-Below <code>1.0</code>, the power reported per branch is a lower bound. When <code>coverage</code> drops below 0.5, Joular Code for Java shows a warning (once, until it rises again).</p>
-<p>Threads that end during a cycle, even ones started before it, are not counted here, because the JVM stops reporting a thread’s CPU time once it has ended.
-Their CPU time is still part of the JVM’s, so their power is spread over the threads still alive at the end of the cycle (like the power of the garbage collector), and <code>coverage</code> does not drop because of them.</p>
+Below <code>1.0</code>, the power reported per branch is a lower bound. When <code>coverage</code> drops below 0.5, Joular Code for Java shows a warning, once per run.</p>
+<p>A sampled thread that ends during a cycle is charged up to the sample that last saw it, because the JVM stops reporting a thread’s CPU time once it has ended.
+A thread that ends without ever being sampled is not counted here. Its CPU time is still part of the JVM’s, so its power is spread over the threads still alive at the end of the cycle (like the power of the garbage collector), and <code>coverage</code> does not drop because of it.</p>
 
                     </main>
 

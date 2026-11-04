@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-320a6c6a.js";
+            window.path_to_searchindex_js = "../searchindex-ea183441.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-421028e5.js"></script>
@@ -179,7 +179,8 @@
 Therefore, it can be integrated and used in any setup running a standard JVM (OpenJDK, Oracle JDK), Java 21 or later (see <a href="../guide/supported_platforms.html">Supported Platforms</a>).</p>
 <p>For instance, you can add Joular Code for Java to the run/execute parameters of your favorite IDE (Eclipse, IntelliJ IDEA, NetBeans, etc.), or to your development workflow or continuous integration and delivery processes (CI/CD).</p>
 <p>Joular Code for Java runs with the same configuration options and generated files on all supported platforms, from Windows to Linux, from x86_64 servers and PC to ARM Raspberry Pi devices.</p>
-<p>The generated CSV files are added to at the end of every monitoring cycle (about every second), so other tools can read them while the application runs, or after it ends.</p>
+<p>The generated CSV files are added to at the end of every monitoring cycle (about every second), so other tools can read them while the application runs, or after it ends.
+With <code>aggregate=true</code>, they get their rows only when the JVM stops.</p>
 <h2 id="attaching-to-a-running-jvm"><a class="header" href="#attaching-to-a-running-jvm">Attaching to a running JVM</a></h2>
 <p>The agent can also be loaded into a JVM that is already running, without restarting it, from another Java program using the Attach API (<code>com.sun.tools.attach.VirtualMachine</code>, in the <code>jdk.attach</code> module):</p>
 <pre><code class="language-java">VirtualMachine vm = VirtualMachine.attach(pid);
@@ -188,14 +189,24 @@ vm.detach();
 </code></pre>
 <p>Monitoring starts when the agent is loaded, so whatever the application did before that is not in the results.
 JDK 21 and later allow the attach by default but print a warning: start the target JVM with <code>-XX:+EnableDynamicAgentLoading</code> to silence it, or with <code>-XX:-EnableDynamicAgentLoading</code> to forbid it.</p>
-<p>The configuration is read when the agent attaches, in the target JVM: <code>-Djoularcodejava.properties=...</code> belongs on its own command line, and the default <code>joularcodejava.properties</code> and a relative <code>results-path</code> are taken from its working folder.</p>
+<p>The configuration is read when the agent attaches, in the target JVM. Give its path as the agent’s argument:</p>
+<pre><code class="language-java">vm.loadAgent("/path/to/joularcodejava-&lt;version&gt;.jar", "/path/to/joularcodejava.properties");
+</code></pre>
+<p>Or with <code>jcmd</code>:</p>
+<pre><code>jcmd &lt;pid&gt; JVMTI.agent_load /path/to/joularcodejava-&lt;version&gt;.jar /path/to/joularcodejava.properties
+</code></pre>
+<p>Without it, <code>-Djoularcodejava.properties=...</code> belongs on the target JVM’s own command line, and the default <code>joularcodejava.properties</code> is taken from its working folder.
+A relative path, as the argument or in <code>results-path</code>, starts from that working folder too.</p>
 <p>Attaching again while Joular Code for Java is monitoring is ignored, with a warning, rather than starting a second monitor.
 If the first one has stopped (for instance, because its power source could not be opened), attaching again reads the configuration again and starts monitoring.</p>
 <h2 id="application-servers-and-long-running-applications"><a class="header" href="#application-servers-and-long-running-applications">Application servers and long-running applications</a></h2>
 <p>Joular Code for Java monitors the JVM until it stops, and closes its files when the JVM shuts down.
 It works the same for a program that ends on its own and for an application server or a service that keeps running (Spring Boot, Tomcat, etc.).
 Unlike JoularJX, there is no <code>application-server</code> property to set.</p>
-<p>The cycle in progress when the JVM shuts down is not written, so the last second or so of a run is not in the results, and a program that ends within its first cycle leaves files with only their header.</p>
+<p>With RAPL, the cycle in progress when the JVM shuts down is written too, over the time it lasted.
+The other sources give their power once a second, so with them that cycle is not written: the last second or so of a run is not in the results, and a program that ends within its first second leaves files with only their header.</p>
+<p>Joular Code for Java sets up <code>java.util.logging</code> for its messages as it starts, before the application.
+Application servers that bring their own log manager, such as WildFly and JBoss, then need it given on the command line, as with other Java agents: <code>-Djava.util.logging.manager=org.jboss.logmanager.LogManager</code>, with its JAR in <code>-Xbootclasspath/a:</code>.</p>
 <h2 id="messages"><a class="header" href="#messages">Messages</a></h2>
 <p>Joular Code for Java writes its messages on the standard error, and leaves the standard output to the application.
 The first line gives its version (<code>Joular Code for Java: version &lt;version&gt;</code>), and the next ones read as <code>dd-MM-yyyy HH:mm:ss LEVEL: message</code>.</p>

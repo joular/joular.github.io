@@ -8,6 +8,7 @@ For instance, you can add Joular Code for Java to the run/execute parameters of 
 Joular Code for Java runs with the same configuration options and generated files on all supported platforms, from Windows to Linux, from x86_64 servers and PC to ARM Raspberry Pi devices.
 
 The generated CSV files are added to at the end of every monitoring cycle (about every second), so other tools can read them while the application runs, or after it ends.
+With `aggregate=true`, they get their rows only when the JVM stops.
 
 ## Attaching to a running JVM
 
@@ -22,7 +23,20 @@ vm.detach();
 Monitoring starts when the agent is loaded, so whatever the application did before that is not in the results.
 JDK 21 and later allow the attach by default but print a warning: start the target JVM with `-XX:+EnableDynamicAgentLoading` to silence it, or with `-XX:-EnableDynamicAgentLoading` to forbid it.
 
-The configuration is read when the agent attaches, in the target JVM: `-Djoularcodejava.properties=...` belongs on its own command line, and the default `joularcodejava.properties` and a relative `results-path` are taken from its working folder.
+The configuration is read when the agent attaches, in the target JVM. Give its path as the agent's argument:
+
+```java
+vm.loadAgent("/path/to/joularcodejava-<version>.jar", "/path/to/joularcodejava.properties");
+```
+
+Or with `jcmd`:
+
+```
+jcmd <pid> JVMTI.agent_load /path/to/joularcodejava-<version>.jar /path/to/joularcodejava.properties
+```
+
+Without it, `-Djoularcodejava.properties=...` belongs on the target JVM's own command line, and the default `joularcodejava.properties` is taken from its working folder.
+A relative path, as the argument or in `results-path`, starts from that working folder too.
 
 Attaching again while Joular Code for Java is monitoring is ignored, with a warning, rather than starting a second monitor.
 If the first one has stopped (for instance, because its power source could not be opened), attaching again reads the configuration again and starts monitoring.
@@ -33,7 +47,11 @@ Joular Code for Java monitors the JVM until it stops, and closes its files when 
 It works the same for a program that ends on its own and for an application server or a service that keeps running (Spring Boot, Tomcat, etc.).
 Unlike JoularJX, there is no `application-server` property to set.
 
-The cycle in progress when the JVM shuts down is not written, so the last second or so of a run is not in the results, and a program that ends within its first cycle leaves files with only their header.
+With RAPL, the cycle in progress when the JVM shuts down is written too, over the time it lasted.
+The other sources give their power once a second, so with them that cycle is not written: the last second or so of a run is not in the results, and a program that ends within its first second leaves files with only their header.
+
+Joular Code for Java sets up `java.util.logging` for its messages as it starts, before the application.
+Application servers that bring their own log manager, such as WildFly and JBoss, then need it given on the command line, as with other Java agents: `-Djava.util.logging.manager=org.jboss.logmanager.LogManager`, with its JAR in `-Xbootclasspath/a:`.
 
 ## Messages
 

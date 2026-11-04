@@ -13,6 +13,7 @@ java -javaagent:joularcodejava-<version>.jar -jar yourProgram.jar
 ```
 
 On Linux PC/Servers, Joular Code for Java reads the CPU power from RAPL directly, which needs root, or read access to the RAPL files (see [Installation](./installation.md)).
+Without them, it says so, and reads the PowerJoular ring buffer instead.
 
 Everywhere else (Windows, macOS, FreeBSD, Raspberry Pi), start [PowerJoular](https://github.com/joular/powerjoular) with the `-r` option, so it writes its power data to the shared memory ring buffer Joular Code for Java reads (with `sudo` on macOS, with `sudo` and the `cpuctl` module on FreeBSD, and from a terminal with administrative rights on Windows with the PawnIO driver):
 
@@ -23,7 +24,7 @@ powerjoular -r
 On Windows, start PowerJoular before the application, and do not restart it while the application runs.
 On Linux, you can also run `sudo powerjoular -r` and set `power-source-type=ringbuffer`, so the Java application does not need root.
 
-Joular Code for Java will generate two CSV files, and will create these files in a `joular-code-java-results` folder:
+Joular Code for Java will generate two CSV files, in a folder of their own for each run, `<pid>-<yyyyMMdd-HHmmss>`, inside a `joular-code-java-results` folder:
 - `methods-power-all.csv`: the power and energy of every execution branch, including the JDK ones.
 - `methods-power-app.csv`: the power and energy of the execution branches of your application, according to the `methods-filtering-prefix` setting.
 
@@ -33,7 +34,13 @@ To focus the second file on your own code, set the packages of your application 
 methods-filtering-prefix=com.example
 ```
 
-To use a configuration file from another path:
+To use a configuration file from another path, give it as the agent's argument:
+
+```
+java -javaagent:joularcodejava-<version>.jar=/path/to/joularcodejava.properties -jar yourProgram.jar
+```
+
+Or with the `-Djoularcodejava.properties` property:
 
 ```
 java -Djoularcodejava.properties=/path/to/joularcodejava.properties -javaagent:joularcodejava-<version>.jar -jar yourProgram.jar
