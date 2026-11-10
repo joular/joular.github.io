@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-d24a2c87.js";
+            window.path_to_searchindex_js = "searchindex-61ed1c94.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-512cade3.js"></script>
@@ -336,8 +336,8 @@ The packaged application is built without it, so it looks for nothing outside th
 <h2 id="compilation-with-gnat-and-gprbuild"><a class="header" href="#compilation-with-gnat-and-gprbuild">Compilation with GNAT and GPRBuild</a></h2>
 <p>Check out the two libraries next to the Joular Energy Meter folder, then point GPRBuild at them:</p>
 <pre><code>cd ..
-git clone --depth 1 --branch 0.0.6 https://github.com/joular/cpuload.git
-git clone --depth 1 --branch 0.0.6 https://github.com/joular/joularcore.git
+git clone --depth 1 --branch 0.1.0 https://github.com/joular/cpuload.git
+git clone --depth 1 --branch 0.1.0 https://github.com/joular/joularcore.git
 cd joular-energy-meter
 gprbuild -P joularenergymeter.gpr -aP../joularcore -aP../cpuload -p
 </code></pre>

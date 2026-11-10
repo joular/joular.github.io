@@ -56,8 +56,8 @@ Check out the two libraries next to the Joular Energy Meter folder, then point G
 
 ```
 cd ..
-git clone --depth 1 --branch 0.0.6 https://github.com/joular/cpuload.git
-git clone --depth 1 --branch 0.0.6 https://github.com/joular/joularcore.git
+git clone --depth 1 --branch 0.1.0 https://github.com/joular/cpuload.git
+git clone --depth 1 --branch 0.1.0 https://github.com/joular/joularcore.git
 cd joular-energy-meter
 gprbuild -P joularenergymeter.gpr -aP../joularcore -aP../cpuload -p
 ```
