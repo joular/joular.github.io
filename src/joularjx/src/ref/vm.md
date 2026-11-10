@@ -20,11 +20,12 @@ A use case example is using JoularJX on the guest OS and PowerJoular on the host
 - Install [Joular Core](https://github.com/joular/joularcore) or [PowerJoular](https://github.com/joular/powerjoular)
 - Run Joular Core or PowerJoular while specifying the PID of the virtual machine of the guest OS, and writing the power data to a file shared with the guest. If you use Joular Core's `joularcore` CSV format, keep append mode so the CSV header remains available; use a single-value watts file for overwrite-style sharing.
 - For instance, you can run PowerJoular with the following command: ```powerjoular -p $VM_PID -o /home/vm/vm.csv```
-- Share the ```/home/vm/vm.csv``` between the host OS and the guest OS
+- This writes two files: ```/home/vm/vm.csv``` with the power of the whole host, and ```/home/vm/vm-$VM_PID.csv``` with the power of the virtual machine process
+- Share the ```/home/vm/vm-$VM_PID.csv``` between the host OS and the guest OS
 
 ## In the guest OS
 
 - Get and compile JoularJX
-- Share the ```/home/vm/vm.csv``` between the host OS and the guest OS, potentially having a different path of the file inside the guest. For instance, ```/opt/vm/vm.csv```
+- Share the ```/home/vm/vm-$VM_PID.csv``` between the host OS and the guest OS, potentially having a different path of the file inside the guest. For instance, ```/opt/vm/vm.csv```
 - Modify ```config.properties``` and set ``vm-power-path``` to the shared file ```/opt/vm/vm.csv```, and ```vm-power-format``` to the proper format (in this case to ```powerjoular```).
 - Start your Java application with JoularJX agent as usual.

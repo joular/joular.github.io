@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-8a1d76cc.js";
+            window.path_to_searchindex_js = "../searchindex-ce2d7926.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-8aae2392.js"></script>
@@ -245,7 +245,7 @@ Theirs := Take ("firefox", Machine);
 A <code>NULL</code> <code>before</code> or <code>after</code> gives <code>0.0</code>, and a <code>NULL</code> <code>out</code> does nothing.</p>
 <h2 id="constraints"><a class="header" href="#constraints">Constraints</a></h2>
 <ul>
-<li>The library keeps no state. Linked statically into an Ada program, it can be called from any number of tasks.</li>
+<li>On Linux and macOS the library keeps no state: linked statically into an Ada program, it can be called from any number of tasks. On Windows and FreeBSD it keeps the list of processes between samples, so a program that samples an application there must call the library from one task at a time.</li>
 <li>The shared library must be called from one thread at a time, whatever the language: it runs on an Ada runtime without tasking, which has a single working stack for the whole process. A sample is a plain record either way, so it can be taken in one thread and compared in another.</li>
 <li>Sample about a second apart (see <a href="./numbers.html">Reading the Numbers</a>).</li>
 </ul>

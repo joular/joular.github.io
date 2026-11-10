@@ -73,4 +73,4 @@ Sampling the stacks of the JVM's threads cannot see:
 
 The `coverage` column of the generated files says how much of the CPU time of the JVM's threads was accounted for in each cycle.
 
-When the stacks cannot be sampled as often as asked (with many threads, and a very low `stack-monitoring-sample-rate`), Joular Code for Java shows a warning, once per run: set a higher `stack-monitoring-sample-rate` or a lower `max-stack-depth`, or accept coarser data.
+When the stacks cannot be sampled as often as asked (with many threads, and a very low `stack-monitoring-sample-rate`), Joular Code for Java shows a warning, once per run: set a higher `stack-monitoring-sample-rate` or a lower `max-stack-depth`, or accept coarser data. In that case it waits as long as a sample took before taking the next one, so sampling never takes more than half of the time.

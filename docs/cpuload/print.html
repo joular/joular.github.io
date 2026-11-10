@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-8a1d76cc.js";
+            window.path_to_searchindex_js = "searchindex-ce2d7926.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-8aae2392.js"></script>
@@ -190,7 +190,7 @@ It gives one simple interface: take a sample, wait, take another, and compare th
 <li>Match an application with the program its processes actually run, so <code>firefox</code> finds every process of Firefox</li>
 <li>Give every load as a share of the whole machine, from 0.0 to 1.0</li>
 <li>Tell apart a process that could not be read (a negative load) from one that used no CPU time (0.0)</li>
-<li>Keep no state: a sample is a plain record, so it can be taken in one thread and compared in another</li>
+<li>Keep no state on Linux and macOS (Windows and FreeBSD keep the list of processes between samples), and give each sample as a plain record, so it can be taken in one thread and compared in another</li>
 <li>Read the counters with no particular rights (except for the processes of other users on macOS and Windows)</li>
 <li>Static library for Ada programs, and a shared library with a C interface for other languages (one self-contained file on Linux, Windows and FreeBSD)</li>
 </ul>
@@ -207,7 +207,7 @@ It gives one simple interface: take a sample, wait, take another, and compare th
 <tr><th>What is measured</th><th>OS</th><th>Method</th></tr>
 </thead>
 <tbody>
-<tr><td>The whole system</td><td>Linux</td><td>The <code>cpu</code> line of <code>/proc/stat</code></td></tr>
+<tr><td>The whole system</td><td>Linux</td><td>The <code>cpu</code> line of <code>/proc/stat</code>; waiting for I/O, and time stolen by the host of a virtual machine, count as idle</td></tr>
 <tr><td>The whole system</td><td>macOS</td><td><code>host_statistics</code>, macOS’ CPU counters</td></tr>
 <tr><td>The whole system</td><td>Windows</td><td><code>GetSystemTimes</code></td></tr>
 <tr><td>The whole system</td><td>FreeBSD</td><td><code>kern.cp_time</code> through <code>sysctl</code></td></tr>
@@ -225,7 +225,8 @@ It gives one simple interface: take a sample, wait, take another, and compare th
 <p>FreeBSD is supported on 64-bit systems only.</p>
 <h2 id="matching-an-application"><a class="header" href="#matching-an-application">Matching an Application</a></h2>
 <p>An application is given by the name of its program, without its folder. The name must match exactly, but upper or lower case does not matter.
-Every OS matches the program with the process that actually runs, so <code>firefox</code> finds every process of Firefox, its content processes included.</p>
+Every OS matches the program with the process that actually runs, so <code>firefox</code> finds every process of Firefox, its content processes included.
+The name is the one of the program file itself, after any link is followed: where <code>python3</code> is a link to <code>python3.12</code>, the application to ask for is <code>python3.12</code>.</p>
 <p><strong>Linux</strong><br>A process is named by the program <code>/proc/&lt;pid&gt;/exe</code> points to. A process whose <code>/proc/&lt;pid&gt;/exe</code> cannot be read (such as a kernel thread, which runs no program directly, or another user’s process) falls back on <code>/proc/&lt;pid&gt;/comm</code>: the name the process was given, cut to 15 characters.</p>
 <p><strong>macOS</strong><br>A process is named by the program inside the bundle, so <code>firefox</code> finds the application inside <code>Firefox.app</code>, and also every program inside <code>Firefox.app</code>: for example, its content processes run <code>plugin-container</code>, from a helper bundle inside it.</p>
 <p><strong>Windows</strong><br>A trailing <code>.exe</code> is ignored, so <code>firefox</code> also finds <code>firefox.exe</code>.</p>
@@ -332,7 +333,7 @@ cpuload_take_app_with("firefox", &amp;machine, &amp;theirs);
 <pre><code class="language-bash">./example/c/example_c "" 2
 </code></pre>
 <p>It prints:</p>
-<pre><code>CPU Load 0.0.4
+<pre><code>CPU Load 0.0.6
 Following the machine and this program. Name an application to follow it as well: ./example/c/example_c firefox
 machine 8.29% | this program 0.00%
 machine 7.89% | this program 0.00%
@@ -492,7 +493,7 @@ Theirs := Take ("firefox", Machine);
 A <code>NULL</code> <code>before</code> or <code>after</code> gives <code>0.0</code>, and a <code>NULL</code> <code>out</code> does nothing.</p>
 <h2 id="constraints"><a class="header" href="#constraints">Constraints</a></h2>
 <ul>
-<li>The library keeps no state. Linked statically into an Ada program, it can be called from any number of tasks.</li>
+<li>On Linux and macOS the library keeps no state: linked statically into an Ada program, it can be called from any number of tasks. On Windows and FreeBSD it keeps the list of processes between samples, so a program that samples an application there must call the library from one task at a time.</li>
 <li>The shared library must be called from one thread at a time, whatever the language: it runs on an Ada runtime without tasking, which has a single working stack for the whole process. A sample is a plain record either way, so it can be taken in one thread and compared in another.</li>
 <li>Sample about a second apart (see <a href="#reading-the-numbers">Reading the Numbers</a>).</li>
 </ul>
@@ -509,7 +510,7 @@ A core here is a CPU as the OS counts them, so a hardware thread on a processor 
 <h2 id="applications"><a class="header" href="#applications">Applications</a></h2>
 <p>For an application, a process that could not be read is left out of the sum, so the figure is short by what it used. The answer is negative only when some of the application’s processes are running and none of them would say anything at all, or when the processes could not be listed. An application that is not running reads <code>0.0</code>.</p>
 <p>On Windows, the processes of other users cannot even be named, so they are never part of an application: an application made only of them reads <code>0.0</code>.</p>
-<p>An application is every process running its program when the sample is taken. A process of the application that ends between two samples takes all of its time out of the second one, so that stretch reads low, or <code>0.0</code>.</p>
+<p>An application is every process running its program when the sample is taken. A process of the application that ends between two samples takes all of its time out of the second one, so that stretch reads low, or <code>0.0</code>. A process that starts and ends between two samples is never seen: an application made of short-lived processes, such as a compiler during a build, reads close to <code>0.0</code>.</p>
 <h2 id="samples-that-cannot-be-compared"><a class="header" href="#samples-that-cannot-be-compared">Samples That Cannot Be Compared</a></h2>
 <ul>
 <li>A sample with a total of 0 could not be taken at all (the counters of the machine could not be read). The loads computed with it are <code>0.0</code>, or negative when the process could not be read.</li>
@@ -544,7 +545,7 @@ A core here is a CPU as the OS counts them, so a hardware thread on a processor 
 <p>From Java, the library can be called through the Foreign Function and Memory API (FFM) or JNA. The shared library does not install any handler for the signals the JVM relies on (such as <code>SIGSEGV</code> and <code>SIGBUS</code>), so it does not get in the way of the JVM.</p>
 <h2 id="threads"><a class="header" href="#threads">Threads</a></h2>
 <p>The shared library must be called from one thread at a time. A sample is a plain record, so it can be taken in one thread and compared in another.</p>
-<p>Linked statically into an Ada program, the library can be called from any number of tasks, as it keeps no state.</p>
+<p>Linked statically into an Ada program, the library can be called from any number of tasks on Linux and macOS, where it keeps no state. On Windows and FreeBSD it keeps the list of processes between samples, so a program that samples an application there must call the library from one task at a time.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="how-cpu-load-works"><a class="header" href="#how-cpu-load-works">How CPU Load Works</a></h1>
 <p>This page describes the internal architecture of CPU Load: what a sample holds, how a load is calculated, how each OS is read, and how to add a new OS.</p>
@@ -563,7 +564,7 @@ process load = (Used after − Used before) / (Total after − Total before)
 <p>When a process or an application is sampled, the counters of the machine are read first, and the process right after. The small lag between the two is the same in both samples, so it cancels out.</p>
 <p>An application is every process running its program at the moment of the sample: CPU Load lists the processes, keeps the ones running the program named, and adds up their CPU time. A process that could not be read is left out of the sum.</p>
 <h2 id="linux"><a class="header" href="#linux">Linux</a></h2>
-<p><strong>The machine.</strong> The first line of <code>/proc/stat</code> gives the time of all the cores together, in clock ticks (usually 100 per second, as <code>sysconf</code> says). <code>Busy</code> is user, nice, system, irq, softirq and steal. The idle time is idle and iowait. The guest times are already inside user and nice, so they are not added again.</p>
+<p><strong>The machine.</strong> The first line of <code>/proc/stat</code> gives the time of all the cores together, in clock ticks (usually 100 per second, as <code>sysconf</code> says). <code>Busy</code> is user, nice, system, irq and softirq. The idle time is idle, iowait and steal (the time a virtual machine waited for its host). The guest times are already inside user and nice, so they are not added again.</p>
 <p><strong>A process.</strong> <code>utime</code> and <code>stime</code> of <code>/proc/&lt;pid&gt;/stat</code> give the time the process spent running its own code and in the kernel. The name of the process, in brackets, may hold spaces or brackets, so the fields are counted from the last <code>)</code>. A process in state <code>Z</code> (zombie), <code>X</code> or <code>x</code> (dead) has ended, and is not read.</p>
 <p><strong>An application.</strong> <code>/proc</code> is scanned, and each process is named by the program <code>/proc/&lt;pid&gt;/exe</code> points to, without the <code> (deleted)</code> the kernel adds when the program’s file was replaced while it runs. When it cannot be read, the name in <code>/proc/&lt;pid&gt;/comm</code> is used instead.</p>
 <p>The files are read through file descriptors rather than <code>Ada.Text_IO</code>, whose <code>Open</code> fails when several tasks call it at once.</p>
@@ -606,7 +607,7 @@ process load = (Used after − Used before) / (Total after − Total before)
 <li><code>For_Each_Process</code>: every process running</li>
 </ul>
 <p>One body per OS lives in <code>src/linux</code>, <code>src/macos</code>, <code>src/windows</code> and <code>src/freebsd</code>, and <code>cpuload.gpr</code> picks the folder for the OS being built from <code>PJ_OS</code>.</p>
-<p>To support a new OS, write a body of <code>CPU_Load.Platform</code> for it, then add the OS and its folder to <code>PJ_OS</code> in <code>cpuload.gpr</code>, and to <code>alire.toml</code>.</p>
+<p>To support a new OS, write a body of <code>CPU_Load.Platform</code> for it, then add the OS, its folder and the target names GPRBuild reports for it to <code>cpuload.gpr</code>, and the OS to <code>available</code> in <code>alire.toml</code>.</p>
 
                     </main>
 

@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-8a1d76cc.js";
+            window.path_to_searchindex_js = "../searchindex-ce2d7926.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-8aae2392.js"></script>
@@ -198,7 +198,7 @@
 <p>From Java, the library can be called through the Foreign Function and Memory API (FFM) or JNA. The shared library does not install any handler for the signals the JVM relies on (such as <code>SIGSEGV</code> and <code>SIGBUS</code>), so it does not get in the way of the JVM.</p>
 <h2 id="threads"><a class="header" href="#threads">Threads</a></h2>
 <p>The shared library must be called from one thread at a time. A sample is a plain record, so it can be taken in one thread and compared in another.</p>
-<p>Linked statically into an Ada program, the library can be called from any number of tasks, as it keeps no state.</p>
+<p>Linked statically into an Ada program, the library can be called from any number of tasks on Linux and macOS, where it keeps no state. On Windows and FreeBSD it keeps the list of processes between samples, so a program that samples an application there must call the library from one task at a time.</p>
 
                     </main>
 

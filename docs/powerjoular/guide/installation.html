@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-9a08d1f2.js";
+            window.path_to_searchindex_js = "../searchindex-f3838ea2.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-b01ac823.js"></script>
@@ -206,7 +206,7 @@ Both are built from the same code, the difference being the C library (glibc) th
 Just open the folder and run the appropriate file to build and install, or uninstall, the program and systemd service.</p>
 <ul>
 <li><code>build-install.sh</code>: will build (using Alire if it is installed, otherwise <code>gprbuild</code>) and install the program binary to <code>/usr/bin</code> and the systemd service. It requires having installed Alire, or GNAT and gprbuild with the Joular Core and CPU Load repositories checked out next to the PowerJoular folder (see <a href="../ref/compilation.html">Compilation</a>).</li>
-<li><code>uninstall.sh</code>: stops the systemd service, and deletes the program binary and the systemd service.</li>
+<li><code>uninstall.sh</code>: stops the systemd service, and deletes the program binary and the systemd service (also the one version 1 put in <code>/etc/systemd/system/</code>).</li>
 </ul>
 <p>These scripts and the packages are for Linux. A <code>PKGBUILD</code> for Arch Linux is also available in the <code>installer/aur</code> folder.</p>
 

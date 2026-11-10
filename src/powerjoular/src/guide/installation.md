@@ -31,6 +31,6 @@ Easy-to-use installation scripts are available in the ```installer/bash-installe
 Just open the folder and run the appropriate file to build and install, or uninstall, the program and systemd service.
 
 - ```build-install.sh```: will build (using Alire if it is installed, otherwise ```gprbuild```) and install the program binary to ```/usr/bin``` and the systemd service. It requires having installed Alire, or GNAT and gprbuild with the Joular Core and CPU Load repositories checked out next to the PowerJoular folder (see [Compilation](../ref/compilation.html)).
-- ```uninstall.sh```: stops the systemd service, and deletes the program binary and the systemd service.
+- ```uninstall.sh```: stops the systemd service, and deletes the program binary and the systemd service (also the one version 1 put in ```/etc/systemd/system/```).
 
 These scripts and the packages are for Linux. A ```PKGBUILD``` for Arch Linux is also available in the ```installer/aur``` folder.

@@ -34,7 +34,7 @@ Open ((CPU => True, GPU => False));
 
 ## C
 
-The C declarations are in [include/joularcore.h](https://github.com/joular/joularcore/blob/main/include/joularcore.h). Use them with the relocatable (shared) library, which starts itself up when loaded: no other initialization call is needed.
+The C declarations are in [include/joularcore.h](https://github.com/joular/joularcore/blob/HEAD/include/joularcore.h). Use them with the relocatable (shared) library, which starts itself up when loaded: no other initialization call is needed.
 
 ### Types
 

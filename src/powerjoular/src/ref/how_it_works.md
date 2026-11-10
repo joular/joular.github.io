@@ -54,14 +54,17 @@ process power = CPU power × process CPU usage / system CPU usage
 
 The process power is never more than the CPU power, and the GPU power is not shared out to processes.
 When the process cannot be read (it has stopped, or the system does not allow it), its usage and power are written as ```-1``` in the CSV file and the ring buffer (and shown as ```n/a``` on the terminal), and not as ```0```.
+With ```-p```, once the process has ended, its values stay at ```-1``` until PowerJoular is stopped, even if the system gives its number to a new process.
 
 ## Monitoring an application by its name
 
 PowerJoular monitors an application by searching for all its PIDs, on every monitoring cycle (every second) because an application can create or destroy process during its runtime.
 Then, PowerJoular applies the same approach to monitor a PID, but by summing the CPU time of all the application's PIDs and calculating the power from that sum.
 An application with no running process is reported as ```0```, and not as ```-1```.
+When no process of that name is running at start, PowerJoular says so once on the error output, and starts anyway.
 
 A process is part of the application when the program it runs has that exact name (without its folder, in any case), so ```firefox``` finds every process of Firefox, its content processes included.
+The name is the one of the program file itself, after any link is followed: where ```python3``` is a link to ```python3.12```, give ```python3.12```.
 On macOS, the name is the one of the program inside the bundle, and every program inside ```Firefox.app``` is found too, as Firefox runs its content processes (```plugin-container```) from a helper bundle inside it. On Windows a trailing ```.exe``` is ignored.
 
 ## Systemd service

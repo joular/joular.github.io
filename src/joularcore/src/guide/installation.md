@@ -54,7 +54,7 @@ No additional software is required. Power data is read via `powermetrics`, which
 
 ### FreeBSD
 
-CPU energy is read from the RAPL registers through the `cpuctl(4)` driver, which is a module not in the GENERIC kernel: load it with `kldload cpuctl` (or `cpuctl_load="YES"` in `/boot/loader.conf`), and run your program as root, or as a member of the `kmem` group (which `/dev/cpuctl0` is part of).
+CPU energy is read from the RAPL registers through the `cpuctl(4)` driver, which is a module not in the GENERIC kernel: load it with `kldload cpuctl` (or `cpuctl_load="YES"` in `/boot/loader.conf`), and run your program as root, or as a member of the `kmem` group (which the `/dev/cpuctl` devices belong to).
 
 GPU monitoring needs the Nvidia driver for Nvidia cards (NVML is installed with it), and no special privileges.
 

@@ -58,7 +58,7 @@ Timestamp,branch,power_watts,energy_joules,interval_seconds,coverage
 
 | Column | Type | Description |
 |---|---|---|
-| `Timestamp` | double (s) | Unix time in seconds, with milliseconds, at the end of the monitoring cycle, as PowerJoular writes it |
+| `Timestamp` | double (s) | Unix time in seconds, with milliseconds, at the end of the monitoring cycle |
 | `branch` | string | The call chain, from the oldest to the newest method, separated by semicolons (e.g., `com.example.Main.run;com.example.Service.process`) |
 | `power_watts` | double | Estimated power consumed by this branch during the cycle (W) |
 | `energy_joules` | double | Energy = power_watts × interval_seconds (J) |
@@ -69,7 +69,7 @@ A branch with a comma, a double quote or a line break in it is written between d
 
 To get the total energy of a branch over the whole execution, add up its `energy_joules` values, or set `aggregate=true`.
 
-With `aggregate=true`, each branch has one row, written when the JVM stops: `power_watts` is its average over the whole run, `energy_joules` its total, `interval_seconds` how long the run was monitored, and `coverage` the average over the run.
+With `aggregate=true`, each branch has one row, written when the JVM stops: `power_watts` is its average over the run, `energy_joules` its total, `interval_seconds` how long the run was monitored, leaving out the cycles whose power could not be read, and `coverage` the average over those same cycles.
 
 ### Example output
 

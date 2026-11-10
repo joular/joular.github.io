@@ -46,4 +46,4 @@ From Java, the library can be called through the Foreign Function and Memory API
 
 The shared library must be called from one thread at a time. A sample is a plain record, so it can be taken in one thread and compared in another.
 
-Linked statically into an Ada program, the library can be called from any number of tasks, as it keeps no state.
+Linked statically into an Ada program, the library can be called from any number of tasks on Linux and macOS, where it keeps no state. On Windows and FreeBSD it keeps the list of processes between samples, so a program that samples an application there must call the library from one task at a time.

@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-9a08d1f2.js";
+            window.path_to_searchindex_js = "searchindex-f3838ea2.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-b01ac823.js"></script>
@@ -362,7 +362,7 @@ Both are built from the same code, the difference being the C library (glibc) th
 Just open the folder and run the appropriate file to build and install, or uninstall, the program and systemd service.</p>
 <ul>
 <li><code>build-install.sh</code>: will build (using Alire if it is installed, otherwise <code>gprbuild</code>) and install the program binary to <code>/usr/bin</code> and the systemd service. It requires having installed Alire, or GNAT and gprbuild with the Joular Core and CPU Load repositories checked out next to the PowerJoular folder (see <a href="#compilation">Compilation</a>).</li>
-<li><code>uninstall.sh</code>: stops the systemd service, and deletes the program binary and the systemd service.</li>
+<li><code>uninstall.sh</code>: stops the systemd service, and deletes the program binary and the systemd service (also the one version 1 put in <code>/etc/systemd/system/</code>).</li>
 </ul>
 <p>These scripts and the packages are for Linux. A <code>PKGBUILD</code> for Arch Linux is also available in the <code>installer/aur</code> folder.</p>
 <div style="break-before: page; page-break-before: always;"></div>
@@ -415,6 +415,7 @@ sudo apt install gnat gprbuild
 </code></pre>
 <p>The PowerJoular binary will be created in the <code>bin/</code> folder.</p>
 <p>Linux, macOS, Windows and FreeBSD are each detected on their own, from the target GPRBuild identifies.
+A target name it does not know stops the build: set <code>PJ_OS</code> then (for example <code>-XPJ_OS=linux</code>).
 To build for another OS than the one you are on, use a cross compiler for that OS (given to GPRBuild with <code>--target</code>), and set <code>PJ_OS</code> to <code>linux</code>, <code>macos</code>, <code>windows</code> or <code>freebsd</code>:</p>
 <pre><code>gprbuild -P powerjoular.gpr -aP../joularcore -aP../cpuload -XPJ_OS=windows -p
 </code></pre>
@@ -509,6 +510,7 @@ It has the CPU usage and the power of that process or application:</p>
 </code></pre>
 <p><code>-o</code> writes the latest measurement only: the file is rewritten every second and carries no header, which is a good option for another program polling it for the current value.</p>
 <p>Both value columns of the process file hold <code>-1.0000</code> for a second where the monitored process could not be read at all: it has stopped, or the system does not let us get the information needed.
+With <code>-p</code>, once the process has ended, its values stay at <code>-1.0000</code> until PowerJoular is stopped, even if the system gives its number to a new process.
 That is not the same as <code>0.0000</code>, which means a process that was read and used no CPU time.</p>
 <p><code>-a</code> is the exception: an application with no running process at all is reported as <code>0.0000</code> and not as <code>-1.0000</code>, because we can’t tell apart a name that matches nothing from a name whose processes did not use any CPU time.
 <code>-1.0000</code> still appears for <code>-a</code> when processes of the application are found but the system does not let us read any of them.
@@ -567,14 +569,15 @@ The service runs <code>/usr/bin/powerjoular</code>, so copy the binary there too
 The service will run the program with the <code>-o</code> option (which only saves the latest power data) and saves data to <code>/run/powerjoular/powerjoular-service.csv</code>.
 The <code>/run/powerjoular</code> folder is made by systemd when the service starts and removed when it stops, and anyone can read the file in it.</p>
 <p>The service runs as root, as reading the energy counters needs it, but with most of the other privileges taken away (it only reads the energy counters and the CPU load, and writes one file in its own folder).
-If it stops on its own (not through <code>systemctl</code>), it is restarted after 30 seconds.</p>
+If it stops on its own (not through <code>systemctl</code>), it is restarted after 30 seconds, except when PowerJoular gives up with exit code 1 (for example, when it finds no power source on the machine): starting it again would end the same way, so it stays stopped.</p>
 <p>The service can be started, and enabled to run automatically on boot, with:</p>
 <pre><code>sudo systemctl start powerjoular.service
 sudo systemctl enable powerjoular.service
 </code></pre>
 <p>The systemd service is automatically installed (but not enabled) when installing PowerJoular using the installer script or the Linux packages.</p>
 <p>Version 1 installed the service in <code>/etc/systemd/system/</code>, which takes precedence over the one now installed in <code>/usr/lib/systemd/system/</code>.
-If you installed version 1 with the installer script, delete <code>/etc/systemd/system/powerjoular.service</code> and run <code>sudo systemctl daemon-reload</code>.</p>
+If you installed version 1 with the installer script, delete <code>/etc/systemd/system/powerjoular.service</code> and run <code>sudo systemctl daemon-reload</code>.
+The installer script now warns when it finds that file, and the uninstaller removes it.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="integration-with-systems-and-tools"><a class="header" href="#integration-with-systems-and-tools">Integration with Systems and Tools</a></h1>
 <p>PowerJoular exports its power data to CSV files and to a shared memory ring buffer, or prints the values directly on the terminal.
@@ -660,12 +663,15 @@ For instance, if both Intel RAPL and NVML are supported, the tool will provide a
 <pre><code>process power = CPU power × process CPU usage / system CPU usage
 </code></pre>
 <p>The process power is never more than the CPU power, and the GPU power is not shared out to processes.
-When the process cannot be read (it has stopped, or the system does not allow it), its usage and power are written as <code>-1</code> in the CSV file and the ring buffer (and shown as <code>n/a</code> on the terminal), and not as <code>0</code>.</p>
+When the process cannot be read (it has stopped, or the system does not allow it), its usage and power are written as <code>-1</code> in the CSV file and the ring buffer (and shown as <code>n/a</code> on the terminal), and not as <code>0</code>.
+With <code>-p</code>, once the process has ended, its values stay at <code>-1</code> until PowerJoular is stopped, even if the system gives its number to a new process.</p>
 <h2 id="monitoring-an-application-by-its-name"><a class="header" href="#monitoring-an-application-by-its-name">Monitoring an application by its name</a></h2>
 <p>PowerJoular monitors an application by searching for all its PIDs, on every monitoring cycle (every second) because an application can create or destroy process during its runtime.
 Then, PowerJoular applies the same approach to monitor a PID, but by summing the CPU time of all the application’s PIDs and calculating the power from that sum.
-An application with no running process is reported as <code>0</code>, and not as <code>-1</code>.</p>
+An application with no running process is reported as <code>0</code>, and not as <code>-1</code>.
+When no process of that name is running at start, PowerJoular says so once on the error output, and starts anyway.</p>
 <p>A process is part of the application when the program it runs has that exact name (without its folder, in any case), so <code>firefox</code> finds every process of Firefox, its content processes included.
+The name is the one of the program file itself, after any link is followed: where <code>python3</code> is a link to <code>python3.12</code>, give <code>python3.12</code>.
 On macOS, the name is the one of the program inside the bundle, and every program inside <code>Firefox.app</code> is found too, as Firefox runs its content processes (<code>plugin-container</code>) from a helper bundle inside it. On Windows a trailing <code>.exe</code> is ignored.</p>
 <h2 id="systemd-service-1"><a class="header" href="#systemd-service-1">Systemd service</a></h2>
 <p>PowerJoular also provides a systemd service which writes power consumption to the <code>/run/powerjoular</code> folder, allowing it to bypass the added restrictions on reading powercap energy meters to <a href="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=949dd0104c496fa7c14991a23c03c62e44637e71">non-privileged users in Intel CPUs</a>.

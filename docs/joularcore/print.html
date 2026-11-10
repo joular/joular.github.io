@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-2ce27a7f.js";
+            window.path_to_searchindex_js = "searchindex-152d1cf0.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-fea6b9de.js"></script>
@@ -261,7 +261,7 @@ It detects automatically what the machine offers (which CPU, which GPU, and how 
 </ul>
 <p><strong>Asus Tinker Board (S)</strong></p>
 <h2 id="cpu-power-monitoring-details"><a class="header" href="#cpu-power-monitoring-details">CPU Power Monitoring Details</a></h2>
-<p><strong>Linux (x86 / x86_64)</strong><br>CPU energy is read from the RAPL package counter exposed through the powercap sysfs interface (<code>/sys/class/powercap/intel-rapl:N</code>), for Intel and AMD processors. Joular Core reads one package, the first one whose name begins with <code>package</code>, so on a server with several sockets only the first socket is measured. On recent kernels, the counter is only readable by root (see <a href="#installation">Installation</a>). If it cannot be read, the CPU is reported as not available.</p>
+<p><strong>Linux (x86 / x86_64)</strong><br>CPU energy is read from the RAPL package counter exposed through the powercap sysfs interface (<code>/sys/class/powercap/intel-rapl:N</code>), for Intel and AMD processors. Joular Core reads every package, each domain whose name begins with <code>package</code> (one per socket), and adds them together. On recent kernels, the counter is only readable by root (see <a href="#installation">Installation</a>). If it cannot be read, the CPU is reported as not available.</p>
 <p><strong>Windows</strong><br>CPU energy is read from the same RAPL package counter, through one of three approaches, tried in this order:</p>
 <ul>
 <li>The <a href="https://learn.microsoft.com/en-us/windows-hardware/drivers/powermeter/energy-meter-interface">Energy Meter Interface</a> (EMI), built into Windows 11. Nothing to install, and no administrative rights needed.</li>
@@ -271,12 +271,12 @@ It detects automatically what the machine offers (which CPU, which GPU, and how 
 <p>The first one that answers is kept. Setting the <code>JOULARCORE_WINDOWS_RAPL</code> environment variable to <code>emi</code>, <code>pawnio</code> or <code>hubblo</code> picks one instead (see <a href="#library-interface">Library Interface</a>).</p>
 <p><strong>macOS</strong><br>CPU power, and GPU power on Apple Silicon, are read from Apple’s <code>powermetrics</code> tool, which ships with macOS. It covers both Apple Silicon and Intel Macs, and only runs as root. On Intel Macs, the CPU power is the whole chip (cores, integrated graphics and system agent), and there is no GPU power.</p>
 <p><strong>Raspberry Pi and SBC</strong><br>Power is calculated from CPU utilization using polynomial regression models that were measured against each supported board at various load levels. The board is detected from <code>/proc/device-tree/model</code>, and the CPU utilization is read from <code>/proc/stat</code>. No special permissions are needed. On a board with no power model, the CPU is reported as not available.</p>
-<p><strong>FreeBSD (x86_64)</strong><br>CPU energy is read from the same RAPL package counter, from the registers of the first processor, through the <a href="https://man.freebsd.org/cgi/man.cgi?query=cpuctl&amp;sektion=4">cpuctl(4)</a> driver (<code>/dev/cpuctl0</code>), for Intel and AMD processors. The driver is a module to load first, and its device is only readable by root and the <code>kmem</code> group (see <a href="#installation">Installation</a>). If it cannot be read, the CPU is reported as not available.</p>
+<p><strong>FreeBSD (x86_64)</strong><br>CPU energy is read from the same RAPL package counter of every socket, added together, through the <a href="https://man.freebsd.org/cgi/man.cgi?query=cpuctl&amp;sektion=4">cpuctl(4)</a> driver (one <code>/dev/cpuctlN</code> device per socket), for Intel and AMD processors. The driver is a module to load first, and its devices are only readable by root and the <code>kmem</code> group (see <a href="#installation">Installation</a>). If it cannot be read, the CPU is reported as not available.</p>
 <p><strong>Virtual Machines</strong><br>Inside a virtual machine, the hardware counters are usually not reachable, so the CPU is reported as not available. <a href="https://github.com/joular/powerjoular">PowerJoular</a> can read the power of a virtual machine from a file the host writes.</p>
 <h2 id="gpu-power-monitoring-details"><a class="header" href="#gpu-power-monitoring-details">GPU Power Monitoring Details</a></h2>
-<p><strong>Nvidia (Linux, Windows and FreeBSD)</strong><br>GPU power is read through NVML, the library installed with the Nvidia driver, and loaded by Joular Core when the GPU is opened. The first card listed is the one read. If the driver is not installed or that card does not report its power, the GPU is reported as not available. On Linux and Windows, Nvidia is tried first, then AMD, and only one GPU is read: on a machine with both, the Nvidia card is the one measured.</p>
-<p><strong>AMD (Linux)</strong><br>GPU power is read from the hwmon sysfs of the amdgpu kernel driver (<code>/sys/class/hwmon</code>), with nothing to install. The first amdgpu sensor with a readable power file is the one read.</p>
-<p><strong>AMD (Windows)</strong><br>GPU power is read through ADLX, the library installed with the AMD driver. The first card listed is the one read.</p>
+<p><strong>Nvidia (Linux, Windows and FreeBSD)</strong><br>GPU power is read through NVML, the library installed with the Nvidia driver, and loaded by Joular Core when the GPU is opened. Every card that reports its power is read, and their power is added together. If the driver is not installed or no card reports its power, the GPU is reported as not available. On Linux and Windows, Nvidia and AMD cards are both read: on a machine with both, the GPU is all of them added together.</p>
+<p><strong>AMD (Linux)</strong><br>GPU power is read from the hwmon sysfs of the amdgpu kernel driver (<code>/sys/class/hwmon</code>), with nothing to install. Every amdgpu sensor with a readable power file is read, and their power is added together.</p>
+<p><strong>AMD (Windows)</strong><br>GPU power is read through ADLX, the library installed with the AMD driver. Every card that reports its power is read, and their power is added together.</p>
 <p><strong>Apple Silicon</strong><br>GPU power comes from the same <code>powermetrics</code> sample as the CPU power.</p>
 <p><strong>SBC</strong><br>GPU monitoring is not supported on single-board computers. The GPU is reported as not available.</p>
 <div style="break-before: page; page-break-before: always;"></div>
@@ -316,7 +316,7 @@ It detects automatically what the machine offers (which CPU, which GPU, and how 
 <h3 id="macos"><a class="header" href="#macos">macOS</a></h3>
 <p>No additional software is required. Power data is read via <code>powermetrics</code>, which ships with macOS. Because <code>powermetrics</code> only runs as the superuser, run your program with <code>sudo</code>. Without it, both the CPU and the GPU are reported as not available.</p>
 <h3 id="freebsd"><a class="header" href="#freebsd">FreeBSD</a></h3>
-<p>CPU energy is read from the RAPL registers through the <code>cpuctl(4)</code> driver, which is a module not in the GENERIC kernel: load it with <code>kldload cpuctl</code> (or <code>cpuctl_load="YES"</code> in <code>/boot/loader.conf</code>), and run your program as root, or as a member of the <code>kmem</code> group (which <code>/dev/cpuctl0</code> is part of).</p>
+<p>CPU energy is read from the RAPL registers through the <code>cpuctl(4)</code> driver, which is a module not in the GENERIC kernel: load it with <code>kldload cpuctl</code> (or <code>cpuctl_load="YES"</code> in <code>/boot/loader.conf</code>), and run your program as root, or as a member of the <code>kmem</code> group (which the <code>/dev/cpuctl</code> devices belong to).</p>
 <p>GPU monitoring needs the Nvidia driver for Nvidia cards (NVML is installed with it), and no special privileges.</p>
 <h3 id="raspberry-pi-and-sbc"><a class="header" href="#raspberry-pi-and-sbc">Raspberry Pi and SBC</a></h3>
 <p>No dependencies and no <code>sudo</code> required. Boards with no power model report the CPU as not available.</p>
@@ -352,7 +352,7 @@ begin
 end Measure;
 </code></pre>
 <p>With Alire, add the library to your project with <code>alr with joularcore</code>.</p>
-<p>A full example program is in <a href="https://github.com/joular/joularcore/blob/main/example/src/example_joular_core.adb">example/src/example_joular_core.adb</a>. It reads once per second until stopped with Ctrl+C, which closes the sources cleanly. To build and run it:</p>
+<p>A full example program is in <a href="https://github.com/joular/joularcore/blob/HEAD/example/src/example_joular_core.adb">example/src/example_joular_core.adb</a>. It reads once per second until stopped with Ctrl+C, which closes the sources cleanly. To build and run it:</p>
 <pre><code class="language-bash">gprbuild -P example/example.gpr
 ./example/example_joular_core
 </code></pre>
@@ -360,7 +360,7 @@ end Measure;
 <pre><code class="language-bash">./example/example_joular_core emi 10
 </code></pre>
 <h2 id="using-from-c"><a class="header" href="#using-from-c">Using from C</a></h2>
-<p>The C declarations are in <a href="https://github.com/joular/joularcore/blob/main/include/joularcore.h">include/joularcore.h</a>. Build the relocatable (shared) library (see <a href="#compilation">Compilation</a>), then:</p>
+<p>The C declarations are in <a href="https://github.com/joular/joularcore/blob/HEAD/include/joularcore.h">include/joularcore.h</a>. Build the relocatable (shared) library (see <a href="#compilation">Compilation</a>), then:</p>
 <pre><code class="language-c">#include &lt;stdio.h&gt;
 #include "joularcore.h"
 
@@ -372,7 +372,7 @@ if (reading.cpu.available)
     printf("CPU: %f %s\n", reading.cpu.value, reading.cpu.unit == 0 ? "J" : "W");
 joularcore_close();
 </code></pre>
-<p>A full example program is in <a href="https://github.com/joular/joularcore/blob/main/example/c/main.c">example/c/main.c</a>. Like the Ada one, it reads once per second until stopped with Ctrl+C. It comes with a Makefile that builds the shared library and the program:</p>
+<p>A full example program is in <a href="https://github.com/joular/joularcore/blob/HEAD/example/c/main.c">example/c/main.c</a>. Like the Ada one, it reads once per second until stopped with Ctrl+C. It comes with a Makefile that builds the shared library and the program:</p>
 <pre><code class="language-bash">make -C example/c
 </code></pre>
 <h2 id="using-from-python"><a class="header" href="#using-from-python">Using from Python</a></h2>
@@ -397,7 +397,7 @@ if r.cpu.available:
 lib.joularcore_close()
 </code></pre>
 <p>The library is <code>libjoularcore.dylib</code> on macOS and <code>libjoularcore.dll</code> on Windows.</p>
-<p>A full example program is in <a href="https://github.com/joular/joularcore/blob/main/example/python/main.py">example/python/main.py</a>, with a Makefile that builds the shared library.</p>
+<p>A full example program is in <a href="https://github.com/joular/joularcore/blob/HEAD/example/python/main.py">example/python/main.py</a>, with a Makefile that builds the shared library.</p>
 <p>Other languages (C++, Java, Rust, etc.) use the same C interface. See <a href="#integration-with-systems-and-tools">Integration with Systems and Tools</a>.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="compilation"><a class="header" href="#compilation">Compilation</a></h1>
@@ -494,7 +494,7 @@ lib.joularcore_close()
 <pre><code class="language-ada">Open ((CPU =&gt; True, GPU =&gt; False));
 </code></pre>
 <h2 id="c"><a class="header" href="#c">C</a></h2>
-<p>The C declarations are in <a href="https://github.com/joular/joularcore/blob/main/include/joularcore.h">include/joularcore.h</a>. Use them with the relocatable (shared) library, which starts itself up when loaded: no other initialization call is needed.</p>
+<p>The C declarations are in <a href="https://github.com/joular/joularcore/blob/HEAD/include/joularcore.h">include/joularcore.h</a>. Use them with the relocatable (shared) library, which starts itself up when loaded: no other initialization call is needed.</p>
 <h3 id="types-1"><a class="header" href="#types-1">Types</a></h3>
 <pre><code class="language-c">typedef struct joularcore_measurement {
     double value;      /* energy or power value, see unit */
@@ -567,20 +567,20 @@ set JOULARCORE_WINDOWS_RAPL=hubblo
 <tr><th>Source</th><th>What the number covers</th></tr>
 </thead>
 <tbody>
-<tr><td>RAPL on Linux</td><td><strong>One</strong> package of powercap, the first one whose name begins with <code>package</code></td></tr>
-<tr><td>RAPL on Windows</td><td>The package domain of the first socket</td></tr>
-<tr><td>RAPL on FreeBSD</td><td>The package domain of the first processor, <code>/dev/cpuctl0</code></td></tr>
+<tr><td>RAPL on Linux</td><td>Every package domain of powercap (one per socket), added together</td></tr>
+<tr><td>RAPL on Windows</td><td>The package domain of every socket, added together</td></tr>
+<tr><td>RAPL on FreeBSD</td><td>The package domain of every socket, added together, read through one <code>/dev/cpuctl</code> device per socket</td></tr>
 <tr><td>Raspberry Pi and Asus Tinker Board</td><td>A model-based estimate: a regression on CPU load, evaluated over the interval between two readings. It is not a reading of the board’s actual draw</td></tr>
-<tr><td>Nvidia (NVML)</td><td>What the card reports for the whole GPU board. Depending on the architecture and driver, this is an average over about a second rather than an instant value</td></tr>
-<tr><td>AMD on Linux (hwmon)</td><td>What the amdgpu driver reports (<code>power1_average</code>, or <code>power1_input</code>), which the kernel documents as the power used by the SoC, the GPU chip. On an APU that chip includes the CPU cores, so work done on the CPU raises what this library calls the GPU, and adding CPU and GPU together counts some of it twice</td></tr>
-<tr><td>AMD on Windows (ADLX)</td><td>Whole GPU board power where the card offers it, and the graphics processor alone where it does not. Which of the two is chosen when the card is opened and does not change while the program runs, so a series of measurements always means one thing</td></tr>
+<tr><td>Nvidia (NVML)</td><td>What every card reports for its whole board, added together. Depending on the architecture and driver, this is an average over about a second rather than an instant value</td></tr>
+<tr><td>AMD on Linux (hwmon)</td><td>Every card, added together: what the amdgpu driver reports (<code>power1_average</code>, or <code>power1_input</code>), which the kernel documents as the power used by the SoC, the GPU chip. On an APU that chip includes the CPU cores, so work done on the CPU raises what this library calls the GPU, and adding CPU and GPU together counts some of it twice</td></tr>
+<tr><td>AMD on Windows (ADLX)</td><td>Every card, added together: whole GPU board power where a card offers it, and the graphics processor alone where it does not. Which of the two is chosen when the card is opened and does not change while the program runs, so a series of measurements always means one thing</td></tr>
 <tr><td>macOS</td><td>Apple Silicon: the CPU and the GPU parts of the same chip, from the same sample, as <code>powermetrics</code> estimates them. Intel Macs: the whole chip (cores, integrated GPU and system agent), like the RAPL package on Linux and Windows</td></tr>
 </tbody>
 </table>
 </div>
 <h2 id="counter-wraps"><a class="header" href="#counter-wraps">Counter Wraps</a></h2>
-<p>RAPL counters wrap when they fill, and the library corrects that. The correction only works if less than half of what the counter holds was used between two readings, so read at least once per minute. How long the counter takes to fill depends on the energy unit of the processor.</p>
-<p>A counter that goes back without looking like a wrap is taken as a reset (for example after the machine was suspended), and that reading gives zero.</p>
+<p>RAPL counters wrap when they fill, and the library corrects that. The correction only works if less energy was used between two readings than the counter holds, so read at least once per minute. How long the counter takes to fill depends on the energy unit of the processor.</p>
+<p>A reading that would mean more than 1000 W for a package is taken as a reset of the counter (for example after the machine was suspended), and that reading gives zero.</p>
 <p>The Energy Meter Interface (EMI) on Windows corrects for the wrap by itself, so Joular Core doesn’t need to do the correction.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="integration-with-systems-and-tools"><a class="header" href="#integration-with-systems-and-tools">Integration with Systems and Tools</a></h1>
@@ -595,12 +595,12 @@ set JOULARCORE_WINDOWS_RAPL=hubblo
 <pre><code class="language-bash">gprbuild -P your_project.gpr -aP../joularcore
 </code></pre>
 <h2 id="c-c-and-other-languages"><a class="header" href="#c-c-and-other-languages">C, C++ and Other Languages</a></h2>
-<p>Any language with a C FFI can use the shared library (<code>libjoularcore.so</code> on Linux and FreeBSD, <code>libjoularcore.dll</code> on Windows, <code>libjoularcore.dylib</code> on macOS) through the C interface in <a href="https://github.com/joular/joularcore/blob/main/include/joularcore.h">include/joularcore.h</a>: C and C++ directly, Python through ctypes, Java through FFM or JNA, Rust through <code>libloading</code> or FFI declarations, etc.</p>
+<p>Any language with a C FFI can use the shared library (<code>libjoularcore.so</code> on Linux and FreeBSD, <code>libjoularcore.dll</code> on Windows, <code>libjoularcore.dylib</code> on macOS) through the C interface in <a href="https://github.com/joular/joularcore/blob/HEAD/include/joularcore.h">include/joularcore.h</a>: C and C++ directly, Python through ctypes, Java through FFM or JNA, Rust through <code>libloading</code> or FFI declarations, etc.</p>
 <p>The two structures of the C interface have the same layout on every target, with no padding: a <code>double</code> followed by two <code>int</code> for one measurement, and the CPU measurement followed by the GPU one for a reading.</p>
 <p>On every OS but macOS, the shared library is one self-contained file, carrying the Ada runtime too, so it is the only file to ship with your program. On Windows, the program looks for the DLL next to it, so put a copy there.</p>
 <p>On macOS, the library loads the Ada runtime from the folder of the compiler that built it (see <a href="#compilation">Compilation</a>), so it only runs on a Mac where that same compiler is installed in the same folder.</p>
 <h2 id="python"><a class="header" href="#python">Python</a></h2>
-<p>The <a href="#quick-usage">Quick Usage</a> page shows how to call the library from Python with ctypes, and <a href="https://github.com/joular/joularcore/blob/main/example/python/main.py">example/python/main.py</a> is a full example.</p>
+<p>The <a href="#quick-usage">Quick Usage</a> page shows how to call the library from Python with ctypes, and <a href="https://github.com/joular/joularcore/blob/HEAD/example/python/main.py">example/python/main.py</a> is a full example.</p>
 <p>The library leaves the signal handlers of the program loading it in place, so Ctrl+C raises <code>KeyboardInterrupt</code> in Python as usual.</p>
 <h2 id="java"><a class="header" href="#java">Java</a></h2>
 <p>From Java, the library can be called through the Foreign Function and Memory API (FFM) or JNA. The shared library does not install any handler for the signals the JVM relies on (such as <code>SIGSEGV</code> and <code>SIGBUS</code>), so it does not get in the way of the JVM.</p>
@@ -612,7 +612,7 @@ set JOULARCORE_WINDOWS_RAPL=hubblo
 <h2 id="high-level-architecture"><a class="header" href="#high-level-architecture">High-Level Architecture</a></h2>
 <p>The library has two sources, the CPU and the GPU, each measured by its own monitor:</p>
 <ol>
-<li><code>Open</code> asks each requested monitor to detect its hardware. The monitor tries, in order, every way it knows to read that hardware on this OS, and keeps the first one that answers. It also takes a first reading of cumulative counters (e.g. RAPL), so the next reading can report the energy consumed since then.</li>
+<li><code>Open</code> asks each requested monitor to detect its hardware. The CPU monitor tries, in order, every way it knows to read the CPU on this OS, and keeps the first one that answers; the GPU monitor opens every one that answers, and adds them up. It also takes a first reading of cumulative counters (e.g. RAPL), so the next reading can report the energy consumed since then.</li>
 <li><code>Read</code> asks each monitor that could be opened for one measurement: the energy consumed since the previous reading, or the power drawn, depending on what the hardware reports.</li>
 <li><code>Close</code> closes what each monitor opened (e.g. a driver on Windows, the <code>powermetrics</code> process on macOS).</li>
 </ol>
@@ -632,36 +632,36 @@ set JOULARCORE_WINDOWS_RAPL=hubblo
 <p>Each source is opened, read and closed on its own: a source that fails while being opened is closed again and reported as not available, and a source that fails while being read reports zero. Neither stops the other source.</p>
 <h2 id="linux"><a class="header" href="#linux">Linux</a></h2>
 <p><strong>CPU.</strong> The CPU monitor tries RAPL first, then the power models of single-board computers.</p>
-<p>RAPL is read from the powercap sysfs interface at <code>/sys/class/powercap/intel-rapl:N</code>. Joular Core looks for the first domain whose name begins with <code>package</code> (it is usually <code>intel-rapl:0</code>, but on some machines another domain such as <code>psys</code> comes first), and reads its <code>energy_uj</code> counter, in microjoules. The <code>max_energy_range_uj</code> file gives where the counter wraps. The counter reads zero without root on most systems, and the CPU is then reported as not available.</p>
+<p>RAPL is read from the powercap sysfs interface at <code>/sys/class/powercap/intel-rapl:N</code>. Joular Core reads every domain whose name begins with <code>package</code> (one per socket; on some machines another domain such as <code>psys</code> comes first), and adds up their <code>energy_uj</code> counters, in microjoules. The <code>max_energy_range_uj</code> file gives where each counter wraps. The counter reads zero without root on most systems, and the CPU is then reported as not available.</p>
 <p>On Raspberry Pi and Asus Tinker Board, the board is detected from <code>/proc/device-tree/model</code>. The power is calculated from CPU utilization using polynomial regression models:</p>
 <pre><code>power = c₀ + c₁·u + c₂·u² + … + c₉·u⁹
 </code></pre>
 <p>where <code>u</code> is the CPU utilization from 0.0 to 1.0, measured from <code>/proc/stat</code> over the interval between two readings, and <code>c₀…c₉</code> are the model coefficients measured for each board (models fitted at a lower degree have their remaining coefficients at zero). Some boards have separate models for 32-bit and 64-bit systems. The models come from our <a href="https://github.com/joular/powermodels">Joular Power Models Database</a>.</p>
-<p><strong>GPU.</strong> The GPU monitor tries Nvidia cards through NVML first, then AMD cards through the hwmon sysfs of the amdgpu kernel driver. For AMD, Joular Core looks in <code>/sys/class/hwmon</code> for the first amdgpu sensor with a readable power file, and prefers <code>power1_average</code> (an average over a short period) to <code>power1_input</code> (an instant reading).</p>
+<p><strong>GPU.</strong> The GPU monitor opens both Nvidia cards through NVML and AMD cards through the hwmon sysfs of the amdgpu kernel driver, and adds them up. For AMD, Joular Core reads every amdgpu sensor in <code>/sys/class/hwmon</code> with a readable power file, and prefers <code>power1_average</code> (an average over a short period) to <code>power1_input</code> (an instant reading).</p>
 <h2 id="windows-1"><a class="header" href="#windows-1">Windows</a></h2>
-<p><strong>CPU.</strong> The same RAPL package counter of the first socket can be reached in three ways, tried in this order, and the first one that answers is kept:</p>
+<p><strong>CPU.</strong> The RAPL package counter of every socket, added together, can be reached in three ways, tried in this order, and the first one that answers is kept:</p>
 <ol>
-<li>The Energy Meter Interface (EMI), built into Windows 11. The processor driver publishes the RAPL domains as channels of a meter, and Joular Core opens the meter publishing the package channel. A meter publishing something else (a board rail, a battery) is refused. Windows hands over a 64-bit counter already unwrapped, so there is no wrap to correct.</li>
+<li>The Energy Meter Interface (EMI), built into Windows 11. The processor driver publishes the RAPL domains as channels of a meter, and Joular Core opens the meter publishing the package channels (one per socket), and adds them up. A meter publishing something else (a board rail, a battery) is refused. Windows hands over a 64-bit counter already unwrapped, so there is no wrap to correct.</li>
 <li>The MSR registers through the PawnIO driver. The driver reads no register on its own: Joular Core loads into it a signed module saying which registers it lets through (one for Intel, one for AMD from family 17h onwards; older AMD processors are refused, and are left to Hubblo’s driver).</li>
 <li>The MSR registers through Hubblo’s RAPL driver, which only lets the RAPL registers through, so opening the device is enough.</li>
 </ol>
 <p>When reading the registers directly, Joular Core asks the processor for its vendor with the CPUID instruction, to know which registers hold the energy unit and the package counter on Intel and AMD. Silvermont and Airmont Atoms, whose energy unit would be read wrongly, are refused.</p>
-<p><strong>GPU.</strong> The GPU monitor tries Nvidia cards through NVML first, then AMD cards through ADLX. ADLX gives the whole board power where the card offers it, and the graphics processor alone where it does not. Which of the two is used is chosen when the card is opened, and does not change afterwards.</p>
+<p><strong>GPU.</strong> The GPU monitor opens both Nvidia cards through NVML and AMD cards through ADLX, and adds up every card of both. ADLX gives the whole board power where the card offers it, and the graphics processor alone where it does not. Which of the two is used is chosen when the card is opened, and does not change afterwards.</p>
 <h2 id="macos-1"><a class="header" href="#macos-1">macOS</a></h2>
 <p>The CPU, and the GPU on Apple Silicon, are read from Apple’s <code>powermetrics</code> tool (<code>/usr/bin/powermetrics</code>, given by its full path so that <code>PATH</code> cannot point at another program). One <code>powermetrics</code> process serves both sources: it is started by the first <code>Open</code>, and stopped by the last <code>Close</code>.</p>
 <p>Each reading asks <code>powermetrics</code> for a sample (with the <code>SIGINFO</code> signal), so a reading is the average power since the previous one. <code>powermetrics</code> still takes a sample of its own every ten minutes (this is what makes it stop once the program using the library is gone), so readings should be closer than that. The CPU and the GPU are read one after the other, and readings within 0.1 seconds share one sample, so both values come from the same sample.</p>
 <p>On Apple Silicon, <code>powermetrics</code> reports the CPU and the GPU each on a line. On Intel Macs, it reports the whole chip on one line, and no GPU.</p>
 <p><code>powermetrics</code> only runs as root, so Joular Core checks that before starting it. If it stops answering, its sources read zero, and it is started again on a reading about ten seconds later.</p>
 <h2 id="freebsd-1"><a class="header" href="#freebsd-1">FreeBSD</a></h2>
-<p><strong>CPU.</strong> The RAPL package counter of the first processor is read from its registers, through the <code>cpuctl(4)</code> driver (<code>/dev/cpuctl0</code>). As on Windows, Joular Core asks the processor for its vendor with the CPUID instruction, to know which registers hold the energy unit and the package counter on Intel and AMD, and refuses Silvermont and Airmont Atoms.</p>
+<p><strong>CPU.</strong> The RAPL package counter of every socket is read from its registers, through the <code>cpuctl(4)</code> driver (the <code>/dev/cpuctlN</code> device of one processor of each socket, found with the CPUID instruction), and the sockets are added together. As on Windows, Joular Core asks the processor for its vendor with the CPUID instruction, to know which registers hold the energy unit and the package counter on Intel and AMD, and refuses Silvermont and Airmont Atoms.</p>
 <p><strong>GPU.</strong> The GPU monitor reads Nvidia cards through NVML.</p>
 <h2 id="nvidia-gpus-on-linux-windows-and-freebsd-nvml"><a class="header" href="#nvidia-gpus-on-linux-windows-and-freebsd-nvml">Nvidia GPUs on Linux, Windows and FreeBSD: NVML</a></h2>
-<p>NVML is the library installed with the Nvidia driver (<code>libnvidia-ml.so.1</code> on Linux and FreeBSD, <code>nvml.dll</code> on Windows, in the system folder, or in the Nvidia folder of Program Files for older drivers). Joular Core loads it when the GPU is opened, rather than linking to it, so the library works the same on a machine with no Nvidia driver. It reads the power of the first card listed. The same applies to ADLX on Windows (<code>amdadlx64.dll</code>, or <code>amdadlx32.dll</code> for a 32 bits build).</p>
+<p>NVML is the library installed with the Nvidia driver (<code>libnvidia-ml.so.1</code> on Linux and FreeBSD, <code>nvml.dll</code> on Windows, in the system folder, or in the Nvidia folder of Program Files for older drivers). Joular Core loads it when the GPU is opened, rather than linking to it, so the library works the same on a machine with no Nvidia driver. It reads the power of every card listed, added together. The same applies to ADLX on Windows (<code>amdadlx64.dll</code>, or <code>amdadlx32.dll</code> for a 32 bits build).</p>
 <h2 id="energy-counters"><a class="header" href="#energy-counters">Energy Counters</a></h2>
 <p>The RAPL counters of Linux, of Windows when read through a driver, and of FreeBSD, only count up, and wrap back to zero once full. Joular Core keeps the previous value of each counter, and turns two readings into the energy consumed between them:</p>
 <ul>
 <li>When the new value is lower, the counter wrapped, so the range it wraps at is added.</li>
-<li>A drop that does not look like a wrap (one that would mean more than half the range was used between two readings) is taken as a counter reset, for example after the machine was suspended, and gives zero.</li>
+<li>A reading that would mean more than 1000 W per package between two readings is taken as a counter reset, for example after the machine was suspended, and gives zero.</li>
 <li>A counter that could not be read gives zero, and keeps the previous value, so the next reading that works covers the gap.</li>
 </ul>
 <p>Only one wrap can be corrected between two readings, so read more often than the counter takes to fill half its range. Under load, this is a few minutes, hence the advice to read at least once per minute.</p>
@@ -677,7 +677,7 @@ set JOULARCORE_WINDOWS_RAPL=hubblo
 <tr><td><code>src/joular_core-cpu_monitor.ads</code>, <code>src/joular_core-gpu_monitor.ads</code></td><td>The two monitors, with one body per OS</td></tr>
 <tr><td><code>src/joular_core-energy_counters.adb</code></td><td>The energy between two readings of a counter that wraps (RAPL on Linux, Windows and FreeBSD)</td></tr>
 <tr><td><code>src/joular_core-gpu_nvidia_nvml.adb</code></td><td>Nvidia GPUs through NVML, on Linux, Windows and FreeBSD</td></tr>
-<tr><td><code>src/joular_core-processor.adb</code></td><td>The CPUID vendor check, to read the RAPL registers on Windows and FreeBSD</td></tr>
+<tr><td><code>src/msr/</code></td><td>The CPUID vendor and socket check, and what the RAPL registers hold, shared by Windows and FreeBSD</td></tr>
 <tr><td><code>src/linux/</code></td><td>RAPL through powercap, the power models of single-board computers, AMD GPUs through hwmon</td></tr>
 <tr><td><code>src/windows/</code></td><td>RAPL through EMI, PawnIO and Hubblo’s driver, AMD GPUs through ADLX, loading a shared library and finding NVML, and the Win32 bindings they share</td></tr>
 <tr><td><code>src/macos/</code></td><td><code>powermetrics</code>, and the specs file recording where the shared library finds the Ada runtime</td></tr>
@@ -691,10 +691,10 @@ set JOULARCORE_WINDOWS_RAPL=hubblo
 </div>
 <h2 id="adding-new-hardware-or-a-new-os"><a class="header" href="#adding-new-hardware-or-a-new-os">Adding New Hardware or a New OS</a></h2>
 <p>Each hardware component is one package with three functions: <code>Open</code> (detect and open, returning <code>False</code> when the hardware is not there or cannot be read), <code>Get_Power</code> or <code>Get_Energy</code> (one reading, in watts or joules), and <code>Close</code>.</p>
-<p>The code shared by every OS is in <code>src</code>, and the code of each OS is in its own folder, picked by <code>joularcore.gpr</code> from <code>PJ_OS</code>. Each OS folder has its own body of the two monitors, <code>CPU_Monitor</code> and <code>GPU_Monitor</code>, which lists the packages that can read that hardware on that OS, tries them in order and keeps the first one that answers.</p>
+<p>The code shared by every OS is in <code>src</code>, and the code of each OS is in its own folder, picked by <code>joularcore.gpr</code> from <code>PJ_OS</code>. Each OS folder has its own body of the two monitors, <code>CPU_Monitor</code> and <code>GPU_Monitor</code>, which lists the packages that can read that hardware on that OS: the CPU monitor tries them in order and keeps the first one that answers, the GPU monitor opens every one that answers and adds them up.</p>
 <ul>
 <li>To support new hardware, write such a package in the folder of the OS it runs on (or in <code>src</code> if it is portable, like NVML), and add it to the monitor of that OS.</li>
-<li>To support a new OS, add its folder with its two monitors, and add it to <code>PJ_OS</code> in the project file.</li>
+<li>To support a new OS, add its folder with its two monitors, then add the OS, its folder and the target names GPRBuild reports for it to <code>joularcore.gpr</code>, and the OS to <code>available</code> in <code>alire.toml</code>.</li>
 </ul>
 <p>Windows RAPL splits this further, as the same counter is reached in several ways. <code>RAPL_Windows</code> tries each way in order and keeps the first that answers: <code>RAPL_EMI_Windows</code>, which reads RAPL from the Energy Meter Interface, then <code>RAPL_MSR_Windows</code>, which reads the MSR registers with a driver. That second one keeps the vendor detection and the counter, and hands the reading of a single register to one of two interchangeable packages, <code>MSR_PawnIO</code> and <code>MSR_Hubblo</code>. Supporting another driver means writing another such package with <code>Open</code>, <code>Read</code> and <code>Close</code>, adding it to <code>Driver_Kind</code> in <code>RAPL_MSR_Windows</code>, and to the list tried in <code>RAPL_Windows.Open</code>.</p>
 <h2 id="third-party-components"><a class="header" href="#third-party-components">Third Party Components</a></h2>

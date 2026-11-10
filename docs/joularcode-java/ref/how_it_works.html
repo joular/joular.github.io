@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-ea183441.js";
+            window.path_to_searchindex_js = "../searchindex-cf46298d.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-421028e5.js"></script>
@@ -227,7 +227,7 @@ The PowerJoular ring buffer and the host of a virtual machine give the power onc
 <li>Which branch a thread was on between two samples: the CPU time it used since its previous sample goes to the branch it is on at this one.</li>
 </ul>
 <p>The <code>coverage</code> column of the generated files says how much of the CPU time of the JVM’s threads was accounted for in each cycle.</p>
-<p>When the stacks cannot be sampled as often as asked (with many threads, and a very low <code>stack-monitoring-sample-rate</code>), Joular Code for Java shows a warning, once per run: set a higher <code>stack-monitoring-sample-rate</code> or a lower <code>max-stack-depth</code>, or accept coarser data.</p>
+<p>When the stacks cannot be sampled as often as asked (with many threads, and a very low <code>stack-monitoring-sample-rate</code>), Joular Code for Java shows a warning, once per run: set a higher <code>stack-monitoring-sample-rate</code> or a lower <code>max-stack-depth</code>, or accept coarser data. In that case it waits as long as a sample took before taking the next one, so sampling never takes more than half of the time.</p>
 
                     </main>
 

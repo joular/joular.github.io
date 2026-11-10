@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-ea183441.js";
+            window.path_to_searchindex_js = "../searchindex-cf46298d.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-421028e5.js"></script>
@@ -199,7 +199,7 @@ Written <code>C:\Users\me\results</code>, the backslashes are dropped, and a <co
 <li><code>results-path</code>: the folder where the CSV files are written, in a sub-folder per run (default: <code>joular-code-java-results</code>). A relative path starts from the folder where the Java command runs. See <a href="./generated_files.html">Generated Files</a>.</li>
 <li><code>methods-filtering-prefix</code>: list of package or class name prefixes, separated by commas, which will be used to filter the methods of your application, for example <code>com.example,org.myapp</code> (default: empty, no filter). See <a href="./generated_files.html">Generated Files</a> for explanations.</li>
 <li><code>lines-monitoring</code>: <code>true</code> also writes the power of each line of code, to <code>lines-power-all.csv</code>, <code>lines-power-app.csv</code> and <code>lines-power-app-self.csv</code> (default: <code>false</code>). See <a href="./generated_files.html">Generated Files</a>.</li>
-<li><code>aggregate</code>: <code>true</code> writes one row per branch when the JVM stops, with its energy and average power over the whole run, instead of a row per monitoring cycle (default: <code>false</code>).</li>
+<li><code>aggregate</code>: <code>true</code> writes one row per branch when the JVM stops, with its energy and average power over the run (the cycles whose power could not be read are left out), instead of a row per monitoring cycle (default: <code>false</code>).</li>
 </ul>
 <p>The values of <code>power-source-type</code>, <code>vm-power-format</code>, <code>lines-monitoring</code> and <code>aggregate</code> can be written in upper or lower case.
 A value other than <code>true</code> or <code>false</code> for <code>lines-monitoring</code> or <code>aggregate</code> is replaced by <code>false</code>, with a warning.

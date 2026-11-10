@@ -15,8 +15,8 @@
         <link rel="icon" href="../favicon-de23e50b.svg">
         <link rel="shortcut icon" href="../favicon-8114d1fc.png">
         <link rel="stylesheet" href="../css/variables-8adf115d.css">
-        <link rel="stylesheet" href="../css/general-0392ca55.css">
-        <link rel="stylesheet" href="../css/chrome-fc474251.css">
+        <link rel="stylesheet" href="../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../css/chrome-d279d366.css">
         <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-918205ad.js";
+            window.path_to_searchindex_js = "../searchindex-7b3a53ad.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-37ddd2a3.js"></script>
@@ -189,12 +189,13 @@ Inside the guest, JoularJX will read this file continuously and use the reported
 <li>Install <a href="https://github.com/joular/joularcore">Joular Core</a> or <a href="https://github.com/joular/powerjoular">PowerJoular</a></li>
 <li>Run Joular Core or PowerJoular while specifying the PID of the virtual machine of the guest OS, and writing the power data to a file shared with the guest. If you use Joular Core’s <code>joularcore</code> CSV format, keep append mode so the CSV header remains available; use a single-value watts file for overwrite-style sharing.</li>
 <li>For instance, you can run PowerJoular with the following command: <code>powerjoular -p $VM_PID -o /home/vm/vm.csv</code></li>
-<li>Share the <code>/home/vm/vm.csv</code> between the host OS and the guest OS</li>
+<li>This writes two files: <code>/home/vm/vm.csv</code> with the power of the whole host, and <code>/home/vm/vm-$VM_PID.csv</code> with the power of the virtual machine process</li>
+<li>Share the <code>/home/vm/vm-$VM_PID.csv</code> between the host OS and the guest OS</li>
 </ul>
 <h2 id="in-the-guest-os"><a class="header" href="#in-the-guest-os">In the guest OS</a></h2>
 <ul>
 <li>Get and compile JoularJX</li>
-<li>Share the <code>/home/vm/vm.csv</code> between the host OS and the guest OS, potentially having a different path of the file inside the guest. For instance, <code>/opt/vm/vm.csv</code></li>
+<li>Share the <code>/home/vm/vm-$VM_PID.csv</code> between the host OS and the guest OS, potentially having a different path of the file inside the guest. For instance, <code>/opt/vm/vm.csv</code></li>
 <li>Modify <code>config.properties</code> and set ``vm-power-path<code>to the shared file</code>/opt/vm/vm.csv<code>, and </code>vm-power-format<code>to the proper format (in this case to</code>powerjoular```).</li>
 <li>Start your Java application with JoularJX agent as usual.</li>
 </ul>
@@ -247,7 +248,7 @@ Inside the guest, JoularJX will read this file continuously and use the reported
 
         <script src="../clipboard-1626706a.min.js"></script>
         <script src="../highlight-abc7f01d.js"></script>
-        <script src="../book-c22b7243.js"></script>
+        <script src="../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
 

@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-8a1d76cc.js";
+            window.path_to_searchindex_js = "../searchindex-ce2d7926.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-8aae2392.js"></script>
@@ -191,7 +191,7 @@ process load = (Used after − Used before) / (Total after − Total before)
 <p>When a process or an application is sampled, the counters of the machine are read first, and the process right after. The small lag between the two is the same in both samples, so it cancels out.</p>
 <p>An application is every process running its program at the moment of the sample: CPU Load lists the processes, keeps the ones running the program named, and adds up their CPU time. A process that could not be read is left out of the sum.</p>
 <h2 id="linux"><a class="header" href="#linux">Linux</a></h2>
-<p><strong>The machine.</strong> The first line of <code>/proc/stat</code> gives the time of all the cores together, in clock ticks (usually 100 per second, as <code>sysconf</code> says). <code>Busy</code> is user, nice, system, irq, softirq and steal. The idle time is idle and iowait. The guest times are already inside user and nice, so they are not added again.</p>
+<p><strong>The machine.</strong> The first line of <code>/proc/stat</code> gives the time of all the cores together, in clock ticks (usually 100 per second, as <code>sysconf</code> says). <code>Busy</code> is user, nice, system, irq and softirq. The idle time is idle, iowait and steal (the time a virtual machine waited for its host). The guest times are already inside user and nice, so they are not added again.</p>
 <p><strong>A process.</strong> <code>utime</code> and <code>stime</code> of <code>/proc/&lt;pid&gt;/stat</code> give the time the process spent running its own code and in the kernel. The name of the process, in brackets, may hold spaces or brackets, so the fields are counted from the last <code>)</code>. A process in state <code>Z</code> (zombie), <code>X</code> or <code>x</code> (dead) has ended, and is not read.</p>
 <p><strong>An application.</strong> <code>/proc</code> is scanned, and each process is named by the program <code>/proc/&lt;pid&gt;/exe</code> points to, without the <code> (deleted)</code> the kernel adds when the program’s file was replaced while it runs. When it cannot be read, the name in <code>/proc/&lt;pid&gt;/comm</code> is used instead.</p>
 <p>The files are read through file descriptors rather than <code>Ada.Text_IO</code>, whose <code>Open</code> fails when several tasks call it at once.</p>
@@ -234,7 +234,7 @@ process load = (Used after − Used before) / (Total after − Total before)
 <li><code>For_Each_Process</code>: every process running</li>
 </ul>
 <p>One body per OS lives in <code>src/linux</code>, <code>src/macos</code>, <code>src/windows</code> and <code>src/freebsd</code>, and <code>cpuload.gpr</code> picks the folder for the OS being built from <code>PJ_OS</code>.</p>
-<p>To support a new OS, write a body of <code>CPU_Load.Platform</code> for it, then add the OS and its folder to <code>PJ_OS</code> in <code>cpuload.gpr</code>, and to <code>alire.toml</code>.</p>
+<p>To support a new OS, write a body of <code>CPU_Load.Platform</code> for it, then add the OS, its folder and the target names GPRBuild reports for it to <code>cpuload.gpr</code>, and the OS to <code>available</code> in <code>alire.toml</code>.</p>
 
                     </main>
 

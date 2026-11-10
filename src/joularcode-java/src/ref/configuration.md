@@ -28,7 +28,7 @@ The following properties are available:
 - `results-path`: the folder where the CSV files are written, in a sub-folder per run (default: `joular-code-java-results`). A relative path starts from the folder where the Java command runs. See [Generated Files](./generated_files.md).
 - `methods-filtering-prefix`: list of package or class name prefixes, separated by commas, which will be used to filter the methods of your application, for example `com.example,org.myapp` (default: empty, no filter). See [Generated Files](./generated_files.md) for explanations.
 - `lines-monitoring`: `true` also writes the power of each line of code, to `lines-power-all.csv`, `lines-power-app.csv` and `lines-power-app-self.csv` (default: `false`). See [Generated Files](./generated_files.md).
-- `aggregate`: `true` writes one row per branch when the JVM stops, with its energy and average power over the whole run, instead of a row per monitoring cycle (default: `false`).
+- `aggregate`: `true` writes one row per branch when the JVM stops, with its energy and average power over the run (the cycles whose power could not be read are left out), instead of a row per monitoring cycle (default: `false`).
 
 The values of `power-source-type`, `vm-power-format`, `lines-monitoring` and `aggregate` can be written in upper or lower case.
 A value other than `true` or `false` for `lines-monitoring` or `aggregate` is replaced by `false`, with a warning.

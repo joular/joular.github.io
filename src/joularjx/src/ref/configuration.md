@@ -21,4 +21,4 @@ JoularJX can be configured by modifying the ```config.properties``` files:
 - `joular-core-ringbuffer-path`: the path to Joular Core ring buffer. The buffer starts with a `u64` head counter followed by 5 Joular Core ring-buffer entries; see the Joular Core export documentation for the exact layout.
 - 
 You can install the jar package (and the PowerMonitor.exe on Windows) wherever you want, and call it in the ```javaagent``` with the full path.
-However, ```config.properties``` must be copied to the same folder as where you run the Java command.
+However, ```config.properties``` must be copied to the same folder as where you run the Java command, or its location given with ```-Djoularjx.config=/path/to/config.properties```.

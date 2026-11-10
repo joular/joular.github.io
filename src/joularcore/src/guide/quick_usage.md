@@ -35,7 +35,7 @@ end Measure;
 
 With Alire, add the library to your project with `alr with joularcore`.
 
-A full example program is in [example/src/example_joular_core.adb](https://github.com/joular/joularcore/blob/main/example/src/example_joular_core.adb). It reads once per second until stopped with Ctrl+C, which closes the sources cleanly. To build and run it:
+A full example program is in [example/src/example_joular_core.adb](https://github.com/joular/joularcore/blob/HEAD/example/src/example_joular_core.adb). It reads once per second until stopped with Ctrl+C, which closes the sources cleanly. To build and run it:
 
 ```bash
 gprbuild -P example/example.gpr
@@ -50,7 +50,7 @@ It takes two optional arguments, in any order: on Windows, `emi`, `pawnio` or `h
 
 ## Using from C
 
-The C declarations are in [include/joularcore.h](https://github.com/joular/joularcore/blob/main/include/joularcore.h). Build the relocatable (shared) library (see [Compilation](../ref/compilation.md)), then:
+The C declarations are in [include/joularcore.h](https://github.com/joular/joularcore/blob/HEAD/include/joularcore.h). Build the relocatable (shared) library (see [Compilation](../ref/compilation.md)), then:
 
 ```c
 #include <stdio.h>
@@ -65,7 +65,7 @@ if (reading.cpu.available)
 joularcore_close();
 ```
 
-A full example program is in [example/c/main.c](https://github.com/joular/joularcore/blob/main/example/c/main.c). Like the Ada one, it reads once per second until stopped with Ctrl+C. It comes with a Makefile that builds the shared library and the program:
+A full example program is in [example/c/main.c](https://github.com/joular/joularcore/blob/HEAD/example/c/main.c). Like the Ada one, it reads once per second until stopped with Ctrl+C. It comes with a Makefile that builds the shared library and the program:
 
 ```bash
 make -C example/c
@@ -98,6 +98,6 @@ lib.joularcore_close()
 
 The library is `libjoularcore.dylib` on macOS and `libjoularcore.dll` on Windows.
 
-A full example program is in [example/python/main.py](https://github.com/joular/joularcore/blob/main/example/python/main.py), with a Makefile that builds the shared library.
+A full example program is in [example/python/main.py](https://github.com/joular/joularcore/blob/HEAD/example/python/main.py), with a Makefile that builds the shared library.
 
 Other languages (C++, Java, Rust, etc.) use the same C interface. See [Integration with Systems and Tools](../ref/integration.md).

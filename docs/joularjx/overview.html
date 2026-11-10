@@ -15,8 +15,8 @@
         <link rel="icon" href="favicon-de23e50b.svg">
         <link rel="shortcut icon" href="favicon-8114d1fc.png">
         <link rel="stylesheet" href="css/variables-8adf115d.css">
-        <link rel="stylesheet" href="css/general-0392ca55.css">
-        <link rel="stylesheet" href="css/chrome-fc474251.css">
+        <link rel="stylesheet" href="css/general-e96d0476.css">
+        <link rel="stylesheet" href="css/chrome-d279d366.css">
         <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-918205ad.js";
+            window.path_to_searchindex_js = "searchindex-7b3a53ad.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-37ddd2a3.js"></script>
@@ -177,7 +177,7 @@
                         <h1 id="overview"><a class="header" href="#overview">Overview</a></h1>
 <p><a href="https://www.gnu.org/licenses/gpl-3.0"><img src="https://img.shields.io/badge/License-GPLv3-blue" alt="License: GPL v3"></a>
 <a href="https://openjdk.java.net"><img src="https://img.shields.io/badge/Made%20with-Java-orange" alt="Java"></a></p>
-<p><img src="joularjx.png" alt="JoularJX Logo"></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="joularjx.png" alt="JoularJX Logo"><span class="img-wrapper"><img src="joularjx.png" alt="JoularJX Logo"></span></label></p>
 <p>JoularJX is part of the <a href="https://www.noureddine.org/research/joular/"><img src="https://raw.githubusercontent.com/joular/.github/main/profile/joular.png" alt="Joular Project" width="64" /></a> project.</p>
 <p>JoularJX is a Java-based agent for power monitoring at the source code level with support for modern Java versions and multi-OS to monitor power consumption of hardware and software.</p>
 <p>JoularJX is a Java agent where you can simply hook it to the Java Virtual Machine when starting your Java program. To get power readings, JoularJX uses a custom PowerMonitor program (based on Hubblo’s Windows RAPL driver) on Windows, Intel RAPL (through powercap) on Linux, Powermetrics on macOS, and our accurate power models on Raspberry Pi and similar devices.</p>
@@ -190,7 +190,7 @@
 <li>Monitor power consumption of methods’ call tree and execution branches</li>
 <li>Monitor energy of Java applications running in virtual machines</li>
 <li>Uses a Java agent, no source code instrumentation needed</li>
-<li>Uses Intel RAPL (powercap interface) for getting accurate power reading on Linux, our research-based regression models on Raspberry Pi devices, and a custom program monitor (based on Intel Power Gadget) for accurate power readings on Windows</li>
+<li>Uses Intel RAPL (powercap interface) for getting accurate power reading on Linux, our research-based regression models on Raspberry Pi devices, and a custom program monitor (using Hubblo’s Windows RAPL driver) for accurate power readings on Windows</li>
 <li>Provides real-time power consumption of every method in the monitored program</li>
 <li>Provides total energy for every method on program exit</li>
 </ul>
@@ -257,7 +257,7 @@ All rights reserved. This program and the accompanying materials are made availa
 
         <script src="clipboard-1626706a.min.js"></script>
         <script src="highlight-abc7f01d.js"></script>
-        <script src="book-c22b7243.js"></script>
+        <script src="book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
 

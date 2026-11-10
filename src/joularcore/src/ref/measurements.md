@@ -20,19 +20,19 @@ To get watts from an energy reading, divide it by the time elapsed since the pre
 
 | Source | What the number covers |
 |---|---|
-| RAPL on Linux | **One** package of powercap, the first one whose name begins with `package` |
-| RAPL on Windows | The package domain of the first socket |
-| RAPL on FreeBSD | The package domain of the first processor, `/dev/cpuctl0` |
+| RAPL on Linux | Every package domain of powercap (one per socket), added together |
+| RAPL on Windows | The package domain of every socket, added together |
+| RAPL on FreeBSD | The package domain of every socket, added together, read through one `/dev/cpuctl` device per socket |
 | Raspberry Pi and Asus Tinker Board | A model-based estimate: a regression on CPU load, evaluated over the interval between two readings. It is not a reading of the board's actual draw |
-| Nvidia (NVML) | What the card reports for the whole GPU board. Depending on the architecture and driver, this is an average over about a second rather than an instant value |
-| AMD on Linux (hwmon) | What the amdgpu driver reports (`power1_average`, or `power1_input`), which the kernel documents as the power used by the SoC, the GPU chip. On an APU that chip includes the CPU cores, so work done on the CPU raises what this library calls the GPU, and adding CPU and GPU together counts some of it twice |
-| AMD on Windows (ADLX) | Whole GPU board power where the card offers it, and the graphics processor alone where it does not. Which of the two is chosen when the card is opened and does not change while the program runs, so a series of measurements always means one thing |
+| Nvidia (NVML) | What every card reports for its whole board, added together. Depending on the architecture and driver, this is an average over about a second rather than an instant value |
+| AMD on Linux (hwmon) | Every card, added together: what the amdgpu driver reports (`power1_average`, or `power1_input`), which the kernel documents as the power used by the SoC, the GPU chip. On an APU that chip includes the CPU cores, so work done on the CPU raises what this library calls the GPU, and adding CPU and GPU together counts some of it twice |
+| AMD on Windows (ADLX) | Every card, added together: whole GPU board power where a card offers it, and the graphics processor alone where it does not. Which of the two is chosen when the card is opened and does not change while the program runs, so a series of measurements always means one thing |
 | macOS | Apple Silicon: the CPU and the GPU parts of the same chip, from the same sample, as `powermetrics` estimates them. Intel Macs: the whole chip (cores, integrated GPU and system agent), like the RAPL package on Linux and Windows |
 
 ## Counter Wraps
 
-RAPL counters wrap when they fill, and the library corrects that. The correction only works if less than half of what the counter holds was used between two readings, so read at least once per minute. How long the counter takes to fill depends on the energy unit of the processor.
+RAPL counters wrap when they fill, and the library corrects that. The correction only works if less energy was used between two readings than the counter holds, so read at least once per minute. How long the counter takes to fill depends on the energy unit of the processor.
 
-A counter that goes back without looking like a wrap is taken as a reset (for example after the machine was suspended), and that reading gives zero.
+A reading that would mean more than 1000 W for a package is taken as a reset of the counter (for example after the machine was suspended), and that reading gives zero.
 
 The Energy Meter Interface (EMI) on Windows corrects for the wrap by itself, so Joular Core doesn't need to do the correction.

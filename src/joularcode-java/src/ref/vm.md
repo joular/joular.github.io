@@ -24,6 +24,8 @@ A negative value, such as the `-1.0000` PowerJoular writes for a process it cann
 
 Some shared folders cache files in the guest (9p with `cache=loose`, virtiofs with `cache=always`), which can hide the host's updates: mount the share without caching.
 
+Joular Code for Java never follows a symbolic link when it opens this file, and only opens a regular file: a pipe or anything else at that path is refused.
+
 ## Use case example with Joular Code for Java on guest and PowerJoular on host
 
 A use case example is using Joular Code for Java on the guest OS and PowerJoular on the host OS.

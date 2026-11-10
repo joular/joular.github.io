@@ -100,7 +100,7 @@ Run from the root of the repository with no application, for two readings:
 It prints:
 
 ```
-CPU Load 0.0.4
+CPU Load 0.0.6
 Following the machine and this program. Name an application to follow it as well: ./example/c/example_c firefox
 machine 8.29% | this program 0.00%
 machine 7.89% | this program 0.00%

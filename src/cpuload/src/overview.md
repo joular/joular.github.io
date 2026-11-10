@@ -20,7 +20,7 @@ CPU Load is the library [PowerJoular](https://github.com/joular/powerjoular) use
 - Match an application with the program its processes actually run, so `firefox` finds every process of Firefox
 - Give every load as a share of the whole machine, from 0.0 to 1.0
 - Tell apart a process that could not be read (a negative load) from one that used no CPU time (0.0)
-- Keep no state: a sample is a plain record, so it can be taken in one thread and compared in another
+- Keep no state on Linux and macOS (Windows and FreeBSD keep the list of processes between samples), and give each sample as a plain record, so it can be taken in one thread and compared in another
 - Read the counters with no particular rights (except for the processes of other users on macOS and Windows)
 - Static library for Ada programs, and a shared library with a C interface for other languages (one self-contained file on Linux, Windows and FreeBSD)
 

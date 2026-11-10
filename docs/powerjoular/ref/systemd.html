@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-9a08d1f2.js";
+            window.path_to_searchindex_js = "../searchindex-f3838ea2.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-b01ac823.js"></script>
@@ -180,14 +180,15 @@ The service runs <code>/usr/bin/powerjoular</code>, so copy the binary there too
 The service will run the program with the <code>-o</code> option (which only saves the latest power data) and saves data to <code>/run/powerjoular/powerjoular-service.csv</code>.
 The <code>/run/powerjoular</code> folder is made by systemd when the service starts and removed when it stops, and anyone can read the file in it.</p>
 <p>The service runs as root, as reading the energy counters needs it, but with most of the other privileges taken away (it only reads the energy counters and the CPU load, and writes one file in its own folder).
-If it stops on its own (not through <code>systemctl</code>), it is restarted after 30 seconds.</p>
+If it stops on its own (not through <code>systemctl</code>), it is restarted after 30 seconds, except when PowerJoular gives up with exit code 1 (for example, when it finds no power source on the machine): starting it again would end the same way, so it stays stopped.</p>
 <p>The service can be started, and enabled to run automatically on boot, with:</p>
 <pre><code>sudo systemctl start powerjoular.service
 sudo systemctl enable powerjoular.service
 </code></pre>
 <p>The systemd service is automatically installed (but not enabled) when installing PowerJoular using the installer script or the Linux packages.</p>
 <p>Version 1 installed the service in <code>/etc/systemd/system/</code>, which takes precedence over the one now installed in <code>/usr/lib/systemd/system/</code>.
-If you installed version 1 with the installer script, delete <code>/etc/systemd/system/powerjoular.service</code> and run <code>sudo systemctl daemon-reload</code>.</p>
+If you installed version 1 with the installer script, delete <code>/etc/systemd/system/powerjoular.service</code> and run <code>sudo systemctl daemon-reload</code>.
+The installer script now warns when it finds that file, and the uninstaller removes it.</p>
 
                     </main>
 

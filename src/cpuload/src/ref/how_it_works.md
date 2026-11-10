@@ -25,7 +25,7 @@ An application is every process running its program at the moment of the sample:
 
 ## Linux
 
-**The machine.** The first line of `/proc/stat` gives the time of all the cores together, in clock ticks (usually 100 per second, as `sysconf` says). `Busy` is user, nice, system, irq, softirq and steal. The idle time is idle and iowait. The guest times are already inside user and nice, so they are not added again.
+**The machine.** The first line of `/proc/stat` gives the time of all the cores together, in clock ticks (usually 100 per second, as `sysconf` says). `Busy` is user, nice, system, irq and softirq. The idle time is idle, iowait and steal (the time a virtual machine waited for its host). The guest times are already inside user and nice, so they are not added again.
 
 **A process.** `utime` and `stime` of `/proc/<pid>/stat` give the time the process spent running its own code and in the kernel. The name of the process, in brackets, may hold spaces or brackets, so the fields are counted from the last `)`. A process in state `Z` (zombie), `X` or `x` (dead) has ended, and is not read.
 
@@ -83,4 +83,4 @@ Each OS has its own body of `src/cpu_load-platform.ads`, which has four function
 
 One body per OS lives in `src/linux`, `src/macos`, `src/windows` and `src/freebsd`, and `cpuload.gpr` picks the folder for the OS being built from `PJ_OS`.
 
-To support a new OS, write a body of `CPU_Load.Platform` for it, then add the OS and its folder to `PJ_OS` in `cpuload.gpr`, and to `alire.toml`.
+To support a new OS, write a body of `CPU_Load.Platform` for it, then add the OS, its folder and the target names GPRBuild reports for it to `cpuload.gpr`, and the OS to `available` in `alire.toml`.

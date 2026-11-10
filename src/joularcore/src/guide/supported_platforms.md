@@ -52,7 +52,7 @@ Joular Core includes power models for the following devices. Every revision of e
 ## CPU Power Monitoring Details
 
 **Linux (x86 / x86_64)**  
-CPU energy is read from the RAPL package counter exposed through the powercap sysfs interface (`/sys/class/powercap/intel-rapl:N`), for Intel and AMD processors. Joular Core reads one package, the first one whose name begins with `package`, so on a server with several sockets only the first socket is measured. On recent kernels, the counter is only readable by root (see [Installation](./installation.md)). If it cannot be read, the CPU is reported as not available.
+CPU energy is read from the RAPL package counter exposed through the powercap sysfs interface (`/sys/class/powercap/intel-rapl:N`), for Intel and AMD processors. Joular Core reads every package, each domain whose name begins with `package` (one per socket), and adds them together. On recent kernels, the counter is only readable by root (see [Installation](./installation.md)). If it cannot be read, the CPU is reported as not available.
 
 **Windows**  
 CPU energy is read from the same RAPL package counter, through one of three approaches, tried in this order:
@@ -69,7 +69,7 @@ CPU power, and GPU power on Apple Silicon, are read from Apple's `powermetrics` 
 Power is calculated from CPU utilization using polynomial regression models that were measured against each supported board at various load levels. The board is detected from `/proc/device-tree/model`, and the CPU utilization is read from `/proc/stat`. No special permissions are needed. On a board with no power model, the CPU is reported as not available.
 
 **FreeBSD (x86_64)**  
-CPU energy is read from the same RAPL package counter, from the registers of the first processor, through the [cpuctl(4)](https://man.freebsd.org/cgi/man.cgi?query=cpuctl&sektion=4) driver (`/dev/cpuctl0`), for Intel and AMD processors. The driver is a module to load first, and its device is only readable by root and the `kmem` group (see [Installation](./installation.md)). If it cannot be read, the CPU is reported as not available.
+CPU energy is read from the same RAPL package counter of every socket, added together, through the [cpuctl(4)](https://man.freebsd.org/cgi/man.cgi?query=cpuctl&sektion=4) driver (one `/dev/cpuctlN` device per socket), for Intel and AMD processors. The driver is a module to load first, and its devices are only readable by root and the `kmem` group (see [Installation](./installation.md)). If it cannot be read, the CPU is reported as not available.
 
 **Virtual Machines**  
 Inside a virtual machine, the hardware counters are usually not reachable, so the CPU is reported as not available. [PowerJoular](https://github.com/joular/powerjoular) can read the power of a virtual machine from a file the host writes.
@@ -77,13 +77,13 @@ Inside a virtual machine, the hardware counters are usually not reachable, so th
 ## GPU Power Monitoring Details
 
 **Nvidia (Linux, Windows and FreeBSD)**  
-GPU power is read through NVML, the library installed with the Nvidia driver, and loaded by Joular Core when the GPU is opened. The first card listed is the one read. If the driver is not installed or that card does not report its power, the GPU is reported as not available. On Linux and Windows, Nvidia is tried first, then AMD, and only one GPU is read: on a machine with both, the Nvidia card is the one measured.
+GPU power is read through NVML, the library installed with the Nvidia driver, and loaded by Joular Core when the GPU is opened. Every card that reports its power is read, and their power is added together. If the driver is not installed or no card reports its power, the GPU is reported as not available. On Linux and Windows, Nvidia and AMD cards are both read: on a machine with both, the GPU is all of them added together.
 
 **AMD (Linux)**  
-GPU power is read from the hwmon sysfs of the amdgpu kernel driver (`/sys/class/hwmon`), with nothing to install. The first amdgpu sensor with a readable power file is the one read.
+GPU power is read from the hwmon sysfs of the amdgpu kernel driver (`/sys/class/hwmon`), with nothing to install. Every amdgpu sensor with a readable power file is read, and their power is added together.
 
 **AMD (Windows)**  
-GPU power is read through ADLX, the library installed with the AMD driver. The first card listed is the one read.
+GPU power is read through ADLX, the library installed with the AMD driver. Every card that reports its power is read, and their power is added together.
 
 **Apple Silicon**  
 GPU power comes from the same `powermetrics` sample as the CPU power.

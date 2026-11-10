@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-2ce27a7f.js";
+            window.path_to_searchindex_js = "../searchindex-152d1cf0.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-fea6b9de.js"></script>
@@ -210,7 +210,7 @@
 <h3 id="macos"><a class="header" href="#macos">macOS</a></h3>
 <p>No additional software is required. Power data is read via <code>powermetrics</code>, which ships with macOS. Because <code>powermetrics</code> only runs as the superuser, run your program with <code>sudo</code>. Without it, both the CPU and the GPU are reported as not available.</p>
 <h3 id="freebsd"><a class="header" href="#freebsd">FreeBSD</a></h3>
-<p>CPU energy is read from the RAPL registers through the <code>cpuctl(4)</code> driver, which is a module not in the GENERIC kernel: load it with <code>kldload cpuctl</code> (or <code>cpuctl_load="YES"</code> in <code>/boot/loader.conf</code>), and run your program as root, or as a member of the <code>kmem</code> group (which <code>/dev/cpuctl0</code> is part of).</p>
+<p>CPU energy is read from the RAPL registers through the <code>cpuctl(4)</code> driver, which is a module not in the GENERIC kernel: load it with <code>kldload cpuctl</code> (or <code>cpuctl_load="YES"</code> in <code>/boot/loader.conf</code>), and run your program as root, or as a member of the <code>kmem</code> group (which the <code>/dev/cpuctl</code> devices belong to).</p>
 <p>GPU monitoring needs the Nvidia driver for Nvidia cards (NVML is installed with it), and no special privileges.</p>
 <h3 id="raspberry-pi-and-sbc"><a class="header" href="#raspberry-pi-and-sbc">Raspberry Pi and SBC</a></h3>
 <p>No dependencies and no <code>sudo</code> required. Boards with no power model report the CPU as not available.</p>

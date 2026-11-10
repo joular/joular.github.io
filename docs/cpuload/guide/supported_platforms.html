@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-8a1d76cc.js";
+            window.path_to_searchindex_js = "../searchindex-ce2d7926.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-8aae2392.js"></script>
@@ -182,7 +182,7 @@
 <tr><th>What is measured</th><th>OS</th><th>Method</th></tr>
 </thead>
 <tbody>
-<tr><td>The whole system</td><td>Linux</td><td>The <code>cpu</code> line of <code>/proc/stat</code></td></tr>
+<tr><td>The whole system</td><td>Linux</td><td>The <code>cpu</code> line of <code>/proc/stat</code>; waiting for I/O, and time stolen by the host of a virtual machine, count as idle</td></tr>
 <tr><td>The whole system</td><td>macOS</td><td><code>host_statistics</code>, macOS’ CPU counters</td></tr>
 <tr><td>The whole system</td><td>Windows</td><td><code>GetSystemTimes</code></td></tr>
 <tr><td>The whole system</td><td>FreeBSD</td><td><code>kern.cp_time</code> through <code>sysctl</code></td></tr>
@@ -200,7 +200,8 @@
 <p>FreeBSD is supported on 64-bit systems only.</p>
 <h2 id="matching-an-application"><a class="header" href="#matching-an-application">Matching an Application</a></h2>
 <p>An application is given by the name of its program, without its folder. The name must match exactly, but upper or lower case does not matter.
-Every OS matches the program with the process that actually runs, so <code>firefox</code> finds every process of Firefox, its content processes included.</p>
+Every OS matches the program with the process that actually runs, so <code>firefox</code> finds every process of Firefox, its content processes included.
+The name is the one of the program file itself, after any link is followed: where <code>python3</code> is a link to <code>python3.12</code>, the application to ask for is <code>python3.12</code>.</p>
 <p><strong>Linux</strong><br>A process is named by the program <code>/proc/&lt;pid&gt;/exe</code> points to. A process whose <code>/proc/&lt;pid&gt;/exe</code> cannot be read (such as a kernel thread, which runs no program directly, or another user’s process) falls back on <code>/proc/&lt;pid&gt;/comm</code>: the name the process was given, cut to 15 characters.</p>
 <p><strong>macOS</strong><br>A process is named by the program inside the bundle, so <code>firefox</code> finds the application inside <code>Firefox.app</code>, and also every program inside <code>Firefox.app</code>: for example, its content processes run <code>plugin-container</code>, from a helper bundle inside it.</p>
 <p><strong>Windows</strong><br>A trailing <code>.exe</code> is ignored, so <code>firefox</code> also finds <code>firefox.exe</code>.</p>

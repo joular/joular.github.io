@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-8a1d76cc.js";
+            window.path_to_searchindex_js = "../searchindex-ce2d7926.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-8aae2392.js"></script>
@@ -186,7 +186,7 @@ A core here is a CPU as the OS counts them, so a hardware thread on a processor 
 <h2 id="applications"><a class="header" href="#applications">Applications</a></h2>
 <p>For an application, a process that could not be read is left out of the sum, so the figure is short by what it used. The answer is negative only when some of the application’s processes are running and none of them would say anything at all, or when the processes could not be listed. An application that is not running reads <code>0.0</code>.</p>
 <p>On Windows, the processes of other users cannot even be named, so they are never part of an application: an application made only of them reads <code>0.0</code>.</p>
-<p>An application is every process running its program when the sample is taken. A process of the application that ends between two samples takes all of its time out of the second one, so that stretch reads low, or <code>0.0</code>.</p>
+<p>An application is every process running its program when the sample is taken. A process of the application that ends between two samples takes all of its time out of the second one, so that stretch reads low, or <code>0.0</code>. A process that starts and ends between two samples is never seen: an application made of short-lived processes, such as a compiler during a build, reads close to <code>0.0</code>.</p>
 <h2 id="samples-that-cannot-be-compared"><a class="header" href="#samples-that-cannot-be-compared">Samples That Cannot Be Compared</a></h2>
 <ul>
 <li>A sample with a total of 0 could not be taken at all (the counters of the machine could not be read). The loads computed with it are <code>0.0</code>, or negative when the process could not be read.</li>

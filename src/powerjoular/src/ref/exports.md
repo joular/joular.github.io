@@ -62,6 +62,7 @@ Timestamp,CPU Usage,CPU Power
 ```-o``` writes the latest measurement only: the file is rewritten every second and carries no header, which is a good option for another program polling it for the current value.
 
 Both value columns of the process file hold ```-1.0000``` for a second where the monitored process could not be read at all: it has stopped, or the system does not let us get the information needed.
+With ```-p```, once the process has ended, its values stay at ```-1.0000``` until PowerJoular is stopped, even if the system gives its number to a new process.
 That is not the same as ```0.0000```, which means a process that was read and used no CPU time.
 
 ```-a``` is the exception: an application with no running process at all is reported as ```0.0000``` and not as ```-1.0000```, because we can't tell apart a name that matches nothing from a name whose processes did not use any CPU time.

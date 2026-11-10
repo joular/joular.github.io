@@ -4,7 +4,7 @@ CPU Load runs on Linux, Windows, macOS and FreeBSD, on PCs, servers, Macs and si
 
 | What is measured | OS | Method |
 |---|---|---|
-| The whole system | Linux | The `cpu` line of `/proc/stat` |
+| The whole system | Linux | The `cpu` line of `/proc/stat`; waiting for I/O, and time stolen by the host of a virtual machine, count as idle |
 | The whole system | macOS | `host_statistics`, macOS' CPU counters |
 | The whole system | Windows | `GetSystemTimes` |
 | The whole system | FreeBSD | `kern.cp_time` through `sysctl` |
@@ -23,6 +23,7 @@ FreeBSD is supported on 64-bit systems only.
 
 An application is given by the name of its program, without its folder. The name must match exactly, but upper or lower case does not matter.
 Every OS matches the program with the process that actually runs, so `firefox` finds every process of Firefox, its content processes included.
+The name is the one of the program file itself, after any link is followed: where `python3` is a link to `python3.12`, the application to ask for is `python3.12`.
 
 **Linux**  
 A process is named by the program `/proc/<pid>/exe` points to. A process whose `/proc/<pid>/exe` cannot be read (such as a kernel thread, which runs no program directly, or another user's process) falls back on `/proc/<pid>/comm`: the name the process was given, cut to 15 characters.

@@ -68,6 +68,6 @@ A `NULL` `before` or `after` gives `0.0`, and a `NULL` `out` does nothing.
 
 ## Constraints
 
-- The library keeps no state. Linked statically into an Ada program, it can be called from any number of tasks.
+- On Linux and macOS the library keeps no state: linked statically into an Ada program, it can be called from any number of tasks. On Windows and FreeBSD it keeps the list of processes between samples, so a program that samples an application there must call the library from one task at a time.
 - The shared library must be called from one thread at a time, whatever the language: it runs on an Ada runtime without tasking, which has a single working stack for the whole process. A sample is a plain record either way, so it can be taken in one thread and compared in another.
 - Sample about a second apart (see [Reading the Numbers](./numbers.md)).

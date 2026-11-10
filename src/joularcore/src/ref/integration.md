@@ -22,7 +22,7 @@ gprbuild -P your_project.gpr -aP../joularcore
 
 ## C, C++ and Other Languages
 
-Any language with a C FFI can use the shared library (`libjoularcore.so` on Linux and FreeBSD, `libjoularcore.dll` on Windows, `libjoularcore.dylib` on macOS) through the C interface in [include/joularcore.h](https://github.com/joular/joularcore/blob/main/include/joularcore.h): C and C++ directly, Python through ctypes, Java through FFM or JNA, Rust through `libloading` or FFI declarations, etc.
+Any language with a C FFI can use the shared library (`libjoularcore.so` on Linux and FreeBSD, `libjoularcore.dll` on Windows, `libjoularcore.dylib` on macOS) through the C interface in [include/joularcore.h](https://github.com/joular/joularcore/blob/HEAD/include/joularcore.h): C and C++ directly, Python through ctypes, Java through FFM or JNA, Rust through `libloading` or FFI declarations, etc.
 
 The two structures of the C interface have the same layout on every target, with no padding: a `double` followed by two `int` for one measurement, and the CPU measurement followed by the GPU one for a reading.
 
@@ -32,7 +32,7 @@ On macOS, the library loads the Ada runtime from the folder of the compiler that
 
 ## Python
 
-The [Quick Usage](../guide/quick_usage.md) page shows how to call the library from Python with ctypes, and [example/python/main.py](https://github.com/joular/joularcore/blob/main/example/python/main.py) is a full example.
+The [Quick Usage](../guide/quick_usage.md) page shows how to call the library from Python with ctypes, and [example/python/main.py](https://github.com/joular/joularcore/blob/HEAD/example/python/main.py) is a full example.
 
 The library leaves the signal handlers of the program loading it in place, so Ctrl+C raises `KeyboardInterrupt` in Python as usual.
 

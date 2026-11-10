@@ -1,0 +1,7 @@
+[book]
+authors = ["Adel Noureddine"]
+language = "en"
+#multilingual = false
+src = "src"
+title = "Joular Energy Meter Documentation"
+#default-theme = "light"

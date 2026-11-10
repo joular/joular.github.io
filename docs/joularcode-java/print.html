@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-ea183441.js";
+            window.path_to_searchindex_js = "searchindex-cf46298d.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-421028e5.js"></script>
@@ -345,7 +345,7 @@ Written <code>C:\Users\me\results</code>, the backslashes are dropped, and a <co
 <li><code>results-path</code>: the folder where the CSV files are written, in a sub-folder per run (default: <code>joular-code-java-results</code>). A relative path starts from the folder where the Java command runs. See <a href="#generated-files">Generated Files</a>.</li>
 <li><code>methods-filtering-prefix</code>: list of package or class name prefixes, separated by commas, which will be used to filter the methods of your application, for example <code>com.example,org.myapp</code> (default: empty, no filter). See <a href="#generated-files">Generated Files</a> for explanations.</li>
 <li><code>lines-monitoring</code>: <code>true</code> also writes the power of each line of code, to <code>lines-power-all.csv</code>, <code>lines-power-app.csv</code> and <code>lines-power-app-self.csv</code> (default: <code>false</code>). See <a href="#generated-files">Generated Files</a>.</li>
-<li><code>aggregate</code>: <code>true</code> writes one row per branch when the JVM stops, with its energy and average power over the whole run, instead of a row per monitoring cycle (default: <code>false</code>).</li>
+<li><code>aggregate</code>: <code>true</code> writes one row per branch when the JVM stops, with its energy and average power over the run (the cycles whose power could not be read are left out), instead of a row per monitoring cycle (default: <code>false</code>).</li>
 </ul>
 <p>The values of <code>power-source-type</code>, <code>vm-power-format</code>, <code>lines-monitoring</code> and <code>aggregate</code> can be written in upper or lower case.
 A value other than <code>true</code> or <code>false</code> for <code>lines-monitoring</code> or <code>aggregate</code> is replaced by <code>false</code>, with a warning.
@@ -479,7 +479,7 @@ When <code>methods-filtering-prefix</code> is empty, both files hold the same da
 <tr><th>Column</th><th>Type</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code>Timestamp</code></td><td>double (s)</td><td>Unix time in seconds, with milliseconds, at the end of the monitoring cycle, as PowerJoular writes it</td></tr>
+<tr><td><code>Timestamp</code></td><td>double (s)</td><td>Unix time in seconds, with milliseconds, at the end of the monitoring cycle</td></tr>
 <tr><td><code>branch</code></td><td>string</td><td>The call chain, from the oldest to the newest method, separated by semicolons (e.g., <code>com.example.Main.run;com.example.Service.process</code>)</td></tr>
 <tr><td><code>power_watts</code></td><td>double</td><td>Estimated power consumed by this branch during the cycle (W)</td></tr>
 <tr><td><code>energy_joules</code></td><td>double</td><td>Energy = power_watts × interval_seconds (J)</td></tr>
@@ -490,7 +490,7 @@ When <code>methods-filtering-prefix</code> is empty, both files hold the same da
 </div>
 <p>A branch with a comma, a double quote or a line break in it is written between double quotes (standard CSV), so read the files with a CSV parser.</p>
 <p>To get the total energy of a branch over the whole execution, add up its <code>energy_joules</code> values, or set <code>aggregate=true</code>.</p>
-<p>With <code>aggregate=true</code>, each branch has one row, written when the JVM stops: <code>power_watts</code> is its average over the whole run, <code>energy_joules</code> its total, <code>interval_seconds</code> how long the run was monitored, and <code>coverage</code> the average over the run.</p>
+<p>With <code>aggregate=true</code>, each branch has one row, written when the JVM stops: <code>power_watts</code> is its average over the run, <code>energy_joules</code> its total, <code>interval_seconds</code> how long the run was monitored, leaving out the cycles whose power could not be read, and <code>coverage</code> the average over those same cycles.</p>
 <h3 id="example-output"><a class="header" href="#example-output">Example output</a></h3>
 <pre><code>Timestamp,branch,power_watts,energy_joules,interval_seconds,coverage
 1746000000.000,com.example.Main.main;com.example.Worker.compute,2.341500000,2.341500000,1.000000000,1.0000
@@ -563,6 +563,7 @@ When a cycle finds no new row, or catches the file while it is rewritten, the la
 After that, the host is taken as stopped, and no energy is attributed until it writes again.
 A negative value, such as the <code>-1.0000</code> PowerJoular writes for a process it cannot read, counts as no reading.</p>
 <p>Some shared folders cache files in the guest (9p with <code>cache=loose</code>, virtiofs with <code>cache=always</code>), which can hide the host’s updates: mount the share without caching.</p>
+<p>Joular Code for Java never follows a symbolic link when it opens this file, and only opens a regular file: a pipe or anything else at that path is refused.</p>
 <h2 id="use-case-example-with-joular-code-for-java-on-guest-and-powerjoular-on-host"><a class="header" href="#use-case-example-with-joular-code-for-java-on-guest-and-powerjoular-on-host">Use case example with Joular Code for Java on guest and PowerJoular on host</a></h2>
 <p>A use case example is using Joular Code for Java on the guest OS and PowerJoular on the host OS.</p>
 <h3 id="in-the-host-os"><a class="header" href="#in-the-host-os">In the host OS</a></h3>
@@ -645,7 +646,7 @@ The PowerJoular ring buffer and the host of a virtual machine give the power onc
 <li>Which branch a thread was on between two samples: the CPU time it used since its previous sample goes to the branch it is on at this one.</li>
 </ul>
 <p>The <code>coverage</code> column of the generated files says how much of the CPU time of the JVM’s threads was accounted for in each cycle.</p>
-<p>When the stacks cannot be sampled as often as asked (with many threads, and a very low <code>stack-monitoring-sample-rate</code>), Joular Code for Java shows a warning, once per run: set a higher <code>stack-monitoring-sample-rate</code> or a lower <code>max-stack-depth</code>, or accept coarser data.</p>
+<p>When the stacks cannot be sampled as often as asked (with many threads, and a very low <code>stack-monitoring-sample-rate</code>), Joular Code for Java shows a warning, once per run: set a higher <code>stack-monitoring-sample-rate</code> or a lower <code>max-stack-depth</code>, or accept coarser data. In that case it waits as long as a sample took before taking the next one, so sampling never takes more than half of the time.</p>
 
                     </main>
 

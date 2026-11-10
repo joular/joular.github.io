@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-ea183441.js";
+            window.path_to_searchindex_js = "../searchindex-cf46298d.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-421028e5.js"></script>
@@ -230,7 +230,7 @@ When <code>methods-filtering-prefix</code> is empty, both files hold the same da
 <tr><th>Column</th><th>Type</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code>Timestamp</code></td><td>double (s)</td><td>Unix time in seconds, with milliseconds, at the end of the monitoring cycle, as PowerJoular writes it</td></tr>
+<tr><td><code>Timestamp</code></td><td>double (s)</td><td>Unix time in seconds, with milliseconds, at the end of the monitoring cycle</td></tr>
 <tr><td><code>branch</code></td><td>string</td><td>The call chain, from the oldest to the newest method, separated by semicolons (e.g., <code>com.example.Main.run;com.example.Service.process</code>)</td></tr>
 <tr><td><code>power_watts</code></td><td>double</td><td>Estimated power consumed by this branch during the cycle (W)</td></tr>
 <tr><td><code>energy_joules</code></td><td>double</td><td>Energy = power_watts × interval_seconds (J)</td></tr>
@@ -241,7 +241,7 @@ When <code>methods-filtering-prefix</code> is empty, both files hold the same da
 </div>
 <p>A branch with a comma, a double quote or a line break in it is written between double quotes (standard CSV), so read the files with a CSV parser.</p>
 <p>To get the total energy of a branch over the whole execution, add up its <code>energy_joules</code> values, or set <code>aggregate=true</code>.</p>
-<p>With <code>aggregate=true</code>, each branch has one row, written when the JVM stops: <code>power_watts</code> is its average over the whole run, <code>energy_joules</code> its total, <code>interval_seconds</code> how long the run was monitored, and <code>coverage</code> the average over the run.</p>
+<p>With <code>aggregate=true</code>, each branch has one row, written when the JVM stops: <code>power_watts</code> is its average over the run, <code>energy_joules</code> its total, <code>interval_seconds</code> how long the run was monitored, leaving out the cycles whose power could not be read, and <code>coverage</code> the average over those same cycles.</p>
 <h3 id="example-output"><a class="header" href="#example-output">Example output</a></h3>
 <pre><code>Timestamp,branch,power_watts,energy_joules,interval_seconds,coverage
 1746000000.000,com.example.Main.main;com.example.Worker.compute,2.341500000,2.341500000,1.000000000,1.0000

@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-9a08d1f2.js";
+            window.path_to_searchindex_js = "../searchindex-f3838ea2.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-b01ac823.js"></script>
@@ -203,6 +203,7 @@ sudo apt install gnat gprbuild
 </code></pre>
 <p>The PowerJoular binary will be created in the <code>bin/</code> folder.</p>
 <p>Linux, macOS, Windows and FreeBSD are each detected on their own, from the target GPRBuild identifies.
+A target name it does not know stops the build: set <code>PJ_OS</code> then (for example <code>-XPJ_OS=linux</code>).
 To build for another OS than the one you are on, use a cross compiler for that OS (given to GPRBuild with <code>--target</code>), and set <code>PJ_OS</code> to <code>linux</code>, <code>macos</code>, <code>windows</code> or <code>freebsd</code>:</p>
 <pre><code>gprbuild -P powerjoular.gpr -aP../joularcore -aP../cpuload -XPJ_OS=windows -p
 </code></pre>

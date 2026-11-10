@@ -40,6 +40,7 @@ gprbuild -P powerjoular.gpr -aP../joularcore -aP../cpuload -p
 The PowerJoular binary will be created in the ```bin/``` folder.
 
 Linux, macOS, Windows and FreeBSD are each detected on their own, from the target GPRBuild identifies.
+A target name it does not know stops the build: set ```PJ_OS``` then (for example ```-XPJ_OS=linux```).
 To build for another OS than the one you are on, use a cross compiler for that OS (given to GPRBuild with ```--target```), and set ```PJ_OS``` to ```linux```, ```macos```, ```windows``` or ```freebsd```:
 
 ```

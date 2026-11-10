@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-2ce27a7f.js";
+            window.path_to_searchindex_js = "../searchindex-152d1cf0.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-fea6b9de.js"></script>
@@ -205,7 +205,7 @@ begin
 end Measure;
 </code></pre>
 <p>With Alire, add the library to your project with <code>alr with joularcore</code>.</p>
-<p>A full example program is in <a href="https://github.com/joular/joularcore/blob/main/example/src/example_joular_core.adb">example/src/example_joular_core.adb</a>. It reads once per second until stopped with Ctrl+C, which closes the sources cleanly. To build and run it:</p>
+<p>A full example program is in <a href="https://github.com/joular/joularcore/blob/HEAD/example/src/example_joular_core.adb">example/src/example_joular_core.adb</a>. It reads once per second until stopped with Ctrl+C, which closes the sources cleanly. To build and run it:</p>
 <pre><code class="language-bash">gprbuild -P example/example.gpr
 ./example/example_joular_core
 </code></pre>
@@ -213,7 +213,7 @@ end Measure;
 <pre><code class="language-bash">./example/example_joular_core emi 10
 </code></pre>
 <h2 id="using-from-c"><a class="header" href="#using-from-c">Using from C</a></h2>
-<p>The C declarations are in <a href="https://github.com/joular/joularcore/blob/main/include/joularcore.h">include/joularcore.h</a>. Build the relocatable (shared) library (see <a href="../ref/compilation.html">Compilation</a>), then:</p>
+<p>The C declarations are in <a href="https://github.com/joular/joularcore/blob/HEAD/include/joularcore.h">include/joularcore.h</a>. Build the relocatable (shared) library (see <a href="../ref/compilation.html">Compilation</a>), then:</p>
 <pre><code class="language-c">#include &lt;stdio.h&gt;
 #include "joularcore.h"
 
@@ -225,7 +225,7 @@ if (reading.cpu.available)
     printf("CPU: %f %s\n", reading.cpu.value, reading.cpu.unit == 0 ? "J" : "W");
 joularcore_close();
 </code></pre>
-<p>A full example program is in <a href="https://github.com/joular/joularcore/blob/main/example/c/main.c">example/c/main.c</a>. Like the Ada one, it reads once per second until stopped with Ctrl+C. It comes with a Makefile that builds the shared library and the program:</p>
+<p>A full example program is in <a href="https://github.com/joular/joularcore/blob/HEAD/example/c/main.c">example/c/main.c</a>. Like the Ada one, it reads once per second until stopped with Ctrl+C. It comes with a Makefile that builds the shared library and the program:</p>
 <pre><code class="language-bash">make -C example/c
 </code></pre>
 <h2 id="using-from-python"><a class="header" href="#using-from-python">Using from Python</a></h2>
@@ -250,7 +250,7 @@ if r.cpu.available:
 lib.joularcore_close()
 </code></pre>
 <p>The library is <code>libjoularcore.dylib</code> on macOS and <code>libjoularcore.dll</code> on Windows.</p>
-<p>A full example program is in <a href="https://github.com/joular/joularcore/blob/main/example/python/main.py">example/python/main.py</a>, with a Makefile that builds the shared library.</p>
+<p>A full example program is in <a href="https://github.com/joular/joularcore/blob/HEAD/example/python/main.py">example/python/main.py</a>, with a Makefile that builds the shared library.</p>
 <p>Other languages (C++, Java, Rust, etc.) use the same C interface. See <a href="../ref/integration.html">Integration with Systems and Tools</a>.</p>
 
                     </main>

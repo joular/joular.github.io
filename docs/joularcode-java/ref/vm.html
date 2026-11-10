@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-ea183441.js";
+            window.path_to_searchindex_js = "../searchindex-cf46298d.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-421028e5.js"></script>
@@ -193,6 +193,7 @@ When a cycle finds no new row, or catches the file while it is rewritten, the la
 After that, the host is taken as stopped, and no energy is attributed until it writes again.
 A negative value, such as the <code>-1.0000</code> PowerJoular writes for a process it cannot read, counts as no reading.</p>
 <p>Some shared folders cache files in the guest (9p with <code>cache=loose</code>, virtiofs with <code>cache=always</code>), which can hide the host’s updates: mount the share without caching.</p>
+<p>Joular Code for Java never follows a symbolic link when it opens this file, and only opens a regular file: a pipe or anything else at that path is refused.</p>
 <h2 id="use-case-example-with-joular-code-for-java-on-guest-and-powerjoular-on-host"><a class="header" href="#use-case-example-with-joular-code-for-java-on-guest-and-powerjoular-on-host">Use case example with Joular Code for Java on guest and PowerJoular on host</a></h2>
 <p>A use case example is using Joular Code for Java on the guest OS and PowerJoular on the host OS.</p>
 <h3 id="in-the-host-os"><a class="header" href="#in-the-host-os">In the host OS</a></h3>

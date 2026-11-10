@@ -21,7 +21,7 @@ For an application, a process that could not be read is left out of the sum, so 
 
 On Windows, the processes of other users cannot even be named, so they are never part of an application: an application made only of them reads `0.0`.
 
-An application is every process running its program when the sample is taken. A process of the application that ends between two samples takes all of its time out of the second one, so that stretch reads low, or `0.0`.
+An application is every process running its program when the sample is taken. A process of the application that ends between two samples takes all of its time out of the second one, so that stretch reads low, or `0.0`. A process that starts and ends between two samples is never seen: an application made of short-lived processes, such as a compiler during a build, reads close to `0.0`.
 
 ## Samples That Cannot Be Compared
 

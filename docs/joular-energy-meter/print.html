@@ -1,0 +1,645 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Joular Energy Meter Documentation</title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-e96d0476.css">
+        <link rel="stylesheet" href="css/chrome-d279d366.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-d24a2c87.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-512cade3.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Joular Energy Meter Documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="overview"><a class="header" href="#overview">Overview</a></h1>
+<p><a href="https://www.gnu.org/licenses/gpl-3.0"><img src="https://img.shields.io/badge/License-GPLv3-blue" alt="License: GPL v3"></a>
+<a href="https://www.open-std.org/jtc1/sc22/wg14/"><img src="https://img.shields.io/badge/Made%20with-C-A8B9CC" alt="C"></a>
+<a href="https://www.adaic.org"><img src="https://img.shields.io/badge/Made%20with-Ada-blue" alt="Ada"></a></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="joular-energymeter.png" alt="Joular Energy Meter Logo"><span class="img-wrapper"><img src="joular-energymeter.png" alt="Joular Energy Meter Logo"></span></label></p>
+<p>Joular Energy Meter is a desktop application that monitors, in real time, the power and energy consumption of your computer (CPU and GPU) and of a process or application, on Windows, Linux, macOS and FreeBSD.
+It also estimates the carbon emissions and the cost of that energy.</p>
+<p>Joular Energy Meter is part of the <a href="https://www.noureddine.org/research/joular/"><img src="https://raw.githubusercontent.com/joular/.github/main/profile/joular.png" alt="Joular Project" width="64" /></a> project.</p>
+<p>Like <a href="https://github.com/joular/powerjoular">PowerJoular</a>, it does the measuring through two Ada libraries we developed, <a href="https://github.com/joular/joularcore">Joular Core</a> for the energy of the CPU and the GPU, and <a href="https://github.com/joular/cpuload">CPU Load</a> for the CPU usage.
+The application itself is written in C with <a href="https://lvgl.io">LVGL</a> and SDL2, so it looks and works the same on every system.</p>
+<p>The official website of Joular Energy Meter is: <a href="https://www.noureddine.org/research/joular/energymeter">https://www.noureddine.org/research/joular/energymeter</a>.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="screenshot.png" alt="Joular Energy Meter on macOS, monitoring an application"><span class="img-wrapper"><img src="screenshot.png" alt="Joular Energy Meter on macOS, monitoring an application"></span></label></p>
+<h2 id="features"><a class="header" href="#features">Features</a></h2>
+<ul>
+<li>Monitor the power and energy of the CPU, the GPU and the whole machine</li>
+<li>Monitor a process, an application (all its processes), or a command started from the application</li>
+<li>Estimate carbon emissions with the carbon intensity of your country’s electricity (from <a href="https://ember-energy.org">Ember</a>), of an energy source, or your own value, and the cost of the energy</li>
+<li>Measure the idle power of the machine, to see what a program adds to it</li>
+<li>Read a power meter at the plug, through the CSV file its program writes</li>
+<li>Save the power data to CSV files, in the same format as PowerJoular</li>
+<li>The same application on Linux, Windows, macOS and FreeBSD</li>
+</ul>
+<h2 id="license"><a class="header" href="#license">License</a></h2>
+<p>Joular Energy Meter is licensed under the GNU GPL 3 license only (GPL-3.0-only).</p>
+<p>Copyright (c) 2026, Adel Noureddine.
+All rights reserved. This program and the accompanying materials are made available under the terms of the GNU General Public License v3.0 only (GPL-3.0-only) which accompanies this distribution, and is available at: https://www.gnu.org/licenses/gpl-3.0.en.html</p>
+<p>The third-party works shipped with Joular Energy Meter (LVGL, SDL2, the fonts and icons, Ember’s carbon intensity data) are listed with their licences in the <a href="https://github.com/joular/joular-energy-meter#newspaper-license">README</a>.</p>
+<p>Author : <a href="https://www.noureddine.org/">Adel Noureddine</a></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="supported-platforms"><a class="header" href="#supported-platforms">Supported Platforms</a></h1>
+<p>Joular Energy Meter runs on Linux, Windows, macOS and FreeBSD, and reads:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>OS</th><th>CPU</th><th>GPU</th></tr>
+</thead>
+<tbody>
+<tr><td>Linux</td><td>Intel, AMD, Raspberry Pi</td><td>Nvidia, AMD</td></tr>
+<tr><td>Windows</td><td>Intel, AMD</td><td>Nvidia, AMD</td></tr>
+<tr><td>macOS</td><td>Apple Silicon, Intel</td><td>Apple Silicon</td></tr>
+<tr><td>FreeBSD</td><td>Intel, AMD</td><td>Nvidia</td></tr>
+</tbody>
+</table>
+</div>
+<p>The hardware is read by our <a href="https://github.com/joular/joularcore">Joular Core</a> library, the same way as in <a href="https://joular.github.io/powerjoular/guide/supported_platforms.html">PowerJoular</a>:</p>
+<ul>
+<li>Intel and AMD processors through RAPL: the powercap files on Linux, the Energy Meter Interface (Windows 11), PawnIO or Hubblo’s driver on Windows, and the <code>cpuctl</code> driver on FreeBSD.</li>
+<li>Macs through <code>powermetrics</code>, installed with macOS. Apple Silicon gives the CPU and the GPU of the chip, Intel Macs the CPU only.</li>
+<li>Raspberry Pi through our regression power models.</li>
+<li>Nvidia cards through NVML (installed with the driver), and AMD cards through the amdgpu hwmon files on Linux and ADLX on Windows.</li>
+</ul>
+<p>The CPU usage of the machine, of a process and of an application is read by our <a href="https://github.com/joular/cpuload">CPU Load</a> library.</p>
+<p><em>Whole machine</em> means the processor and the graphics card only.
+The screen, memory, disks and the losses of the power supply are not measured, so the computer draws more at the plug.
+A power meter at the plug can be added for that (see <a href="#idle-power-and-plug-meter">Idle Power and Plug Meter</a>).</p>
+<h2 id="required-privileges"><a class="header" href="#required-privileges">Required privileges</a></h2>
+<p>The CPU load is always read, but the CPU power needs some rights on most systems.
+When they are missing, a notice says what to do: on Linux, macOS and Windows, with a button that asks the system for the administrator (through the system’s own dialog, never a password field of ours), and on Linux, macOS and FreeBSD, with a button to copy the command instead.</p>
+<ul>
+<li><strong>Linux</strong>: the RAPL files are readable by root only (CVE-2020-8694). <strong>Allow reading power</strong> asks for the administrator through polkit (<code>pkexec</code>), and makes the processor’s counters readable by every user of the machine until the next boot. The application itself keeps running as you. The same by hand, after each boot: <code>sudo chmod -R a+r /sys/class/powercap/intel-rapl</code>. Or start the application with <code>sudo</code>, under X11 (not Wayland).</li>
+<li><strong>Windows</strong>: nothing to do on Windows 11. On older versions, install the <a href="https://pawnio.eu">PawnIO</a> driver, then <strong>Restart as administrator</strong> (UAC asks), or install <a href="https://github.com/hubblo-org/windows-rapl-driver">Hubblo’s RAPL driver</a>, which needs no administrator.</li>
+<li><strong>macOS</strong>: <code>powermetrics</code> needs root. <strong>Restart with admin rights</strong> asks for your password in macOS’s dialog, then starts the application again as root, with your files and settings still yours. Or from Terminal: <code>sudo "/Applications/Joular Energy Meter.app/Contents/MacOS/joularenergymeter"</code>.</li>
+<li><strong>FreeBSD</strong>: load the cpuctl driver (<code>sudo kldload cpuctl</code>, or <code>cpuctl_load="YES"</code> in <code>/boot/loader.conf</code>), and start the application with <code>sudo</code> under X11. The <code>kmem</code> group also works, but it can read all memory through <code>/dev/mem</code>.</li>
+<li>Nvidia and AMD graphics cards, and Raspberry Pi, need nothing.</li>
+</ul>
+<p>On Windows and macOS, following a process of another user also needs the administrator.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="installation"><a class="header" href="#installation">Installation</a></h1>
+<p>Ready-made packages are released in our <a href="https://github.com/joular/joular-energy-meter">GitHub repository</a> release page and in the build workflow.
+They need no compiler, Alire or MSYS2.</p>
+<p>Every package has the program, the carbon intensities of the countries, the README and the licences.</p>
+<h2 id="linux"><a class="header" href="#linux">Linux</a></h2>
+<p>For x86_64 and aarch64:</p>
+<pre><code>Debian, Ubuntu:
+sudo apt install ./joularenergymeter_&lt;version&gt;-1_amd64.deb
+
+Fedora:
+sudo dnf install ./joularenergymeter-&lt;version&gt;-1.x86_64.rpm
+
+Arch Linux:
+sudo pacman -U joularenergymeter-&lt;version&gt;-1-x86_64.pkg.tar.zst
+</code></pre>
+<p>These packages also install SDL2.
+The AppImage has SDL2 inside and runs on any distribution: make it executable with <code>chmod +x</code>, then start it.
+The tar.gz needs the SDL2 package (<code>libsdl2-2.0-0</code> on Debian and Ubuntu, <code>SDL2</code> on Fedora).</p>
+<p>All of them need glibc 2.35 or newer (Debian 12, Ubuntu 22.04, Fedora 36 and later), as they are built on Ubuntu 22.04.
+On Raspberry Pi, this means a 64 bits OS.</p>
+<h2 id="macos"><a class="header" href="#macos">macOS</a></h2>
+<p>Open the <code>.dmg</code> and drag the application to Applications.
+It is one application for Apple Silicon and Intel Macs, with SDL2 inside, and needs macOS 15 or newer (GNAT’s Ada runtime is built for 15).</p>
+<p>The application is only signed ad hoc, so macOS blocks it the first time: open <em>System Settings &gt; Privacy &amp; Security</em> and click <em>Open Anyway</em>.</p>
+<p>Started from Finder, it writes its CSV files to the home folder.
+To read the power, it needs root (see <a href="#required-privileges">Required privileges</a>).</p>
+<h2 id="windows"><a class="header" href="#windows">Windows</a></h2>
+<p>Run the <code>.msi</code> (it installs to Program Files, adds a Start menu shortcut, and is removed from <em>Settings &gt; Apps</em>), or unzip the <code>.zip</code> and run <code>joularenergymeter.exe</code>.
+Both ship SDL’s own <code>SDL2.dll</code>.</p>
+<p>The installer is not signed, so SmartScreen asks once (<em>More info</em>, then <em>Run anyway</em>).</p>
+<h2 id="freebsd"><a class="header" href="#freebsd">FreeBSD</a></h2>
+<pre><code>sudo pkg install sdl2
+sudo pkg add joularenergymeter-&lt;version&gt;-freebsd14-amd64.pkg
+</code></pre>
+<p><code>pkg add</code> looks for dependencies only beside the file, hence SDL2 first.
+A tar.gz is also available.
+The package is made for the FreeBSD version it was built on.</p>
+<h2 id="from-the-source-code"><a class="header" href="#from-the-source-code">From the source code</a></h2>
+<p>See <a href="#compilation-and-packages">Compilation and Packages</a>.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="quick-usage"><a class="header" href="#quick-usage">Quick Usage</a></h1>
+<p>Start Joular Energy Meter, with the rights it needs to read the power (see <a href="#required-privileges">Required privileges</a>).</p>
+<p>The window has two tabs:</p>
+<ul>
+<li><strong>Setup</strong>: what to measure (the whole machine, a process by its ID, an application by its name, or a command to start), how often (every 1 to 10 seconds), for how long, and whether to record to a CSV file. Optionally, the electricity used for the carbon emissions and the cost, the idle power, and a plug meter.</li>
+<li><strong>Readings</strong>: the power now, and the energy and carbon emissions since the start, of the followed program and of the whole machine, the share of the processor and the graphics card, and a chart of the last 120 measurements.</li>
+</ul>
+<p>Press <strong>Start</strong> (or Enter in a field) to start measuring.
+The bar at the bottom says what is measured, for how long, and the last message.</p>
+<p>While measuring, the interval, the length and the electricity can still be changed (a new interval restarts the chart).
+<strong>Pause</strong> stops the clock and the energy count until you resume, and the length only counts the measured time.
+After <strong>Stop</strong>, the power shown is the average of the session.</p>
+<p><strong>Copy summary</strong> puts the session in plain text on the clipboard, for a report or an email: what was measured, when and for how long, the average power, the energy, the carbon emissions, and the price per kWh (with the cost of the followed program, when there is one).</p>
+<p>Resting the pointer on the name of a figure shows what it means.</p>
+<p>To see what a program adds to an idle machine, measure the idle power first (see <a href="#idle-power-and-plug-meter">Idle Power and Plug Meter</a>).</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="compilation-and-packages"><a class="header" href="#compilation-and-packages">Compilation and Packages</a></h1>
+<p>Joular Energy Meter is written in C, and is linked with the <a href="https://github.com/joular/joularcore">Joular Core</a> and <a href="https://github.com/joular/cpuload">CPU Load</a> libraries, written in Ada.
+It needs GNAT and GPRBuild, SDL2 (2.0.18 or newer), and LVGL 9.6.</p>
+<p>LVGL goes in the <code>lvgl</code> folder, at the commit of its <code>release/v9.6</code> branch that the CI builds against (see <code>.github/workflows/build.yml</code>):</p>
+<pre><code>git clone https://github.com/joular/joular-energy-meter
+cd joular-energy-meter
+git init lvgl &amp;&amp; git -C lvgl fetch --depth 1 https://github.com/lvgl/lvgl.git 8df3de9c4c5e45ad7b0fef5adc2fa6eaa5d21579 &amp;&amp; git -C lvgl checkout FETCH_HEAD
+</code></pre>
+<p>The program is created as <code>bin/joularenergymeter</code>.</p>
+<h2 id="sdl2"><a class="header" href="#sdl2">SDL2</a></h2>
+<pre><code>macOS:
+brew install sdl2
+
+Debian, Ubuntu:
+sudo apt install libsdl2-dev
+
+Fedora:
+sudo dnf install SDL2-devel
+
+Windows, in Alire's msys2 shell:
+pacman -S mingw-w64-x86_64-SDL2
+
+FreeBSD:
+sudo pkg install sdl2
+</code></pre>
+<h2 id="compilation-with-alire"><a class="header" href="#compilation-with-alire">Compilation with Alire</a></h2>
+<p><a href="https://alire.ada.dev/">Alire</a> downloads GNAT, GPRBuild and the two libraries, and checks that SDL2 is installed (and offers to install it):</p>
+<pre><code>alr build
+</code></pre>
+<p>When SDL2 is somewhere else:</p>
+<pre><code>alr build -- -XSDL2_CFLAGS="-I&lt;folder&gt;" -XSDL2_LIBS="-L&lt;folder&gt; -lSDL2"
+</code></pre>
+<p>On macOS, use <code>alr build -- -XDev=True</code> for a program run from the source folder.
+Homebrew’s SDL2 loads SDL3 by name, and this switch tells dyld where to find it.
+The packaged application is built without it, so it looks for nothing outside the application when run with <code>sudo</code>.</p>
+<h2 id="compilation-with-gnat-and-gprbuild"><a class="header" href="#compilation-with-gnat-and-gprbuild">Compilation with GNAT and GPRBuild</a></h2>
+<p>Check out the two libraries next to the Joular Energy Meter folder, then point GPRBuild at them:</p>
+<pre><code>cd ..
+git clone --depth 1 --branch 0.0.6 https://github.com/joular/cpuload.git
+git clone --depth 1 --branch 0.0.6 https://github.com/joular/joularcore.git
+cd joular-energy-meter
+gprbuild -P joularenergymeter.gpr -aP../joularcore -aP../cpuload -p
+</code></pre>
+<p>The OS is detected from the compiler, and can be forced with <code>-XPJ_OS=linux</code>, <code>windows</code>, <code>macos</code> or <code>freebsd</code>.</p>
+<p>GPRBuild does not look where Homebrew puts SDL2, so on macOS add:</p>
+<pre><code>-XSDL2_CFLAGS="-I$(brew --prefix)/include" -XSDL2_LIBS="-L$(brew --prefix)/lib -lSDL2"
+</code></pre>
+<p>On FreeBSD, this is the only way to build, as Alire has no FreeBSD SDL2 package.
+Use GNAT 15 or newer (<code>sudo pkg install gprbuild gnat15</code>, then put <code>/usr/local/gnat15/bin</code> first in <code>PATH</code>), as GNAT 12 cannot compile Joular Core’s FreeBSD code.</p>
+<h2 id="packages-and-installers"><a class="header" href="#packages-and-installers">Packages and installers</a></h2>
+<p>The <code>packaging/</code> folder has one script per system.
+Each script builds the program, checks it, and makes the packages in <code>dist/</code>.
+The CI runs the same scripts and keeps the packages as artifacts.
+The top of each script lists what it needs.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>System</th><th>Run</th><th>Makes</th></tr>
+</thead>
+<tbody>
+<tr><td>Linux</td><td><code>packaging/linux.sh</code></td><td><code>.tar.gz</code>, <code>.deb</code>, <code>.rpm</code>, Arch Linux <code>.pkg.tar.zst</code>, <code>.AppImage</code></td></tr>
+<tr><td>macOS</td><td><code>packaging/macos.sh</code></td><td><code>.zip</code> with <em>Joular Energy Meter.app</em>, <code>.dmg</code></td></tr>
+<tr><td>Windows</td><td><code>powershell -ExecutionPolicy Bypass -File packaging\windows.ps1</code></td><td><code>.zip</code>, <code>.msi</code></td></tr>
+<tr><td>FreeBSD</td><td><code>packaging/freebsd.sh</code></td><td><code>.tar.gz</code>, <code>.pkg</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>The Linux packages need the glibc of the build machine or newer, so build them on an old distribution (the CI uses Ubuntu 22.04).
+On macOS, the script builds the application’s binary in <code>bin/app</code>, so <code>bin/joularenergymeter</code> stays the one that runs from the source folder, and two binaries (arm64 and x86_64) make one universal application.</p>
+<p>A binary built by hand needs SDL2 from where it was built (Homebrew, MSYS2), so ship the packages instead.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="measuring-a-program"><a class="header" href="#measuring-a-program">Measuring a Program</a></h1>
+<p>Joular Energy Meter follows one program at a time, besides the whole machine:</p>
+<ul>
+<li><strong>Process</strong>: one process, by its ID.</li>
+<li><strong>Application</strong>: every process whose program has that name (<code>firefox</code>, not <em>Firefox.app</em>). On macOS, all the programs inside the application bundle count too. On Windows, a trailing <code>.exe</code> is ignored.</li>
+<li><strong>Command</strong>: a command started by Joular Energy Meter at Start, and measured from its first instant.</li>
+</ul>
+<h2 id="the-power-of-a-program"><a class="header" href="#the-power-of-a-program">The power of a program</a></h2>
+<p>The power of the followed program is its share of the processor’s power only, as in PowerJoular:</p>
+<pre><code>program power = CPU power × program CPU usage / machine CPU usage
+</code></pre>
+<p>The graphics card is not shared out to programs.</p>
+<p><em>Share of CPU</em> is the fraction of the machine’s processing capacity the program used (all of one core out of eight is 12.5 %), not of the processor’s power.
+The share of the machine shown next to the program’s name is its power divided by the power of the CPU and the GPU.</p>
+<p>So on a quiet machine, a program gets most of the processor’s idle power too.
+<em>Above idle</em> takes it out (see <a href="#idle-power-and-plug-meter">Idle Power and Plug Meter</a>).</p>
+<h2 id="a-program-that-cannot-be-read"><a class="header" href="#a-program-that-cannot-be-read">A program that cannot be read</a></h2>
+<p>A process that has ended, or that the system does not let us read, shows a dash instead of 0 %, and is written as <code>-1</code> in the CSV files, as PowerJoular does.
+A process that ended stays ended: a new process given the same ID later is not followed.</p>
+<h2 id="commands"><a class="header" href="#commands">Commands</a></h2>
+<p>On Linux, macOS and FreeBSD, the command runs through <code>/bin/sh</code>, so <code>python3 bench.py &gt; out.txt</code> works, and the program itself is followed, not the shell.
+On Windows, it is a program and its arguments, without the shell’s <code>&gt;</code> or <code>&amp;&amp;</code>.</p>
+<p>The command starts in the current folder.
+Started with <code>sudo</code>, Joular Energy Meter runs the command as you, not as root.
+Started as administrator on Windows, it cannot run commands.</p>
+<p>Only the command’s own process counts as the program: the processes it starts (the compilers of <code>make</code>, for example) are in the machine’s reading, not in the program’s.</p>
+<p>When the command ends, its exit status is shown, and the measuring stops if the length is <em>Until it ends</em>.
+<strong>Stop</strong> leaves the command running.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="idle-power-and-plug-meter"><a class="header" href="#idle-power-and-plug-meter">Idle Power and Plug Meter</a></h1>
+<p>Both are optional, and set in the Setup tab.</p>
+<h2 id="idle-power"><a class="header" href="#idle-power">Idle power</a></h2>
+<p>The idle power is what the machine draws doing nothing, in watts.
+It can be typed, or measured with <strong>Measure…</strong>: a window of its own measures the whole machine for 30 seconds while you leave it alone, without recording and without touching the readings, then offers its average.
+On macOS and Windows, the machine does not go to sleep while it measures.</p>
+<p>A typed value is split between the processor and the graphics card as the last measured one was (all to the processor without one).
+The value is kept for the next launches, and an empty field means no idle power.</p>
+<p>With an idle power, the chart of the machine shows a dashed <em>idle</em> line, and the <strong>Above idle</strong> switch shows the readings without it: what the program, or anything you run, adds to an idle machine.</p>
+<ul>
+<li>For the machine, the processor and the graphics card: the power minus their idle power.</li>
+<li>For the program: its share of the processor’s power above the processor’s idle power.</li>
+<li>Energies: the energy minus the idle power times the measured time (for the program, times its share of the processor over that time), so the ups and downs around the idle power even out.</li>
+</ul>
+<p>A figure below zero shows as 0.</p>
+<p>The idle power is only as good as the 30 seconds it was measured in: measure it again after a change (power settings, a dock, other programs started at login).</p>
+<h2 id="plug-meter"><a class="header" href="#plug-meter">Plug meter</a></h2>
+<p><em>Whole machine</em> is the processor and the graphics card only.
+A power meter between the plug and the socket measures the whole computer, screen and power supply included.</p>
+<p><strong>Choose…</strong> picks the CSV file the meter’s program writes as it measures, such as <a href="https://github.com/joular/powerspycli">PowerSpyCli</a> for PowerSpy 2 meters.
+From the next Start, the readings get an <em>At the plug</em> row and the chart an <em>At the plug</em> choice.
+<strong>Remove</strong> stops using it.</p>
+<p>The rows of the file are <code>time;watts</code>, <code>time,watts</code> or separated by a tab, and a header is skipped.
+When the meter’s program starts the file again, it is read again from the top.
+Only the rows written after Start count: each measurement takes the average of the rows written during it, or the last one for up to 5 seconds.
+After that, a warning shows, and the plug has no reading until a new row comes.</p>
+<p>The plug’s readings are not written to the recording CSV files.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="carbon-emissions-and-cost"><a class="header" href="#carbon-emissions-and-cost">Carbon Emissions and Cost</a></h1>
+<p>The energy since the start is turned into grams of CO2 equivalent, for the machine and for the followed program:</p>
+<pre><code>carbon (g CO2e) = energy (kWh) × carbon intensity (g CO2e per kWh)
+</code></pre>
+<p>The carbon intensity is chosen in the Setup tab, under <em>Electricity</em>:</p>
+<ul>
+<li><strong>Country</strong>: the yearly average of the country’s electricity, from <a href="https://ember-energy.org/data/yearly-electricity-data/">Ember’s yearly electricity data</a>, over the life cycle of the power plants. The first time, the country of the time zone is chosen (on Windows, the one of the region setting), or the world’s average. After that, the one chosen last time.</li>
+<li><strong>Country, this month</strong>: the average of the current calendar month, from the latest year <a href="https://ember-energy.org/data/monthly-electricity-data/">Ember’s monthly electricity data</a> has it, as electricity is cleaner in some seasons. Ember has monthly figures for fewer countries (88 and the world). Elsewhere, the yearly average is used, and the note under it says so.</li>
+<li><strong>Energy source</strong>: electricity from a single source, such as your own solar panels.</li>
+<li><strong>Own value</strong>: your own figure in g CO2e per kWh, such as your supplier’s.</li>
+</ul>
+<p>The energy sources use the life-cycle medians of the IPCC (AR5, WG3, Annex III), which Ember uses too, in g CO2e per kWh:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Source</th><th>Wind</th><th>Nuclear</th><th>Hydro</th><th>Geothermal</th><th>Solar</th><th>Bioenergy</th><th>Gas</th><th>Oil</th><th>Coal</th></tr>
+</thead>
+<tbody>
+<tr><td>g CO2e per kWh</td><td>11</td><td>12</td><td>24</td><td>38</td><td>48</td><td>230</td><td>490</td><td>700</td><td>820</td></tr>
+</tbody>
+</table>
+</div>
+<p>Oil is Ember’s figure for oil and other fossil fuels.</p>
+<p>Changing the carbon intensity works out the emissions again from the last measurement, including after Stop.
+The emissions are not written to the CSV files, which keep PowerJoular’s columns.</p>
+<h2 id="cost"><a class="header" href="#cost">Cost</a></h2>
+<p>With a price per kWh (a comma or a point for the decimals) and a currency, the cost of the machine’s energy since the start is shown, with the followed program’s part of it.
+The currency is written as text (EUR, $, £, CHF…), as the font has no euro sign.
+An empty price means no cost.</p>
+<h2 id="everyday-equivalents"><a class="header" href="#everyday-equivalents">Everyday equivalents</a></h2>
+<p>Under the cost, the machine’s energy and emissions are given in everyday terms, from the US EPA’s <a href="https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator-calculations-and-references">greenhouse gas equivalencies</a>:</p>
+<ul>
+<li>A smartphone charge takes 0.019 kWh.</li>
+<li>An average gasoline car emits 3.93 × 10<sup>-4</sup> t CO2e per mile, so 244 g per km.</li>
+<li>Below one phone charge, the energy is given as the time a 10 W LED bulb would take.</li>
+</ul>
+<p>These are orders of magnitude for people, not results to report.</p>
+<h2 id="the-data-files"><a class="header" href="#the-data-files">The data files</a></h2>
+<p>The values of the countries are read from <code>carbon-intensity.csv</code> and <code>carbon-intensity-monthly.csv</code>, beside the program (in <em>Contents/Resources</em> of the application on macOS), or in <code>../share/joularenergymeter/</code> from it, as the Linux and FreeBSD packages install them.
+Without these files, the same values built into the program are used.</p>
+<p>An edited file works without compiling again:</p>
+<ul>
+<li><code>carbon-intensity.csv</code>: one row per country, <code>ISO 3 code,Area,Year,grams per kWh</code>. The world has an empty code.</li>
+<li><code>carbon-intensity-monthly.csv</code>: one row per country and month, <code>ISO 3 code,Year,Month,grams per kWh</code>. A country needs all twelve months, or it has none.</li>
+</ul>
+<p>To update them, run from the source folder:</p>
+<pre><code>python3 data/update.py
+</code></pre>
+<p>It downloads Ember’s latest yearly and monthly data, and rewrites both files and their built-in copy, <code>src/carbon_data.c</code>.
+<code>python3 data/update.py YEARLY.csv MONTHLY.csv</code> uses files already downloaded.
+Ember adds a new year once a year, and new months each month.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="csv-files"><a class="header" href="#csv-files">CSV Files</a></h1>
+<p>With <em>Record to a CSV file</em> on, Joular Energy Meter writes a row at every measurement, in the same format as <a href="https://joular.github.io/powerjoular/ref/exports.html">PowerJoular</a>, so the same scripts read both.</p>
+<p>The file is added to, not emptied, and a new or empty file starts with a header:</p>
+<pre><code>Timestamp,CPU Usage,Total Power,CPU Power,GPU Power
+1756681930,0.2460,18.4500,15.2000,3.2500
+</code></pre>
+<p>The timestamp is in whole Unix seconds, the CPU usage goes from 0.0 to 1.0, the power is in watts, with four digits after the dot.
+Each row is written to the disk at once, so the file can be read while measuring, and its rows survive a crash.</p>
+<p>When following a process, an application or a command, a second file is written next to the first, named after the process ID or the program’s name (<code>power-144.csv</code> or <code>power-firefox.csv</code> for <code>power.csv</code>).
+For a command, the name is its program’s, without its folder.
+The characters a file name cannot hold are replaced by <code>_</code>.
+It has the CPU usage and the power of the followed program:</p>
+<pre><code>Timestamp,CPU Usage,CPU Power
+1756681930,0.0310,1.9154
+</code></pre>
+<p>Both value columns hold <code>-1.0000</code> when the program could not be read at all: it has ended, or the system does not let us read it.
+That is not the same as <code>0.0000</code>, a program that was read and used no CPU time.
+An application with no running process is written as <code>0.0000</code>, as in PowerJoular.</p>
+<p>The carbon emissions, the cost, the idle power and the plug meter are not written to the CSV files, which keep PowerJoular’s columns.</p>
+<h2 id="writing-files-safely"><a class="header" href="#writing-files-safely">Writing files safely</a></h2>
+<p>On Linux, macOS and FreeBSD, the CSV files are only written to plain files: a symbolic link, a hard link, or anything else that is not a plain file is refused, and the reason is shown.
+A file created while running with <code>sudo</code> belongs to you, not to root.</p>
+<p>A file that cannot be written is reported once, and the measuring goes on.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="options-and-settings"><a class="header" href="#options-and-settings">Options and Settings</a></h1>
+<h2 id="command-line-options"><a class="header" href="#command-line-options">Command line options</a></h2>
+<p>Everything is chosen in the window, and the command line has only these options:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Option</th><th>What it does</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--start</code></td><td>Start measuring at once, with the choices kept from the last time</td></tr>
+<tr><td><code>--idle</code></td><td>Open the window that measures the idle power</td></tr>
+<tr><td><code>-v</code>, <code>--version</code></td><td>Print the versions of Joular Energy Meter, Joular Core and CPU Load, and stop</td></tr>
+<tr><td><code>-h</code>, <code>--help</code></td><td>Print the help, and stop</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="settings-file"><a class="header" href="#settings-file">Settings file</a></h2>
+<p>The choices are kept for the next launch: what to measure (except a process ID), the interval, the length, the recording and its file, the electricity, the price, the idle power, the plug meter, the look and the zoom.
+They are saved at each Start and on quit, as <code>key=value</code> lines, in:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>OS</th><th>File</th></tr>
+</thead>
+<tbody>
+<tr><td>Linux, FreeBSD</td><td><code>~/.config/joularenergymeter/settings</code> (or in <code>$XDG_CONFIG_HOME</code> when set)</td></tr>
+<tr><td>macOS</td><td><code>~/Library/Application Support/Joular Energy Meter/settings</code></td></tr>
+<tr><td>Windows</td><td><code>%APPDATA%\Joular Energy Meter\settings</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>Under <code>sudo</code>, they go to your own folder, not root’s.
+Delete the file to go back to the defaults.</p>
+<h2 id="look-and-zoom"><a class="header" href="#look-and-zoom">Look and zoom</a></h2>
+<p>The sun or moon key at the top right picks a light or a dark look, or one like the system’s (the default): the appearance of macOS and Windows, and GNOME’s style on Linux.
+On Linux and FreeBSD under <code>sudo</code>, “like the system” is light.</p>
+<p><strong>Ctrl +</strong> and <strong>Ctrl -</strong> (<strong>Cmd</strong> on macOS) zoom the window from 80 to 150 %, and <strong>Ctrl 0</strong> goes back to 100 %.
+The window grows with the zoom, so a zoom larger than the screen can hold is refused.</p>
+<h2 id="keyboard-and-accessibility"><a class="header" href="#keyboard-and-accessibility">Keyboard and accessibility</a></h2>
+<p>Every control works from the keyboard: Tab moves between them, Space or Enter uses one, and the arrows choose in a list.
+In the file browser, the arrows move, Enter opens, Backspace goes up, letters jump to a name, and Esc cancels.</p>
+<p>The help shown on hover needs a mouse.
+Screen readers cannot read the window, as LVGL draws it itself, but <strong>Copy summary</strong> gives the figures as text.</p>
+<h2 id="sleep"><a class="header" href="#sleep">Sleep</a></h2>
+<p>While measuring, macOS and Windows do not go to sleep on idle (the screen still can, and closing the lid still does).
+On Linux, use <code>systemd-inhibit --what=sleep</code> for long runs.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="how-joular-energy-meter-works"><a class="header" href="#how-joular-energy-meter-works">How Joular Energy Meter Works</a></h1>
+<p>Joular Energy Meter is written in C, with <a href="https://lvgl.io">LVGL</a> drawing the window on top of SDL2, so it has the same interface on every system.
+The hardware is measured by our <a href="https://github.com/joular/joularcore">Joular Core</a> library, and the CPU usage by our <a href="https://github.com/joular/cpuload">CPU Load</a> library.
+Both are written in Ada, and are linked into the program as static libraries with their Ada runtime, so it is one binary.</p>
+<h2 id="the-measuring-thread"><a class="header" href="#the-measuring-thread">The measuring thread</a></h2>
+<p>The libraries are only called from a measuring thread, so a slow reading (<code>powermetrics</code> on macOS, for example) never blocks the window.
+The thread queues its measurements for the window, up to four minutes of them at 1 second while the window is blocked (a window dragged on Windows, a menu held open on macOS).
+Beyond that, the oldest are dropped, and counted as missed.</p>
+<p>An idle window costs nothing: the program sleeps until the next event or the next measurement.</p>
+<h2 id="a-measurement"><a class="header" href="#a-measurement">A measurement</a></h2>
+<p>Each cycle, Joular Energy Meter:</p>
+<ol>
+<li>Reads the CPU time of the whole machine, of the followed program, and of Joular Energy Meter itself, from the same sample.</li>
+<li>Reads the processor and the graphics card from Joular Core.</li>
+<li>Divides the energy given by the hardware (RAPL, for example) by how long the cycle actually took, so the watts are right even when a cycle takes longer than the interval, and when the interval is changed while measuring. Hardware that gives watts (<code>powermetrics</code>, NVML) is used as it is.</li>
+<li>Shares the processor’s power out to the followed program (see <a href="#measuring-a-program">Measuring a Program</a>).</li>
+<li>Adds the power times the length of the cycle to the energy since the start.</li>
+</ol>
+<p>A cycle during which the machine slept for more than 2 seconds is dropped, and counted as missed.</p>
+<p>From the energy since the start:</p>
+<ul>
+<li>The average power is the energy divided by the measured time.</li>
+<li>The spread is the standard deviation of the power around this average, each measurement weighted by the time it covers.</li>
+<li><em>A year at this average</em> is the average power for 365.25 days, day and night.</li>
+</ul>
+<p>The share of the CPU used by Joular Energy Meter itself is shown under the chart (on macOS, without the <code>powermetrics</code> it starts).</p>
+<h2 id="asking-for-the-administrator"><a class="header" href="#asking-for-the-administrator">Asking for the administrator</a></h2>
+<p>When the power cannot be read for lack of rights, Joular Energy Meter asks through the system’s own dialog, never through a password field of its own:</p>
+<ul>
+<li><strong>Linux</strong>: <code>pkexec chmod a+r</code> on the energy counter of each top-level RAPL zone (<code>intel-rapl:N/energy_uj</code>), which stays readable by every user until the next boot. The application itself keeps running as you.</li>
+<li><strong>macOS</strong>: the administrator dialog (<code>osascript</code> with administrator privileges) starts the application again as root, as <code>powermetrics</code> needs.</li>
+<li><strong>Windows</strong>: UAC starts the application again as administrator, for the PawnIO driver.</li>
+</ul>
+<p>Restarting saves the settings first, so the new run starts where the old one was.</p>
+<h2 id="running-as-root"><a class="header" href="#running-as-root">Running as root</a></h2>
+<p>Started with <code>sudo</code>, Joular Energy Meter keeps your files yours:</p>
+<ul>
+<li>CSV files it creates belong to you (see <a href="#csv-files">CSV Files</a>).</li>
+<li>Settings go to your own folder, not root’s (see <a href="#options-and-settings">Options and Settings</a>).</li>
+<li><strong>Copy summary</strong> goes to your own clipboard on macOS, not root’s.</li>
+<li>Commands it starts run as you.</li>
+</ul>
+<p>On Linux, a program run as root cannot open a window on Wayland, so use X11, or <strong>Allow reading power</strong> instead of <code>sudo</code>.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-09f2665d.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+
+    </div>
+    </body>
+</html>
